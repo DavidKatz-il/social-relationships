@@ -1,0 +1,9 @@
+wheel
+pyjwt
+uvicorn
+aiopath
+aiofiles
+pydantic
+sqlalchemy
+fastapi[all]
+passlib[bcrypt]
