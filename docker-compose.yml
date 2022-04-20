@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ./backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/app:/backend/app/:cached
+      - ./backend/data:/backend/data/:cached
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - 3000:3000
+    volumes:
+      - './frontend/src:/frontend/src:cached'
+      - './frontend/public:/frontend/public:cached'
