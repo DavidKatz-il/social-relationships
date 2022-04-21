@@ -40,7 +40,6 @@ const App = () => {
           {!token ? (
             <div className="columns">
               <Register /> <Login />
-              <p>{"test"}</p>
             </div>
           ) : (
             <PersonsTable />
