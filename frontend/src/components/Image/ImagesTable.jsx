@@ -74,7 +74,8 @@ export const ImagesTable = () => {
                 <thead>
                     <tr>
                         {/*<th>Name</th>*/}
-                        <th>Images</th>
+                        <th>Name</th>
+                        <th>Image</th>
                         <th>Last Updated</th>
                         <th>Actions</th>
                     </tr>
@@ -82,15 +83,13 @@ export const ImagesTable = () => {
                 <tbody>
                     {images.map((img) => (
                         <tr key={img.id}>
-                            {/*<td>{img.name}</td>*/}
-                            <td>{JSON.parse(img.image).length > 0 ? JSON.parse(img.image).map((imageObj, i) => {
-                                return (
-                                    <div key={i}>
-                                        <img width="50" src={imageObj} alt="" />
+                            {<td>{img.name}</td>}
+                            <td>{img.image.length > 0 ?
+                                    <div key={0}>
+                                        <img width="50" src={img.image} alt="" />
                                     </div>
-                                );
-                            })
-                                : null}</td>
+                                : null}
+                            </td>
                             <td>{moment(img.date_last_updated).format("MMM Do YY")}</td>
                             <td>
                                 {/*<button className="button mr-2 is-info is-light"

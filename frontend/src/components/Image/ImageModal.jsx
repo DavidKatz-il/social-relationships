@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react"
 import ErrorMessage from "../ErrorMessage";
 
 const ImageModal = ({ active, handleModal, token }) => {
-    const [images, setImages] = useState([]);
+    const [name, setName] = useState("");
+    const [image, setImage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     const fileToDataUri = (image) => {
@@ -15,11 +16,9 @@ const ImageModal = ({ active, handleModal, token }) => {
 
     const uploadImage = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            const newImagesPromises = [];
-            for (let i = 0; i < e.target.files.length; i++)
-                newImagesPromises.push(fileToDataUri(e.target.files[i]));
-            const newImages = await Promise.all(newImagesPromises);
-            setImages(newImages);
+            const file = e.target.files[0];
+            setName(file.name);
+            setImage(await fileToDataUri(file));
         }
         e.target.value = '';
     };
@@ -29,7 +28,8 @@ const ImageModal = ({ active, handleModal, token }) => {
     }, [id, token]);*/
 
     const cleanFormData = () => {
-        setImages([]);
+        setName("");
+        setImage("");
         setErrorMessage("");
     };
 
@@ -56,7 +56,7 @@ const ImageModal = ({ active, handleModal, token }) => {
         }
     };*/
 
-    const handleCreatePerson = async (e) => {
+    const handleCreateImage = async (e) => {
         e.preventDefault();
         const requestOptions = {
             method: "POST",
@@ -65,12 +65,12 @@ const ImageModal = ({ active, handleModal, token }) => {
                 Authorization: "Bearer " + token,
             },
             body: JSON.stringify({
-                images: JSON.stringify(images),
+                name: name,
+                image: image,
             }),
         };
-        console.log(requestOptions);
         const response = await fetch("/api/images", requestOptions);
-        if (!response.ok) setErrorMessage("Something went wrong when creating person");
+        if (!response.ok) setErrorMessage("Something went wrong when creating image");
         else handleClose();
     };
 
@@ -94,11 +94,11 @@ const ImageModal = ({ active, handleModal, token }) => {
                         <div className="control">
                             <input type="file" placeholder="Image" onChange={uploadImage}
                                 className="input" required={true} />
-                            {images.length > 0 ? images.map((imageObj, i) => {
-                                return <div key={i}>
-                                    <img width="50" src={imageObj} alt="" />
+                            {image.length > 0 ? 
+                                <div key={0}>
+                                    <img width="50" src={image} alt="" />
                                 </div>
-                            }) : null}
+                            : null}
                         </div>
                     </div>
                     <div className="errorMessage"><ErrorMessage message={errorMessage} /></div>
@@ -106,7 +106,7 @@ const ImageModal = ({ active, handleModal, token }) => {
             </section>
             <footer className="modal-card-foot has-background-primary-light">
                 {//id ? <button className="button is-info" onClick={handleUpdatePerson}>Update</button>:
-                    <button className="button is-primary" onClick={handleCreatePerson}>Add</button>}
+                    <button className="button is-primary" onClick={handleCreateImage}>Add</button>}
                 <button className="button" onClick={handleClose}>Cancel</button>
             </footer>
         </div>
