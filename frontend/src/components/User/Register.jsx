@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
-import { UserContext } from "../context/UserContext";
-import ErrorMessage from "./ErrorMessage";
+import { UserContext } from "../../context/UserContext";
+import ErrorMessage from "../ErrorMessage";
 
 const Register = () => {
   const [email, setEmail] = useState("");
