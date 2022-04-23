@@ -38,3 +38,22 @@ class Person(_PersonBase):
 
     class Config:
         orm_mode = True
+
+
+class _ImageBase(BaseModel):
+    name: str
+    image: str
+
+
+class ImageCreate(_ImageBase):
+    pass
+
+
+class Image(_ImageBase):
+    id: int
+    owner_id: int
+    datetime_created: datetime
+    datetime_updated: datetime
+
+    class Config:
+        orm_mode = True

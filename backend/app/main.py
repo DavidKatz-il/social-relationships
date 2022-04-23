@@ -17,6 +17,11 @@ async def startup():
     services.create_database()
 
 
+@app.get("/api/users/user", response_model=schemas.User)
+async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return user
+
+
 @app.post("/api/users")
 async def create_user(
     user: schemas.UserCreate, db: orm.Session = fastapi.Depends(services.get_db)
@@ -43,20 +48,6 @@ async def generate_token(
     return await services.create_token(user)
 
 
-@app.get("/api/users/user", response_model=schemas.User)
-async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
-    return user
-
-
-@app.post("/api/persons", response_model=schemas.Person)
-async def create_person(
-    person: schemas.PersonCreate,
-    user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
-):
-    return await services.create_person(user=user, db=db, person=person)
-
-
 @app.get("/api/persons", response_model=List[schemas.Person])
 async def get_persons(
     user: schemas.User = fastapi.Depends(services.get_current_user),
@@ -74,14 +65,13 @@ async def get_person(
     return await services.get_person(person_id, user, db)
 
 
-@app.delete("/api/persons/{person_id}", status_code=204)
-async def delete_person(
-    person_id: int,
+@app.post("/api/persons", response_model=schemas.Person)
+async def create_person(
+    person: schemas.PersonCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    await services.delete_person(person_id, user, db)
-    return {"message", "Successfully Deleted."}
+    return await services.create_person(user=user, db=db, person=person)
 
 
 @app.put("/api/persons/{person_id}", status_code=200)
@@ -93,6 +83,63 @@ async def update_person(
 ):
     await services.update_person(person_id, person, user, db)
     return {"message", "Successfully Updated."}
+
+
+@app.delete("/api/persons/{person_id}", status_code=204)
+async def delete_person(
+    person_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.delete_person(person_id, user, db)
+    return {"message", "Successfully Deleted."}
+
+
+@app.get("/api/images", response_model=List[schemas.Image])
+async def get_images(
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_images(user=user, db=db)
+
+
+@app.get("/api/images/{image_id}", status_code=200)
+async def get_image(
+    image_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_image(image_id, user, db)
+
+
+@app.post("/api/images", response_model=schemas.Image)
+async def create_image(
+    image: schemas.ImageCreate,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.create_image(user=user, db=db, image=image)
+
+
+@app.put("/api/images/{image_id}", status_code=200)
+async def update_image(
+    image_id: int,
+    image: schemas.ImageCreate,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.update_image(image_id, image, user, db)
+    return {"message", "Successfully Updated."}
+
+
+@app.delete("/api/images/{image_id}", status_code=204)
+async def delete_image(
+    image_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.delete_image(image_id, user, db)
+    return {"message", "Successfully Deleted."}
 
 
 @app.get("/api")
