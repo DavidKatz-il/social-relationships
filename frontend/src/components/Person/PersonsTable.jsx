@@ -112,11 +112,7 @@ const PersonsTable = () => {
             ))}
           </tbody>
         </table>
-      ) : (
-        <p>Loading</p>
-      )}
-    </>
+      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
   );
 };
-
 export default PersonsTable;
