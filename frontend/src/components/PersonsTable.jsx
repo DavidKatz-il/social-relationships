@@ -69,7 +69,7 @@ const PersonsTable = () => {
         handleModal={handleModal}
         token={token}
         id={id}
-        setErrorMessage={setErrorMessage}
+      //setErrorMessage={setErrorMessage}
       />
       <button
         className="button is-fullwidth mb-5 is-primary"
@@ -93,13 +93,13 @@ const PersonsTable = () => {
               <tr key={person.id}>
                 <td>{person.name}</td>
                 <td>{JSON.parse(person.images).length > 0 ? JSON.parse(person.images).map((imageObj, i) => {
-                    return (
-                      <div key={i}>
-                        <img width="50" src={imageObj} alt="" />
-                      </div>
-                    );
-                  })
-                : null}</td>
+                  return (
+                    <div key={i}>
+                      <img width="50" src={imageObj} alt="" />
+                    </div>
+                  );
+                })
+                  : null}</td>
                 <td>{moment(person.date_last_updated).format("MMM Do YY")}</td>
                 <td>
                   <button

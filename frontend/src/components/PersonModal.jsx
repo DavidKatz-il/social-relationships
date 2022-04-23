@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import ErrorMessage from "./ErrorMessage";
 
-const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
+//const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
+const PersonModal = ({ active, handleModal, token, id }) => {
   const [name, setName] = useState("");
   const [images, setImages] = useState([]);
-  
+  const [errorMessage, setErrorMessage] = useState("");
+
+
   const fileToDataUri = (image) => {
     return new Promise((res) => {
       const reader = new FileReader();
@@ -13,7 +17,7 @@ const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
       reader.readAsDataURL(image);
     });
   };
-  
+
   const uploadImage = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const newImagesPromises = [];
@@ -25,8 +29,7 @@ const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
     }
     e.target.value = '';
   };
-  
-  
+
   useEffect(() => {
     const getPerson = async () => {
       const requestOptions = {
@@ -122,6 +125,7 @@ const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="input"
+                  required={true}
                 />
               </div>
             </div>
@@ -133,16 +137,20 @@ const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
                   placeholder="Images"
                   onChange={uploadImage} multiple
                   className="input"
+                  required={true}
                 />
                 {images.length > 0 ? images.map((imageObj, i) => {
-                    return (
-                      <div key={i}>
-                        <img width="50" src={imageObj} alt="" />
-                      </div>
-                    );
-                  })
-                : null}
+                  return (
+                    <div key={i}>
+                      <img width="50" src={imageObj} alt="" />
+                    </div>
+                  );
+                })
+                  : null}
               </div>
+            </div>
+            <div className="field">
+              <ErrorMessage message={errorMessage} />
             </div>
           </form>
         </section>
