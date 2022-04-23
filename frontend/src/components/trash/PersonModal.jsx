@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+/*import React, { useEffect, useState } from "react";
 import ErrorMessage from "./ErrorMessage";
 
 //const PersonModal = ({ active, handleModal, token, id, setErrorMessage }) => {
@@ -174,3 +174,4 @@ const PersonModal = ({ active, handleModal, token, id }) => {
 };
 
 export default PersonModal;
+*/
