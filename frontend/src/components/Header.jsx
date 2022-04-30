@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import logo from '../logo.jpeg';
 
 export const Header = () => {
   const [token, setToken] = useContext(UserContext);
@@ -12,7 +13,7 @@ export const Header = () => {
       <nav className="navbar" style={{ backgroundColor: "lightblue" }}>
         <div className="navbar-brand">
           <NavLink className="navbar-item" to="/">
-            <img src="https://bulma.io/images/bulma-logo.png" alt="Social-Relationships" width="112" height="28" />
+            <img src={logo} alt="Social-Relationships" width="40" height="40" />
           </NavLink>
         </div>
 
