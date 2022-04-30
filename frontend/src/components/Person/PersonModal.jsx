@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ErrorMessage from "../ErrorMessage"
+import { ErrorMessage } from "../ErrorMessage"
 
-const PersonModal = ({ active, handleModal, token, id }) => {
+export const PersonModal = ({ active, handleModal, token, id }) => {
   const [name, setName] = useState("");
   const [images, setImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -122,7 +122,7 @@ const PersonModal = ({ active, handleModal, token, id }) => {
               }) : null}
             </div>
           </div>
-          <div className="errorMessage"><ErrorMessage message={errorMessage} /></div>
+          <ErrorMessage message={errorMessage} />
         </form>
       </section>
       <footer className="modal-card-foot has-background-primary-light">
@@ -133,4 +133,3 @@ const PersonModal = ({ active, handleModal, token, id }) => {
     </div>
   </div>
 };
-export default PersonModal;

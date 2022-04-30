@@ -1,9 +1,8 @@
 import React, { useState, useContext } from "react";
-
-import ErrorMessage from "../ErrorMessage";
+import { ErrorMessage } from "../ErrorMessage";
 import { UserContext } from "../../context/UserContext";
 
-const Login = () => {
+export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,19 +12,12 @@ const Login = () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: JSON.stringify(
-        `grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`
-      ),
+      body: JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`),
     };
-
     const response = await fetch("/api/token", requestOptions);
     const data = await response.json();
-
-    if (!response.ok) {
-      setErrorMessage(data.detail);
-    } else {
-      setToken(data.access_token);
-    }
+    if (!response.ok) setErrorMessage(data.detail);
+    else setToken(data.access_token);
   };
 
   const handleSubmit = (e) => {
@@ -34,43 +26,30 @@ const Login = () => {
   };
 
   return (
-    <div className="column">
-      <form className="box" onSubmit={handleSubmit}>
-        <h1 className="title has-text-centered">Login</h1>
-        <div className="field">
-          <label className="label">Email Address</label>
-          <div className="control">
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input"
-              required
-            />
+    <div className="columns">
+      <div className="column" />
+      <div className="column">
+        <form className="box" onSubmit={handleSubmit}>
+          <h1 className="title has-text-centered">Login</h1>
+          <div className="field">
+            <label className="label">Email Address</label>
+            <div className="control">
+              <input type="email" placeholder="Enter email" value={email}
+                onChange={(e) => setEmail(e.target.value)} className="input" required />
+            </div>
           </div>
-        </div>
-        <div className="field">
-          <label className="label">Password</label>
-          <div className="control">
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-              required
-            />
+          <div className="field">
+            <label className="label">Password</label>
+            <div className="control">
+              <input type="password" placeholder="Enter password" value={password}
+                onChange={(e) => setPassword(e.target.value)} className="input" required />
+            </div>
           </div>
-        </div>
-        <ErrorMessage message={errorMessage} />
-        <br />
-        <button className="button is-primary" type="submit">
-          Login
-        </button>
-      </form>
+          <ErrorMessage message={errorMessage} /><br />
+          <button className="button is-primary" type="submit">Login</button>
+        </form>
+      </div>
+      <div className="column" />
     </div>
   );
 };
-
-export default Login;

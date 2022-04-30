@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import moment from "moment";
-import ErrorMessage from "../ErrorMessage";
-import PersonModal from "./PersonModal";
+import { ErrorMessage } from "../ErrorMessage";
+import { PersonModal } from "./PersonModal";
 import { UserContext } from "../../context/UserContext";
 
-const PersonsTable = () => {
+export const PersonsTable = () => {
   const [token] = useContext(UserContext);
   const [persons, setPersons] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,7 +15,6 @@ const PersonsTable = () => {
   const handleUpdate = async (id) => {
     setId(id);
     setActiveModal(true);
-    //getPersons(); why wasnt this here ?? doesitworks ??
   };
 
   const handleDelete = async (id) => {
@@ -49,9 +48,7 @@ const PersonsTable = () => {
     }
   };
 
-  useEffect(() => {
-    getPersons();
-  }, []);
+  useEffect(() => { getPersons(); }, []);
 
   const handleModal = () => {
     setActiveModal(!activeModal);
@@ -61,24 +58,22 @@ const PersonsTable = () => {
 
   return (
     <>
-      <PersonModal
-        active={activeModal}
-        handleModal={handleModal}
-        token={token}
-        id={id}
-      //setErrorMessage={setErrorMessage}
-      />
-      <button className="button is-fullwidth mb-5 is-primary"
-        onClick={() => setActiveModal(true)}>Add a new Person</button>
+      <PersonModal active={activeModal} handleModal={handleModal} token={token} id={id} />
+      <div className="columns">
+        <div className="column"></div>
+        <button className="column button is-fullwidth mb-5 is-primary"
+          onClick={() => setActiveModal(true)}>Add a new Person</button>
+        <div className="column"></div>
+      </div>
       <ErrorMessage message={errorMessage} />
-      {loaded && persons ? (
-        <table className="table is-fullwidth">
+      {(loaded && persons) ? (
+        <table className="table is-fullwidth is-bordered is-hoverable is-striped" style={{ textAlign: "center" }}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Images</th>
-              <th>Last Updated</th>
-              <th>Actions</th>
+              <th width="25%">Name</th>
+              <th >Images</th>
+              <th width="15%">Last Updated</th>
+              <th width="15%">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -86,11 +81,7 @@ const PersonsTable = () => {
               <tr key={person.id}>
                 <td>{person.name}</td>
                 <td>{JSON.parse(person.images).length > 0 ? JSON.parse(person.images).map((imageObj, i) => {
-                  return (
-                    <div key={i}>
-                      <img width="50" src={imageObj} alt="" />
-                    </div>
-                  );
+                  return (<img key={i} width="100" height="100" style={{ padding: 5 }} src={imageObj} />);
                 })
                   : null}</td>
                 <td>{moment(person.date_last_updated).format("MMM Do YY")}</td>
@@ -98,21 +89,17 @@ const PersonsTable = () => {
                   <button
                     className="button mr-2 is-info is-light"
                     onClick={() => handleUpdate(person.id)}
-                  >
-                    Update
-                  </button>
+                  >Update</button>
                   <button
                     className="button mr-2 is-danger is-light"
                     onClick={() => handleDelete(person.id)}
-                  >
-                    Delete
-                  </button>
+                  >Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>
+      }</>
   );
 };
-export default PersonsTable;

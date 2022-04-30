@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import moment from "moment";
-import ErrorMessage from "../ErrorMessage";
-import ImageModal from "./ImageModal";
+import { ErrorMessage } from "../ErrorMessage";
+import { ImageModal } from "./ImageModal";
 import { UserContext } from "../../context/UserContext";
 
 export const ImagesTable = () => {
@@ -10,13 +10,6 @@ export const ImagesTable = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [activeModal, setActiveModal] = useState(false);
-    //const [id, setId] = useState(null);
-
-    /*const handleUpdate = async (id) => {
-        setId(id);
-        setActiveModal(true);
-        //getPersons(); why wasnt this here ?? doesitworks ??
-    };*/
 
     const handleDelete = async (id) => {
         const requestOptions = {
@@ -40,40 +33,34 @@ export const ImagesTable = () => {
             },
         };
         const response = await fetch("/api/images", requestOptions);
-        if (!response.ok) {
-            setErrorMessage("Something went wrong. Couldn't load the images");
-        } else {
+        if (!response.ok) setErrorMessage("Something went wrong. Couldn't load the images");
+        else {
             const data = await response.json();
             setImages(data);
             setLoaded(true);
         }
     };
 
-    useEffect(() => {
-        getImages();
-    }, []);
+    useEffect(() => { getImages(); }, []);
 
     const handleModal = () => {
         setActiveModal(!activeModal);
         getImages();
-        //setId(null);
     };
 
     return <>
-        <ImageModal
-            active={activeModal}
-            handleModal={handleModal}
-            token={token}
-        //id={id}
-        />
-        <button className="button is-fullwidth mb-5 is-primary"
-            onClick={() => setActiveModal(true)}>Add a new Image</button>
+        <ImageModal active={activeModal} handleModal={handleModal} token={token} />
+        <div className="columns">
+            <div className="column" />
+            <button className="column button is-fullwidth mb-5 is-primary"
+                onClick={() => setActiveModal(true)}>Add a new Image</button>
+            <div className="column" />
+        </div>
         <ErrorMessage message={errorMessage} />
-        {loaded && images ? (
-            <table className="table is-fullwidth">
+        {(loaded && images) ? (
+            <table className="table is-fullwidth is-bordered is-hoverable is-striped" style={{ textAlign: "center" }}>
                 <thead>
                     <tr>
-                        {/*<th>Name</th>*/}
                         <th>Name</th>
                         <th>Image</th>
                         <th>Last Updated</th>
@@ -83,24 +70,14 @@ export const ImagesTable = () => {
                 <tbody>
                     {images.map((img) => (
                         <tr key={img.id}>
-                            {<td>{img.name}</td>}
-                            <td>{img.image.length > 0 ?
-                                    <div key={0}>
-                                        <img width="50" src={img.image} alt="" />
-                                    </div>
-                                : null}
-                            </td>
+                            <td>{img.name}</td>
+                            <td>{img.image.length > 0 ? <img key={0} width="300" src={img.image} /> : null}</td>
                             <td>{moment(img.date_last_updated).format("MMM Do YY")}</td>
-                            <td>
-                                {/*<button className="button mr-2 is-info is-light"
-                                    onClick={() => handleUpdate(img.id)} >Update</button>*/}
-                                <button className="button mr-2 is-danger is-light"
-                                    onClick={() => handleDelete(img.id)} >Delete</button>
-                            </td>
+                            <td><button className="button mr-2 is-danger is-light"
+                                onClick={() => handleDelete(img.id)} >Delete</button></td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
 };
-//export default ImagesTable;
