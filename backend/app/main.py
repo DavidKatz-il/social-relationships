@@ -121,17 +121,6 @@ async def create_image(
     return await services.create_image(user=user, db=db, image=image)
 
 
-@app.put("/api/images/{image_id}", status_code=200)
-async def update_image(
-    image_id: int,
-    image: schemas.ImageCreate,
-    user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
-):
-    await services.update_image(image_id, image, user, db)
-    return {"message", "Successfully Updated."}
-
-
 @app.delete("/api/images/{image_id}", status_code=204)
 async def delete_image(
     image_id: int,
@@ -140,6 +129,22 @@ async def delete_image(
 ):
     await services.delete_image(image_id, user, db)
     return {"message", "Successfully Deleted."}
+
+
+@app.post("/api/create_match_faces", status_code=200)
+async def create_match_faces(
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.create_match_faces(user, db)
+    return {"message", "Successfully finished matcheing all faces."}
+
+@app.get("/api/get_match_faces", status_code=200)
+async def get_match_faces(
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_match_faces(user, db)
 
 
 @app.get("/api")

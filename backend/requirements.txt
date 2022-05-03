@@ -1,9 +1,9 @@
 wheel
-pyjwt
-uvicorn
-aiopath
-aiofiles
 pydantic
 sqlalchemy
+uvicorn
 fastapi[all]
+pyjwt
 passlib[bcrypt]
+numpy
+face_recognition

@@ -8,12 +8,15 @@ from app import database
 
 class User(database.Base):
     __tablename__ = "users"
+    
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     email = sql.Column(sql.String, unique=True, index=True)
     hashed_password = sql.Column(sql.String)
 
     persons = sql.orm.relationship("Person", back_populates="owner")
     images = sql.orm.relationship("Image", back_populates="owner")
+    faces_persons = person_faces = sql.orm.relationship("FacePerson", back_populates="owner")
+    faces_images = sql.orm.relationship("FaceImage", back_populates="owner")
 
     def verify_password(self, password: str):
         return bcrypt.verify(password, self.hashed_password)
@@ -25,8 +28,10 @@ class Person(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey("users.id"))
+    
     name = sql.Column(sql.String, index=True)
-    images = sql.Column(sql.String, default="")
+    images = sql.Column(sql.String)
+    
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
@@ -39,9 +44,44 @@ class Image(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey("users.id"))
+    
     name = sql.Column(sql.String, index=True)
-    image = sql.Column(sql.String, default="")
+    image = sql.Column(sql.String)
+    
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
     owner = sql.orm.relationship("User", back_populates="images")
+
+
+class FacePerson(database.Base):
+    __tablename__ = "faces_persons"
+
+    id = sql.Column(sql.Integer, primary_key=True, index=True)
+    owner_id = sql.Column(sql.Integer, sql.ForeignKey("users.id"))
+    
+    name = sql.Column(sql.String, sql.ForeignKey("persons.name"))
+    face_locations = sql.Column(sql.JSON)
+    face_encodings = sql.Column(sql.JSON)
+    
+    datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
+    datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
+
+    owner = sql.orm.relationship("User", back_populates="faces_persons")
+
+
+class FaceImage(database.Base):
+    __tablename__ = "faces_images"
+
+    id = sql.Column(sql.Integer, primary_key=True, index=True)
+    owner_id = sql.Column(sql.Integer, sql.ForeignKey("users.id"))
+    
+    name = sql.Column(sql.String, sql.ForeignKey("images.name"))
+    face_locations = sql.Column(sql.JSON)
+    face_encodings = sql.Column(sql.JSON)
+    person_names = sql.Column(sql.JSON, default=None)
+
+    datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
+    datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
+
+    owner = sql.orm.relationship("User", back_populates="faces_images")

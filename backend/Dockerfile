@@ -1,4 +1,5 @@
-FROM python:3.9
+FROM animcogn/face_recognition:cpu-latest
+
 WORKDIR /backend
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
