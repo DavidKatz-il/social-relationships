@@ -14,20 +14,12 @@ export const UserProvider = (props) => {
           Authorization: "Bearer " + token,
         },
       };
-
       const response = await fetch("/api/users/user", requestOptions);
-
-      if (!response.ok) {
-        setToken(null);
-      }
+      if (!response.ok) setToken(null);
       localStorage.setItem("socialRelationshipsToken", token);
     };
     fetchUser();
   }, [token]);
 
-  return (
-    <UserContext.Provider value={[token, setToken]}>
-      {props.children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={[token, setToken]}>{props.children}</UserContext.Provider>
 };

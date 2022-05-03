@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+/*import React, { useState } from "react";
 import { ImagesTable } from "./Image/ImagesTable";
-import PersonsTable from "./Person/PersonsTable";
+import { PersonsTable } from "./Person/PersonsTable";
 import { ReportsTable } from "./Report/ReportsTable";
 
 export const Views = () => {
@@ -16,12 +16,12 @@ export const Views = () => {
                 <li onClick={() => setSelectedTab(2)}
                     className={selectedTab === 2 ? "is-active" : ""}><a>Reports</a></li>
                 {/*<li onClick={() => setSelectedTab(3)}
-                    className={selectedTab === 3 ? "is-active" : ""}><a>Documents</a></li>*/}
+                    className={selectedTab === 3 ? "is-active" : ""}><a>Documents</a></li>*}
             </ul>
         </div >
         <div>{selectedTab === 0 ? <PersonsTable /> : <></>}</div>
         <div>{selectedTab === 1 ? <ImagesTable /> : <></>}</div>
         <div>{selectedTab === 2 ? <ReportsTable /> : <></>}</div>
-        {/*<div>{selectedTab === 3 ? <Login /> : <></>}</div>*/}
+        {/*<div>{selectedTab === 3 ? <Login /> : <></>}</div>*}
     </>
-}
+}*/

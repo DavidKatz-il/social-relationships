@@ -1,9 +1,8 @@
 import React, { useContext, useState } from "react";
-
 import { UserContext } from "../../context/UserContext";
-import ErrorMessage from "../ErrorMessage";
+import { ErrorMessage } from "../ErrorMessage";
 
-const Register = () => {
+export const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmationPassword, setConfirmationPassword] = useState("");
@@ -16,79 +15,50 @@ const Register = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, hashed_password: password }),
     };
-
     const response = await fetch("/api/users", requestOptions);
     const data = await response.json();
-
-    if (!response.ok) {
-      setErrorMessage(data.detail);
-    } else {
-      setToken(data.access_token);
-    }
+    if (!response.ok) setErrorMessage(data.detail);
+    else setToken(data.access_token);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === confirmationPassword && password.length > 5) {
-      submitRegistration();
-    } else {
-      setErrorMessage(
-        "Ensure that the passwords match and greater than 5 characters"
-      );
-    }
+    if (password === confirmationPassword && password.length > 5) submitRegistration();
+    else setErrorMessage("Ensure that the passwords match and greater than 5 characters");
   };
 
   return (
-    <div className="column">
-      <form className="box" onSubmit={handleSubmit}>
-        <h1 className="title has-text-centered">Register</h1>
-        <div className="field">
-          <label className="label">Email Address</label>
-          <div className="control">
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input"
-              required
-            />
+    <div className="columns">
+      <div className="column"></div>
+      <div className="column">
+        <form className="box" onSubmit={handleSubmit}>
+          <h1 className="title has-text-centered">Register</h1>
+          <div className="field">
+            <label className="label">Email Address</label>
+            <div className="control">
+              <input type="email" placeholder="Enter email" value={email}
+                onChange={(e) => setEmail(e.target.value)} className="input" required />
+            </div>
           </div>
-        </div>
-        <div className="field">
-          <label className="label">Password</label>
-          <div className="control">
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-              required
-            />
+          <div className="field">
+            <label className="label">Password</label>
+            <div className="control">
+              <input type="password" placeholder="Enter password" value={password}
+                onChange={(e) => setPassword(e.target.value)} className="input" required />
+            </div>
           </div>
-        </div>
-        <div className="field">
-          <label className="label">Confirm Password</label>
-          <div className="control">
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={confirmationPassword}
-              onChange={(e) => setConfirmationPassword(e.target.value)}
-              className="input"
-              required
-            />
+          <div className="field">
+            <label className="label">Confirm Password</label>
+            <div className="control">
+              <input type="password" placeholder="Enter password" value={confirmationPassword}
+                onChange={(e) => setConfirmationPassword(e.target.value)} className="input" required />
+            </div>
           </div>
-        </div>
-        <ErrorMessage message={errorMessage} />
-        <br />
-        <button className="button is-primary" type="submit">
-          Register
-        </button>
-      </form>
+          <ErrorMessage message={errorMessage} /><br />
+          <button className="button is-primary" type="submit">Register</button>
+        </form>
+      </div>
+      <div className="column" />
     </div>
   );
 };
-
-export default Register;
