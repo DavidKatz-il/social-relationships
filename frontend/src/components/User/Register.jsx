@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import { ErrorMessage } from "../ErrorMessage";
+import logo from '../../logo.jpeg';
 
 export const Register = () => {
   const [email, setEmail] = useState("");
@@ -28,37 +29,42 @@ export const Register = () => {
   };
 
   return (
-    <div className="columns">
-      <div className="column"></div>
-      <div className="column">
-        <form className="box" onSubmit={handleSubmit}>
-          <h1 className="title has-text-centered">Register</h1>
-          <div className="field">
-            <label className="label">Email Address</label>
-            <div className="control">
-              <input type="email" placeholder="Enter email" value={email}
-                onChange={(e) => setEmail(e.target.value)} className="input" required />
-            </div>
+    <div className="hero-body">
+      <div className="container has-text-centered">
+          <div className="column is-4 is-offset-4">
+              <h3 className="title has-text-black">Register</h3>
+              <hr className="login-hr"/>
+              <p className="subtitle has-text-black">Please register to proceed.</p>
+              <div className="box" onSubmit={handleSubmit}>
+                  <figure className="avatar"> <img src={logo} alt=""/> </figure>
+                  <form>
+                      <div className="field">
+                          <div className="control">
+                              <input className="input is-large" type="email" placeholder="Enter your email" autoFocus=""
+                              value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                          </div>
+                      </div>
+                      <div className="field">
+                          <div className="control">
+                              <input className="input is-large" type="password" placeholder="Enter your password"
+                              value={password} onChange={(e) => setPassword(e.target.value)} required/>
+                          </div>
+                      </div>
+                      <div className="field">
+                          <div className="control">
+                              <input className="input is-large" type="password" placeholder="Enter your password again"
+                              value={password} onChange={(e) => setConfirmationPassword(e.target.value)} required/>
+                          </div>
+                      </div>
+                      <div className="field"> <ErrorMessage message={errorMessage} /><br /></div>
+                      <button className="button is-block is-info is-large is-fullwidth" type="submit">Register <i className="fa fa-sign-in" aria-hidden="true"></i></button>
+                  </form>
+              </div>
+              <p className="has-text-grey">
+                  <a href="./Login">Sign In</a>
+              </p>
           </div>
-          <div className="field">
-            <label className="label">Password</label>
-            <div className="control">
-              <input type="password" placeholder="Enter password" value={password}
-                onChange={(e) => setPassword(e.target.value)} className="input" required />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Confirm Password</label>
-            <div className="control">
-              <input type="password" placeholder="Enter password" value={confirmationPassword}
-                onChange={(e) => setConfirmationPassword(e.target.value)} className="input" required />
-            </div>
-          </div>
-          <ErrorMessage message={errorMessage} /><br />
-          <button className="button is-primary" type="submit">Register</button>
-        </form>
       </div>
-      <div className="column" />
     </div>
   );
 };

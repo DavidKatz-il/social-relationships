@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react"
-import moment from "moment";
 import { ErrorMessage } from "../ErrorMessage";
 import { ImageModal } from "./ImageModal";
 import { UserContext } from "../../context/UserContext";
@@ -50,34 +49,60 @@ export const ImagesTable = () => {
 
     return <>
         <ImageModal active={activeModal} handleModal={handleModal} token={token} />
-        <div className="columns">
-            <div className="column" />
-            <button className="column button is-fullwidth mb-5 is-primary"
-                onClick={() => setActiveModal(true)}>Add a new Image</button>
-            <div className="column" />
-        </div>
+        <section className="container">
+            <div className="columns">
+                <div className="column">
+                    <div className="card">
+                        <div className="card-content">
+                            <div className="content">
+                                <div className="control">
+                                <button className="button is-fullwidth is-primary"
+                                onClick={() => setActiveModal(true)}>Add a new image</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="column">
+                    <div className="card">
+                        <div className="card-content">
+                            <div className="content">
+                                <div className="control">
+                                    <input className="input is-fullwidth" placeholder="Search images" type="search"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br></br>
         <ErrorMessage message={errorMessage} />
+        <br></br>
         {(loaded && images) ? (
-            <table className="table is-fullwidth is-bordered is-hoverable is-striped" style={{ textAlign: "center" }}>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Image</th>
-                        <th>Last Updated</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {images.map((img) => (
-                        <tr key={img.id}>
-                            <td>{img.name}</td>
-                            <td>{img.image.length > 0 ? <img key={0} width="300" src={img.image} /> : null}</td>
-                            <td>{moment(img.date_last_updated).format("MMM Do YY")}</td>
-                            <td><button className="button mr-2 is-danger is-light"
-                                onClick={() => handleDelete(img.id)} >Delete</button></td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+        <section className="container">
+            <div className="columns is-multiline">
+                {images.map((img) => (
+                    <div className="column is-4">
+                        <div className="card is-shady">
+                            <div className="card-image">
+                                <figure className="image is-3by2">
+                                    <img src={img.image} alt=""/>
+                                </figure>
+                                <div className="card-content is-overlay is-clipped">
+                                    <span className="tag is-info">{img.name}</span>       
+                                </div>
+                            </div>
+                            <footer className="card-footer">
+                                <button className="button is-danger card-footer-item"
+                                    onClick={() => handleDelete(img.id)} >Delete
+                                </button>
+                            </footer>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>               
+      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+  
 };

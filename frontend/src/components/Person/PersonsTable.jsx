@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import moment from "moment";
 import { ErrorMessage } from "../ErrorMessage";
 import { PersonModal } from "./PersonModal";
 import { UserContext } from "../../context/UserContext";
@@ -56,50 +55,70 @@ export const PersonsTable = () => {
     setId(null);
   };
 
-  return (
-    <>
+  return <>
       <PersonModal active={activeModal} handleModal={handleModal} token={token} id={id} />
-      <div className="columns">
-        <div className="column"></div>
-        <button className="column button is-fullwidth mb-5 is-primary"
-          onClick={() => setActiveModal(true)}>Add a new Person</button>
-        <div className="column"></div>
-      </div>
-      <ErrorMessage message={errorMessage} />
+      <section className="container">
+        <div className="columns">
+            <div className="column">
+                <div className="card">
+                    <div className="card-content">
+                        <div className="content">
+                            <div className="control">
+                            <button className="button is-fullwidth is-primary"
+                            onClick={() => setActiveModal(true)}>Add a new student</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="column">
+                <div className="card">
+                    <div className="card-content">
+                        <div className="content">
+                            <div className="control">
+                                <input className="input is-fullwidth" placeholder="Search students" type="search"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </section>
+        <br></br>
+        <ErrorMessage message={errorMessage} />
+        <br></br>
       {(loaded && persons) ? (
-        <table className="table is-fullwidth is-bordered is-hoverable is-striped" style={{ textAlign: "center" }}>
-          <thead>
-            <tr>
-              <th width="25%">Name</th>
-              <th >Images</th>
-              <th width="15%">Last Updated</th>
-              <th width="15%">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {persons.map((person) => (
-              <tr key={person.id}>
-                <td>{person.name}</td>
-                <td>{JSON.parse(person.images).length > 0 ? JSON.parse(person.images).map((imageObj, i) => {
-                  return (<img key={i} width="100" height="100" style={{ padding: 5 }} src={imageObj} />);
-                })
-                  : null}</td>
-                <td>{moment(person.date_last_updated).format("MMM Do YY")}</td>
-                <td>
-                  <button
-                    className="button mr-2 is-info is-light"
-                    onClick={() => handleUpdate(person.id)}
-                  >Update</button>
-                  <button
-                    className="button mr-2 is-danger is-light"
-                    onClick={() => handleDelete(person.id)}
-                  >Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>
-      }</>
-  );
+      <section className="container">
+        <div className="columns is-multiline">
+          {persons.map((person) => (
+            <div className="column is-2">
+              <div className="card is-shady">
+                <div className="card-image">
+                  <figure className="image is-3by2">
+                    <img src={JSON.parse(person.images)[0]} alt=""/>
+                  </figure>
+                </div>
+                <div className="card-content">
+                  <div className="media-content">
+                    <p className="title is-4">{person.name}</p>
+                    <p className="subtitle is-6">Number of images: {JSON.parse(person.images).length}</p>
+                  </div>
+                </div>
+                <div className="content">
+                  
+                </div>
+                </div>
+                  <footer className="card-footer">
+                    <button className="button is-info card-footer-item"
+                        onClick={() => handleUpdate(person.id)} >Update
+                    </button>
+                    <button className="button is-danger card-footer-item"
+                        onClick={() => handleDelete(person.id)} >Delete
+                    </button>
+                  </footer>
+                </div>
+          ))}
+        </div>
+      </section>      
+      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
 };
