@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
-import { Header } from "./components/Header";
+import { HeaderTabs } from "./components/HeaderTabs";
 import { UserContext } from "./context/UserContext";
 import { Register } from "./components/User/Register";
 import { Login } from "./components/User/Login";
@@ -13,7 +13,7 @@ export const App = () => {
 
   return (
     <BrowserRouter>
-      <Header />
+      <HeaderTabs />
       <Routes>
         <Route path="/" element={token ? <PersonsTable /> : <Login />} />
         <Route path="/login" element={token ? <PersonsTable /> : <Login />} />

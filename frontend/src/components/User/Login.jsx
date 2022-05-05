@@ -30,7 +30,6 @@ export const Login = () => {
     <div className="hero-body">
         <div className="container has-text-centered">
             <div className="column is-4 is-offset-4">
-                <h3 className="title has-text-black">Login</h3>
                 <hr className="login-hr"/>
                 <p className="subtitle has-text-black">Please login to proceed.</p>
                 <div className="box" onSubmit={handleSubmit}>
@@ -53,7 +52,7 @@ export const Login = () => {
                     </form>
                 </div>
                 <p className="has-text-grey">
-                    <a href="./register">Sign Up</a>
+                    <a href="./register">Don't have an account? &nbsp;·&nbsp; Register</a>
                 </p>
             </div>
         </div>
