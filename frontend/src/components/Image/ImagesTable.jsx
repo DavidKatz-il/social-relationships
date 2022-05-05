@@ -46,7 +46,7 @@ export const ImagesTable = () => {
         setActiveModal(!activeModal);
         getImages();
     };
-
+    
     return <>
         <ImageModal active={activeModal} handleModal={handleModal} token={token} />
         <section className="container">
@@ -83,7 +83,7 @@ export const ImagesTable = () => {
         <section className="container">
             <div className="columns is-multiline">
                 {images.map((img) => (
-                    <div className="column is-4">
+                    <div className="column is-4" key={img.id}>
                         <div className="card is-shady">
                             <div className="card-image">
                                 <figure className="image is-3by2">

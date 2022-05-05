@@ -91,7 +91,7 @@ export const PersonsTable = () => {
       <section className="container">
         <div className="columns is-multiline">
           {persons.map((person) => (
-            <div className="column is-2">
+            <div className="column is-2" key={person.id}>
               <div className="card is-shady">
                 <div className="card-image">
                   <figure className="image is-3by2">

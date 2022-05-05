@@ -6,7 +6,8 @@ import logo from '../logo.jpeg';
 export const HeaderTabs = () => {
   const [token, setToken] = useContext(UserContext);
   const handleLogout = () => { setToken(null); };
-    
+  const tabActive = (tab_name) => {return window.location.pathname === "/" + tab_name ? "is-active" : ""};
+
   return (
     <>
     <nav className="navbar is-info">
@@ -70,21 +71,21 @@ export const HeaderTabs = () => {
       {token ?
       <div className="tabs is-boxed is-centered main-menu" id="tabs">
           <ul>
-              <li id="1">
+              <li id="tab-students" className={tabActive("students")}>
                   <a href="/students">
-                      <span className="icon is-small"><i className="fa fa-superpowers"></i></span>
+                      <span className="icon is-small"><i className="fa fa-users"></i></span>
                       <span>Students</span>
                   </a>
               </li>
-              <li id="2">
+              <li id="tab-images" className={tabActive("images")}>
                   <a href="/images">
                       <span className="icon is-small"><i className="fa fa-image"></i></span>
                       <span>Images</span>
                   </a>
               </li>
-              <li id="3">
+              <li id="tab-reports" className={tabActive("reports")}>
                   <a href="/reports">
-                      <span className="icon is-small"><i className="fa fa-empire"></i></span>
+                      <span className="icon is-small"><i className="fa fa-file"></i></span>
                       <span>Reports</span>
                   </a>
               </li>
