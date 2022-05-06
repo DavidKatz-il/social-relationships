@@ -7,13 +7,14 @@ import { Login } from "./components/User/Login";
 import { ImagesTable } from "./components/Image/ImagesTable";
 import { PersonsTable } from "./components/Person/PersonsTable";
 import { ReportsTable } from "./components/Report/ReportsTable";
+import { Header } from "./components/Header";
 
 export const App = () => {
   const [token] = useContext(UserContext);
 
   return (
     <BrowserRouter>
-      <HeaderTabs />
+      <HeaderTabs /><Header />
       <Routes>
         <Route path="/" element={token ? <PersonsTable /> : <Login />} />
         <Route path="/login" element={token ? <PersonsTable /> : <Login />} />

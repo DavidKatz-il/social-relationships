@@ -67,7 +67,7 @@ export const ImageModal = ({ active, handleModal, token }) => {
                                 className="input" required={true} />
                             {image.length > 0 ?
                                 <div key={0}>
-                                    <img width="150" src={image} />
+                                    <img width="150" src={image} alt="" />
                                 </div>
                                 : null}
                         </div>

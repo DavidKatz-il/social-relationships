@@ -104,5 +104,4 @@ export const ImagesTable = () => {
             </div>
         </section>               
       ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
-  
 };

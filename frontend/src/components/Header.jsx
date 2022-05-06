@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import logo from '../logo.jpeg';
@@ -45,12 +45,6 @@ export const Header = () => {
         </div>
       </nav>
       <hr />
-
     </>
   );
 };
-{/*<div className="has-text-centered m-6">
-      {/***** Logo ******}
-      <h1 className="title">{title}</h1>
-      {token && <button className="button" onClick={handleLogout}>Logout</button>}
-    </div>*/}
