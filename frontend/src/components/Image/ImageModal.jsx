@@ -31,24 +31,6 @@ export const ImageModal = ({ active, handleModal, token }) => {
         e.preventDefault();
         await g.fetchData("POST", "application/json", token, "/api/images", setErrorMessage,
             "Something went wrong when creating image", undefined, handleClose, JSON.stringify({ name: name, image: image, }));
-        /*const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token,
-            },
-            body: JSON.stringify({
-                name: name,
-                image: image,
-            }),
-        };
-        const response = await fetch("/api/images", requestOptions);
-        if (!response.ok) {
-            const data = await response.json();
-            if (data && data.detail) setErrorMessage(data.detail);
-            else setErrorMessage("Something went wrong when creating image");
-        }
-        else handleClose();*/
     }
 
     return <div className={`modal ${active && "is-active"}`}>

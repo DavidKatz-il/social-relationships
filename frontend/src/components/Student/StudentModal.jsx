@@ -7,14 +7,6 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   const [images, setImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  /*const fileToDataUri = (image) => {
-    return new Promise((res) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => { res(reader.result); });
-      reader.readAsDataURL(image);
-    });
-  };*/
-
   async function uploadImage(e) {
     if (e.target.files && e.target.files.length > 0) {
       const newImagesPromises = [];
@@ -36,23 +28,6 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   async function getStudent() {
     await g.fetchData("GET", "application/json", token, `/api/persons/${id}`, setErrorMessage,
       "Could not get the student", setData, undefined, undefined);
-    /*const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(`/api/persons/${id}`, requestOptions);
-    const data = await response.json();
-    if (!response.ok) {
-      if (data && data.detail) setErrorMessage(data.detail);
-      else setErrorMessage("Could not get the student");
-    }
-    else {
-      setName(data.name);
-      setImages(JSON.parse(data.images));
-    }*/
   };
 
   useEffect(() => {
@@ -72,59 +47,16 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
 
   async function handleCreateStudent(e) {
     e.preventDefault();
-    const body = JSON.stringify({
-      name: name,
-      images: JSON.stringify(images),
-    });
+    const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
     await g.fetchData("POST", "application/json", token, "/api/persons", setErrorMessage,
       "Something went wrong when creating student", undefined, handleClose, body);
-    /*const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({
-        name: name,
-        images: JSON.stringify(images),
-      }),
-    };
-    console.log(requestOptions);
-    const response = await fetch("/api/persons", requestOptions);
-    if (!response.ok) {
-      const data = await response.json();
-      if (data && data.detail) setErrorMessage(data.detail);
-      else setErrorMessage("Something went wrong when creating student");
-    }
-    else handleClose();*/
   }
 
   async function handleUpdateStudent(e) {
     e.preventDefault();
-    const body = JSON.stringify({
-      name: name,
-      images: JSON.stringify(images),
-    });
+    const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
     await g.fetchData("PUT", "application/json", token, `/api/persons/${id}`, setErrorMessage,
       "Something went wrong when updating student", undefined, handleClose, body);
-    /*const requestOptions = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({
-        name: name,
-        images: JSON.stringify(images),
-      }),
-    };
-    const response = await fetch(`/api/persons/${id}`, requestOptions);
-    if (!response.ok) {
-      const data = await response.json();
-      if (data && data.detail) setErrorMessage(data.detail);
-      else setErrorMessage("Something went wrong when updating student");
-    }
-    else handleClose();*/
   }
 
   return <div className={`modal ${active && "is-active"}`}>

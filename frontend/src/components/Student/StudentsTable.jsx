@@ -13,49 +13,20 @@ export const StudentsTable = () => {
   const [id, setId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const handleUpdate = async (id) => {
+  async function handleUpdate(id) {
     setId(id);
     setActiveModal(true);
-  };
+  }
 
-  const handleDelete = async (id) => {
+  async function handleDelete(id) {
     await g.fetchData("DELETE", "application/json", token, `/api/persons/${id}`,
       setErrorMessage, "Failed to delete student", undefined, getStudents);
-    /*const requestOptions = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch(`/api/persons/${id}`, requestOptions);
-    if (!response.ok) {
-      const data = await response.json();
-      if (data && data.detail) setErrorMessage(data.detail);
-      else setErrorMessage("Failed to delete student");
-    }*/
-    //if (res) getStudents();
-  };
+  }
 
-  const getStudents = async () => {
+  async function getStudents() {
     await g.fetchData("GET", "application/json", token, "/api/persons", setErrorMessage,
       "Something went wrong. Couldn't load the students", setStudents, () => setLoaded(true));
-    /*const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    };
-    const response = await fetch("/api/persons", requestOptions);
-    const data = await response.json();
-    if (!response.ok) {
-      if (data && data.detail) setErrorMessage(data.detail);
-      else setErrorMessage("Something went wrong. Couldn't load the students");
-    } else {
-    setStudents(data);*/
-    //if (res) setLoaded(true);
-  };
+  }
 
   useEffect(() => {
     getStudents();
@@ -66,11 +37,11 @@ export const StudentsTable = () => {
     //search for students....
   }, [search]);
 
-  const handleModal = () => {
+  function handleModal() {
     setActiveModal(!activeModal);
     getStudents();
     setId(null);
-  };
+  }
 
   return <>
     <StudentModal active={activeModal} handleModal={handleModal} token={token} id={id} />

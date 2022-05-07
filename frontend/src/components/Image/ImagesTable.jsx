@@ -12,39 +12,15 @@ export const ImagesTable = () => {
     const [activeModal, setActiveModal] = useState(false);
     const [search, setSearch] = useState("");
 
-    const handleDelete = async (id) => {
+    async function handleDelete(id) {
         await g.fetchData("DELETE", "application/json", token, `/api/images/${id}`, setErrorMessage,
             "Failed to delete image", undefined, getImages);
-        /*const requestOptions = {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token,
-            },
-        };
-        const response = await fetch(`/api/images/${id}`, requestOptions);
-        if (!response.ok) setErrorMessage("Failed to delete image");
-        getImages();*/
-    };
+    }
 
-    const getImages = async () => {
+    async function getImages() {
         await g.fetchData("GET", "application/json", token, "/api/images", setErrorMessage,
             "Something went wrong. Couldn't load the images", setImages, () => setLoaded(true));
-        /* const requestOptions = {
-             method: "GET",
-             headers: {
-                 "Content-Type": "application/json",
-                 Authorization: "Bearer " + token,
-             },
-         };
-         const response = await fetch("/api/images", requestOptions);
-         if (!response.ok) setErrorMessage("Something went wrong. Couldn't load the images");
-         else {
-             const data = await response.json();
-             setImages(data);
-             setLoaded(true);
-         }*/
-    };
+    }
 
     useEffect(() => {
         getImages();
@@ -55,10 +31,10 @@ export const ImagesTable = () => {
         //search for images....
     }, [search]);
 
-    const handleModal = () => {
+    function handleModal() {
         setActiveModal(!activeModal);
         getImages();
-    };
+    }
 
     return <>
         <ImageModal active={activeModal} handleModal={handleModal} token={token} />
@@ -74,9 +50,7 @@ export const ImagesTable = () => {
                 </div>
             </div>
         </section>
-        <br />
-        <ErrorMessage message={errorMessage} />
-        <br />
+        <br /><ErrorMessage message={errorMessage} /><br />
         {(loaded && images) ? (
             <section className="container">
                 <div className="columns is-multiline">

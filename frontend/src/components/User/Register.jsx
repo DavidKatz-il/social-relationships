@@ -3,6 +3,7 @@ import { UserContext } from "../../context/UserContext";
 import { ErrorMessage } from "../Info/ErrorMessage";
 import logo from '../../logo.jpeg';
 import { NavLink } from "react-router-dom";
+import * as g from "../../Global";
 
 export const Register = () => {
   const [email, setEmail] = useState("");
@@ -11,17 +12,25 @@ export const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [, setToken] = useContext(UserContext);
 
-  const submitRegistration = async () => {
-    const requestOptions = {
+  function setData(data) {
+    setToken(data.access_token);
+  }
+
+  async function submitRegistration() {
+    const body = JSON.stringify({ email: email, hashed_password: password });
+    await g.fetchData("POST", "application/json", undefined, "/api/users", setErrorMessage, "", setData, undefined, body);
+    /*const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, hashed_password: password }),
     };
     const response = await fetch("/api/users", requestOptions);
     const data = await response.json();
-    if (!response.ok) setErrorMessage(data.detail);
-    else setToken(data.access_token);
-  };
+    if (!response.ok)
+      setErrorMessage(data.detail);
+    else
+      setToken(data.access_token);*/
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { ErrorMessage } from "../Info/ErrorMessage";
 import { UserContext } from "../../context/UserContext";
 import logo from '../../logo.jpeg';
+import { fetchData } from "../../Global";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,22 +11,31 @@ export const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [, setToken] = useContext(UserContext);
 
-  const submitLogin = async () => {
-    const requestOptions = {
+  function setData(data) {
+    setToken(data.access_token);
+  }
+
+  async function submitLogin() {
+    const body = JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`);
+    await fetchData("POST", "application/x-www-form-urlencoded", undefined, "/api/token", setErrorMessage,
+      "", setData, undefined, body);
+    /*const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`),
     };
     const response = await fetch("/api/token", requestOptions);
     const data = await response.json();
-    if (!response.ok) setErrorMessage(data.detail);
-    else setToken(data.access_token);
-  };
+    if (!response.ok)
+      setErrorMessage(data.detail);
+    else
+      setToken(data.access_token);*/
+  }
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
     submitLogin();
-  };
+  }
 
   return (
     <div className="hero-body">
