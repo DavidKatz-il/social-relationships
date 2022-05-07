@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+/*import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
-import logo from '../logo.jpeg';
+import { UserContext } from "../../context/UserContext";
+import logo from '../../logo.jpeg';
 
 export const Header = () => {
   const [token, setToken] = useContext(UserContext);
@@ -47,4 +47,4 @@ export const Header = () => {
       <hr />
     </>
   );
-};
+};*/

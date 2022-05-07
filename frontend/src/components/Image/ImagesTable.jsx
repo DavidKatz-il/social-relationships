@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react"
-import { ErrorMessage } from "../ErrorMessage";
+import { ErrorMessage } from "../Info/ErrorMessage";
 import { ImageModal } from "./ImageModal";
 import { UserContext } from "../../context/UserContext";
+import * as g from "../../Global";
 
 export const ImagesTable = () => {
     const [token] = useContext(UserContext);
@@ -9,9 +10,12 @@ export const ImagesTable = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [activeModal, setActiveModal] = useState(false);
+    const [search, setSearch] = useState("");
 
     const handleDelete = async (id) => {
-        const requestOptions = {
+        await g.fetchData("DELETE", "application/json", token, `/api/images/${id}`, setErrorMessage,
+            "Failed to delete image", undefined, getImages);
+        /*const requestOptions = {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -20,88 +24,82 @@ export const ImagesTable = () => {
         };
         const response = await fetch(`/api/images/${id}`, requestOptions);
         if (!response.ok) setErrorMessage("Failed to delete image");
-        getImages();
+        getImages();*/
     };
 
     const getImages = async () => {
-        const requestOptions = {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token,
-            },
-        };
-        const response = await fetch("/api/images", requestOptions);
-        if (!response.ok) setErrorMessage("Something went wrong. Couldn't load the images");
-        else {
-            const data = await response.json();
-            setImages(data);
-            setLoaded(true);
-        }
+        await g.fetchData("GET", "application/json", token, "/api/images", setErrorMessage,
+            "Something went wrong. Couldn't load the images", setImages, () => setLoaded(true));
+        /* const requestOptions = {
+             method: "GET",
+             headers: {
+                 "Content-Type": "application/json",
+                 Authorization: "Bearer " + token,
+             },
+         };
+         const response = await fetch("/api/images", requestOptions);
+         if (!response.ok) setErrorMessage("Something went wrong. Couldn't load the images");
+         else {
+             const data = await response.json();
+             setImages(data);
+             setLoaded(true);
+         }*/
     };
 
-    useEffect(() => { getImages(); }, []);
+    useEffect(() => {
+        getImages();
+    }, []);
+
+    useEffect(() => {
+        console.log("search: " + search);
+        //search for images....
+    }, [search]);
 
     const handleModal = () => {
         setActiveModal(!activeModal);
         getImages();
     };
-    
+
     return <>
         <ImageModal active={activeModal} handleModal={handleModal} token={token} />
         <section className="container">
             <div className="columns">
                 <div className="column">
-                    <div className="card">
-                        <div className="card-content">
-                            <div className="content">
-                                <div className="control">
-                                <button className="button is-fullwidth is-primary"
-                                onClick={() => setActiveModal(true)}>Add a new image</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <button className="button is-fullwidth is-primary" onClick={() => setActiveModal(true)}
+                    >Add a new image</button>
                 </div>
                 <div className="column">
-                    <div className="card">
-                        <div className="card-content">
-                            <div className="content">
-                                <div className="control">
-                                    <input className="input is-fullwidth" placeholder="Search images" type="search"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <input className="input is-fullwidth" placeholder="Search images" type="search"
+                        value={search} onChange={e => setSearch(e.target.value)} />
                 </div>
             </div>
         </section>
-        <br></br>
+        <br />
         <ErrorMessage message={errorMessage} />
-        <br></br>
+        <br />
         {(loaded && images) ? (
-        <section className="container">
-            <div className="columns is-multiline">
-                {images.map((img) => (
-                    <div className="column is-4" key={img.id}>
-                        <div className="card is-shady">
-                            <div className="card-image">
-                                <figure className="image is-3by2">
-                                    <img src={img.image} alt=""/>
-                                </figure>
-                                <div className="card-content is-overlay is-clipped">
-                                    <span className="tag is-info">{img.name}</span>       
+            <section className="container">
+                <div className="columns is-multiline">
+                    {images.map((img) => (
+                        <div className="column is-4" key={img.id}>
+                            <div className="card is-shady">
+                                <div className="card-image">
+                                    <figure className="image is-3by2">
+                                        <img src={img.image} alt="" />
+                                    </figure>
+                                    <div className="card-content is-overlay is-clipped">
+                                        <span className="tag is-info">{img.name}</span>
+                                    </div>
                                 </div>
+                                <footer className="card-footer">
+                                    <button className="button is-danger card-footer-item"
+                                        onClick={() => handleDelete(img.id)} >Delete
+                                    </button>
+                                </footer>
                             </div>
-                            <footer className="card-footer">
-                                <button className="button is-danger card-footer-item"
-                                    onClick={() => handleDelete(img.id)} >Delete
-                                </button>
-                            </footer>
                         </div>
-                    </div>
-                ))}
-            </div>
-        </section>               
-      ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+                    ))}
+                </div>
+            </section>
+        ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
 };

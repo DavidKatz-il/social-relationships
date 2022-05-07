@@ -5,23 +5,28 @@ import { UserContext } from "./context/UserContext";
 import { Register } from "./components/User/Register";
 import { Login } from "./components/User/Login";
 import { ImagesTable } from "./components/Image/ImagesTable";
-import { PersonsTable } from "./components/Person/PersonsTable";
+import { StudentsTable } from "./components/Student/StudentsTable";
 import { ReportsTable } from "./components/Report/ReportsTable";
-import { Header } from "./components/Header";
+import { Home } from "./components/Info/Home";
+import { About } from "./components/Info/About";
+import { Contact } from "./components/Info/Contact";
 
 export const App = () => {
   const [token] = useContext(UserContext);
 
   return (
     <BrowserRouter>
-      <HeaderTabs /><Header />
+      <HeaderTabs />
       <Routes>
-        <Route path="/" element={token ? <PersonsTable /> : <Login />} />
-        <Route path="/login" element={token ? <PersonsTable /> : <Login />} />
-        <Route path="/register" element={token ? <PersonsTable /> : <Register />} />
-        <Route path="/students" element={token ? <PersonsTable /> : <Login />} />
-        <Route path="/images" element={token ? <ImagesTable /> : <Login />} />
-        <Route path="/reports" element={token ? <ReportsTable /> : <Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={token ? <Home /> : <Login />} />
+        <Route path="/register" element={token ? <Home /> : <Register />} />
+        <Route path="/students" element={token ? <StudentsTable /> : <Home />} />
+        <Route path="/images" element={token ? <ImagesTable /> : <Home />} />
+        <Route path="/reports" element={token ? <ReportsTable /> : <Home />} />
       </Routes>
     </BrowserRouter>
   );

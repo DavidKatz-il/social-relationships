@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import { ErrorMessage } from "../ErrorMessage";
+import { ErrorMessage } from "../Info/ErrorMessage";
 import logo from '../../logo.jpeg';
 import { NavLink } from "react-router-dom";
 
@@ -36,7 +36,9 @@ export const Register = () => {
           <hr className="login-hr" />
           <p className="subtitle has-text-black">Please register to proceed.</p>
           <div className="box" onSubmit={handleSubmit}>
-            <figure className="avatar"> <img src={logo} alt="" /> </figure>
+            <figure className="avatar">
+              <img src={logo} alt="Logo" />
+            </figure>
             <form>
               <div className="field">
                 <div className="control">
@@ -56,8 +58,14 @@ export const Register = () => {
                     value={confirmationPassword} onChange={(e) => setConfirmationPassword(e.target.value)} required />
                 </div>
               </div>
-              <div className="field"> <ErrorMessage message={errorMessage} /><br /></div>
-              <button className="button is-block is-info is-large is-fullwidth" type="submit">Register <i className="fa fa-sign-in" aria-hidden="true"></i></button>
+              <div className="field">
+                <ErrorMessage message={errorMessage} />
+                <br />
+              </div>
+              <button className="button is-block is-info is-large is-fullwidth" type="submit">
+                <span>Register </span>
+                <i className="fa fa-sign-in" aria-hidden="true" />
+              </button>
             </form>
           </div>
           <p className="has-text-grey">

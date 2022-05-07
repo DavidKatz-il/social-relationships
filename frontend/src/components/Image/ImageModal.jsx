@@ -1,42 +1,37 @@
 import React, { useState } from "react"
-import { ErrorMessage } from "../ErrorMessage";
+import { ErrorMessage } from "../Info/ErrorMessage";
+import * as g from "../../Global";
 
 export const ImageModal = ({ active, handleModal, token }) => {
     const [name, setName] = useState("");
     const [image, setImage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const fileToDataUri = (image) => {
-        return new Promise((res) => {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => { res(reader.result); });
-            reader.readAsDataURL(image);
-        });
-    };
-
-    const uploadImage = async (e) => {
+    async function uploadImage(e) {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
             setName(file.name.replace(/\.[^/.]+$/, ""));
-            setImage(await fileToDataUri(file));
+            setImage(await g.fileToDataUri(file));
         }
         e.target.value = '';
-    };
+    }
 
-    const cleanFormData = () => {
+    function cleanFormData() {
         setName("");
         setImage("");
         setErrorMessage("");
-    };
+    }
 
-    const handleClose = () => {
+    function handleClose() {
         cleanFormData();
         handleModal();
-    };
+    }
 
-    const handleCreateImage = async (e) => {
+    async function handleCreateImage(e) {
         e.preventDefault();
-        const requestOptions = {
+        await g.fetchData("POST", "application/json", token, "/api/images", setErrorMessage,
+            "Something went wrong when creating image", undefined, handleClose, JSON.stringify({ name: name, image: image, }));
+        /*const requestOptions = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -48,9 +43,13 @@ export const ImageModal = ({ active, handleModal, token }) => {
             }),
         };
         const response = await fetch("/api/images", requestOptions);
-        if (!response.ok) setErrorMessage("Something went wrong when creating image");
-        else handleClose();
-    };
+        if (!response.ok) {
+            const data = await response.json();
+            if (data && data.detail) setErrorMessage(data.detail);
+            else setErrorMessage("Something went wrong when creating image");
+        }
+        else handleClose();*/
+    }
 
     return <div className={`modal ${active && "is-active"}`}>
         <div className="modal-background" onClick={handleClose}></div>
@@ -63,13 +62,10 @@ export const ImageModal = ({ active, handleModal, token }) => {
                     <div className="field">
                         <label className="label">Image</label>
                         <div className="control">
-                            <input type="file" placeholder="Image" onChange={uploadImage}
-                                className="input" required={true} />
-                            {image.length > 0 ?
-                                <div key={0}>
-                                    <img width="150" src={image} alt="" />
-                                </div>
-                                : null}
+                            <input type="file" placeholder="Image" onChange={uploadImage} className="input" required />
+                            {image && <div key={0}>
+                                <img width="150" src={image} alt="" />
+                            </div>}
                         </div>
                     </div>
                     <ErrorMessage message={errorMessage} />
