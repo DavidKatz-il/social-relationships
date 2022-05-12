@@ -18,7 +18,7 @@ class User(database.Base):
 
     students = sql.orm.relationship("Student", back_populates="owner")
     images = sql.orm.relationship("Image", back_populates="owner")
-    faces_students = student_faces = sql.orm.relationship("FaceStudent", back_populates="owner")
+    faces_students = sql.orm.relationship("FaceStudent", back_populates="owner")
     faces_images = sql.orm.relationship("FaceImage", back_populates="owner")
 
     def verify_password(self, password: str):
