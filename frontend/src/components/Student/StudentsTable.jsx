@@ -19,12 +19,12 @@ export const StudentsTable = () => {
   }
 
   async function handleDelete(id) {
-    await g.fetchData("DELETE", "application/json", token, `/api/persons/${id}`,
+    await g.fetchData("DELETE", "application/json", token, `/api/students/${id}`,
       setErrorMessage, "Failed to delete student", undefined, getStudents);
   }
 
   async function getStudents() {
-    await g.fetchData("GET", "application/json", token, "/api/persons", setErrorMessage,
+    await g.fetchData("GET", "application/json", token, "/api/students", setErrorMessage,
       "Something went wrong. Couldn't load the students", setStudents, () => setLoaded(true));
   }
 

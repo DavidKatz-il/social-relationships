@@ -98,96 +98,96 @@ async def _get_object_by_name(obj_name: str, user_id: int, model: database.Base,
     )
 
 
-async def validate_person(person: schemas.PersonCreate):
-    if not person.name or not person.images or (person.images == "[]"):
+async def validate_student(student: schemas.StudentCreate):
+    if not student.name or not student.images or (student.images == "[]"):
         raise fastapi.HTTPException(
-            status_code=400, detail="Person must have a name and at least one image."
+            status_code=400, detail="Student must have a name and at least one image."
         )
 
 
-async def validate_person_name_not_exist(
-    person_name: str, user_id: int, db: orm.Session
+async def validate_student_name_not_exist(
+    student_name: str, user_id: int, db: orm.Session
 ):
-    person_db = await _get_object_by_name(
-        obj_name=person_name, user_id=user_id, model=models.Person, db=db
+    student_db = await _get_object_by_name(
+        obj_name=student_name, user_id=user_id, model=models.Student, db=db
     )
-    if person_db:
-        raise fastapi.HTTPException(status_code=400, detail="Person already exist.")
+    if student_db:
+        raise fastapi.HTTPException(status_code=400, detail="Student already exist.")
 
 
-async def get_persons(user: schemas.User, db: orm.Session):
-    persons = db.query(models.Person).filter_by(owner_id=user.id)
+async def get_students(user: schemas.User, db: orm.Session):
+    students = db.query(models.Student).filter_by(owner_id=user.id)
 
-    return list(map(schemas.Person.from_orm, persons))
-
-
-async def get_person(person_id: int, user: schemas.User, db: orm.Session):
-    person_db = await _get_object_by_id(obj_id=person_id, user_id=user.id, model=models.Person, db=db)
-
-    return schemas.Person.from_orm(person_db)
+    return list(map(schemas.Student.from_orm, students))
 
 
-async def create_person(
-    user: schemas.User, db: orm.Session, person: schemas.PersonCreate
+async def get_student(student_id: int, user: schemas.User, db: orm.Session):
+    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+
+    return schemas.Student.from_orm(student_db)
+
+
+async def create_student(
+    user: schemas.User, db: orm.Session, student: schemas.StudentCreate
 ):
-    await validate_person(person=person)
-    await validate_person_name_not_exist(
-        person_name=person.name, user_id=user.id, db=db
+    await validate_student(student=student)
+    await validate_student_name_not_exist(
+        student_name=student.name, user_id=user.id, db=db
     )
 
     locations, encodings = await get_locations_and_encodings_from_images(
-        images=json.loads(person.images)
+        images=json.loads(student.images)
     )
-    face_person = schemas.FacePersonCreate(
-        face_locations=locations, face_encodings=encodings, name=person.name
+    face_student = schemas.FaceStudentCreate(
+        face_locations=locations, face_encodings=encodings, name=student.name
     )
 
-    person = models.Person(**person.dict(), owner_id=user.id)
-    db.add(person)
+    student = models.Student(**student.dict(), owner_id=user.id)
+    db.add(student)
     db.commit()
-    db.refresh(person)
-    face_person = await create_face_person(user=user, db=db, face_person=face_person)
+    db.refresh(student)
+    face_student = await create_face_student(user=user, db=db, face_student=face_student)
 
-    return schemas.Person.from_orm(person)
+    return schemas.Student.from_orm(student)
 
 
-async def update_person(
-    person_id: int, person: schemas.PersonCreate, user: schemas.User, db: orm.Session
+async def update_student(
+    student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
-    person_db = await _get_object_by_id(obj_id=person_id, user_id=user.id, model=models.Person, db=db)
-    if person.name != person_db.name:
-        await validate_person_name_not_exist(
-            person_name=person.name, user_id=user.id, db=db
+    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+    if student.name != student_db.name:
+        await validate_student_name_not_exist(
+            student_name=student.name, user_id=user.id, db=db
         )
 
-    person_db.name = person.name
-    person_db.images = person.images
-    person_db.datetime_updated = datetime.utcnow()
+    student_db.name = student.name
+    student_db.images = student.images
+    student_db.datetime_updated = datetime.utcnow()
 
-    await validate_person(person=person_db)
+    await validate_student(student=student_db)
     locations, encodings = await get_locations_and_encodings_from_images(
-        images=json.loads(person.images)
+        images=json.loads(student.images)
     )
-    face_person = schemas.FacePersonCreate(
-        face_locations=locations, face_encodings=encodings, name=person.name
+    face_student = schemas.FaceStudentCreate(
+        face_locations=locations, face_encodings=encodings, name=student.name
     )
-    face_person_db = await _get_object_by_name(obj_name=person_db.name, user_id=user.id, model=models.FacePerson, db=db)
-    face_person = await update_face_person(face_person_id=face_person_db.id, face_person=face_person, user=user, db=db)
+    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user, db=db)
 
     db.commit()
-    db.refresh(person_db)
+    db.refresh(student_db)
 
-    return schemas.Person.from_orm(person_db)
+    return schemas.Student.from_orm(student_db)
 
 
-async def delete_person(person_id: int, user: schemas.User, db: orm.Session):
-    person_db = await _get_object_by_id(obj_id=person_id, user_id=user.id, model=models.Person, db=db)
+async def delete_student(student_id: int, user: schemas.User, db: orm.Session):
+    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
 
-    db.delete(person_db)
+    db.delete(student_db)
     db.commit()
 
-    face_person_db = await _get_object_by_name(obj_name=person_db.name, user_id=user.id, model=models.FacePerson, db=db)
-    await delete_face_person(face_person_id=face_person_db.id, user=user, db=db)
+    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+    await delete_face_student(face_student_id=face_student_db.id, user=user, db=db)
 
 
 async def validate_image(image: schemas.ImageCreate):
@@ -231,7 +231,7 @@ async def create_image(
         image_base64=image.image
     )
     face_image = schemas.FaceImageCreate(
-        face_locations=locations, face_encodings=encodings, name=image.name, person_names=[]
+        face_locations=locations, face_encodings=encodings, name=image.name, student_names=[]
     )
     
     image = models.Image(**image.dict(), owner_id=user.id)
@@ -254,49 +254,49 @@ async def delete_image(image_id: int, user: schemas.User, db: orm.Session):
     await delete_face_image(face_image_id=face_image_db.id, user=user, db=db)
 
 
-async def get_faces_persons(user: schemas.User, db: orm.Session):
-    faces_persons = db.query(models.FacePerson).filter_by(owner_id=user.id)
+async def get_faces_students(user: schemas.User, db: orm.Session):
+    faces_students = db.query(models.FaceStudent).filter_by(owner_id=user.id)
 
-    return list(map(schemas.FacePerson.from_orm, faces_persons))
-
-
-async def get_face_person(face_person_id: int, user: schemas.User, db: orm.Session):
-    face_person_db = await _get_object_by_id(obj_id=face_person_id, user_id=user.id, model=models.FacePerson, db=db)
-
-    return schemas.FacePerson.from_orm(face_person_db)
+    return list(map(schemas.FaceStudent.from_orm, faces_students))
 
 
-async def create_face_person(
-    user: schemas.User, db: orm.Session, face_person: schemas.FacePersonCreate
+async def get_face_student(face_student_id: int, user: schemas.User, db: orm.Session):
+    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
+
+    return schemas.FaceStudent.from_orm(face_student_db)
+
+
+async def create_face_student(
+    user: schemas.User, db: orm.Session, face_student: schemas.FaceStudentCreate
 ):
-    face_person = models.FacePerson(**face_person.dict(), owner_id=user.id)
+    face_student = models.FaceStudent(**face_student.dict(), owner_id=user.id)
 
-    db.add(face_person)
+    db.add(face_student)
     db.commit()
-    db.refresh(face_person)
-    return schemas.FacePerson.from_orm(face_person)
+    db.refresh(face_student)
+    return schemas.FaceStudent.from_orm(face_student)
 
 
-async def update_face_person(
-    face_person_id: int, face_person: schemas.FacePersonCreate, user: schemas.User, db: orm.Session
+async def update_face_student(
+    face_student_id: int, face_student: schemas.FaceStudentCreate, user: schemas.User, db: orm.Session
 ):
-    face_person_db = await _get_object_by_id(obj_id=face_person_id, user_id=user.id, model=models.FacePerson, db=db)
+    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
 
-    face_person_db.name = face_person.name
-    face_person_db.face_locations = face_person.face_locations
-    face_person_db.face_encodings = face_person.face_encodings
-    face_person_db.datetime_updated = datetime.utcnow()
+    face_student_db.name = face_student.name
+    face_student_db.face_locations = face_student.face_locations
+    face_student_db.face_encodings = face_student.face_encodings
+    face_student_db.datetime_updated = datetime.utcnow()
 
     db.commit()
-    db.refresh(face_person_db)
+    db.refresh(face_student_db)
 
-    return schemas.FacePerson.from_orm(face_person_db)
+    return schemas.FaceStudent.from_orm(face_student_db)
 
 
-async def delete_face_person(face_person_id: int, user: schemas.User, db: orm.Session):
-    face_person_db = await _get_object_by_id(obj_id=face_person_id, user_id=user.id, model=models.FacePerson, db=db)
+async def delete_face_student(face_student_id: int, user: schemas.User, db: orm.Session):
+    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
 
-    db.delete(face_person_db)
+    db.delete(face_student_db)
     db.commit()
 
 
@@ -329,7 +329,7 @@ async def update_face_image(
     face_image_db = await _get_object_by_id(obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db)
 
     face_image_db.name = face_image.name
-    face_image_db.person_names = face_image.person_names
+    face_image_db.student_names = face_image.student_names
     face_image_db.face_locations = face_image.face_locations
     face_image_db.face_encodings = face_image.face_encodings
     face_image_db.datetime_updated = datetime.utcnow()
@@ -350,14 +350,14 @@ async def delete_face_image(face_image_id: int, user: schemas.User, db: orm.Sess
 async def create_match_faces(user: schemas.User, db: orm.Session):
     known_face_encodings = []
     known_face_names = []
-    faces_persons = await get_faces_persons(user=user, db=db)
-    for face_person in faces_persons:
-        for encoding in face_person.face_encodings:
+    faces_students = await get_faces_students(user=user, db=db)
+    for face_student in faces_students:
+        for encoding in face_student.face_encodings:
             known_face_encodings.append(encoding)
-            known_face_names.append(face_person.name)
+            known_face_names.append(face_student.name)
     faces_images = await get_faces_images(user=user, db=db)
     for face_image in faces_images:
-        person_names = []
+        student_names = []
         for encoding in face_image.face_encodings:
             name = "Unknown"
             matches = face_recognition.compare_faces(np.array(known_face_encodings), np.array(encoding))
@@ -365,26 +365,26 @@ async def create_match_faces(user: schemas.User, db: orm.Session):
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
-            person_names.append(name)
+            student_names.append(name)
         
-        face_image.person_names = person_names
+        face_image.student_names = student_names
         face_image = await update_face_image(face_image_id=face_image.id, face_image=face_image, user=user, db=db)
 
 
 async def get_match_faces(user: schemas.User, db: orm.Session):
     faces_image = db.query(models.FaceImage).filter_by(owner_id=user.id)
-    images_person_names = {}
+    images_student_names = {}
     for face_image in faces_image:
-        if face_image.person_names:
-            images_person_names[face_image.name] = [
+        if face_image.student_names:
+            images_student_names[face_image.name] = [
                 {   
-                    'person_name': person_name,
+                    'student_name': student_name,
                     'location': {'top': top, 'right': right, 'bottom': bottom, 'left': left}
                 }
-                for person_name, (top, right, bottom, left) in zip(face_image.person_names, face_image.face_locations)
+                for student_name, (top, right, bottom, left) in zip(face_image.student_names, face_image.face_locations)
             ]            
 
-    return images_person_names
+    return images_student_names
 
 
 async def get_locations_and_encodings_from_image(image_base64: str):
