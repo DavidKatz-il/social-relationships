@@ -22,16 +22,16 @@ class User(_UserBase):
         orm_mode = True
 
 
-class _PersonBase(BaseModel):
+class _StudentBase(BaseModel):
     name: str
     images: str
 
 
-class PersonCreate(_PersonBase):
+class StudentCreate(_StudentBase):
     pass
 
 
-class Person(_PersonBase):
+class Student(_StudentBase):
     id: int
     owner_id: int
     datetime_created: datetime
@@ -66,12 +66,12 @@ class _FaceBase(BaseModel):
     #     arbitrary_types_allowed = True
 
 
-class FacePersonCreate(_FaceBase):
+class FaceStudentCreate(_FaceBase):
     face_locations: List[List[int]]
     face_encodings: List[List[float]]
 
 
-class FacePerson(FacePersonCreate):
+class FaceStudent(FaceStudentCreate):
     id: int
     owner_id: int
     datetime_created: datetime
@@ -81,7 +81,7 @@ class FacePerson(FacePersonCreate):
         orm_mode = True
 
 class FaceImageCreate(_FaceBase):
-    person_names: List[str]
+    student_names: List[str]
     face_locations: List[List[int]]
     face_encodings: List[List[float]]
 

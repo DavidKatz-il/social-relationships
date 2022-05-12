@@ -26,7 +26,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   }
 
   async function getStudent() {
-    await g.fetchData("GET", "application/json", token, `/api/persons/${id}`, setErrorMessage,
+    await g.fetchData("GET", "application/json", token, `/api/students/${id}`, setErrorMessage,
       "Could not get the student", setData, undefined, undefined);
   };
 
@@ -48,14 +48,14 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   async function handleCreateStudent(e) {
     e.preventDefault();
     const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
-    await g.fetchData("POST", "application/json", token, "/api/persons", setErrorMessage,
+    await g.fetchData("POST", "application/json", token, "/api/students", setErrorMessage,
       "Something went wrong when creating student", undefined, handleClose, body);
   }
 
   async function handleUpdateStudent(e) {
     e.preventDefault();
     const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
-    await g.fetchData("PUT", "application/json", token, `/api/persons/${id}`, setErrorMessage,
+    await g.fetchData("PUT", "application/json", token, `/api/students/${id}`, setErrorMessage,
       "Something went wrong when updating student", undefined, handleClose, body);
   }
 
