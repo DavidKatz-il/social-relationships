@@ -80,6 +80,7 @@ class FacePerson(FacePersonCreate):
     class Config:
         orm_mode = True
 
+
 class FaceImageCreate(_FaceBase):
     person_names: List[str]
     face_locations: List[List[int]]
@@ -94,3 +95,17 @@ class FaceImage(FaceImageCreate):
 
     class Config:
         orm_mode = True
+
+
+class _ReportBase(BaseModel):
+    name: str
+    info: str
+
+
+class Report(_ReportBase):
+    datetime_created: datetime
+
+
+class ReportCreate(_ReportBase):
+    pass
+
