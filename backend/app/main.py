@@ -48,50 +48,50 @@ async def generate_token(
     return await services.create_token(user)
 
 
-@app.get("/api/persons", response_model=List[schemas.Person])
-async def get_persons(
+@app.get("/api/students", response_model=List[schemas.Student])
+async def get_students(
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    return await services.get_persons(user=user, db=db)
+    return await services.get_students(user=user, db=db)
 
 
-@app.get("/api/persons/{person_id}", status_code=200)
-async def get_person(
-    person_id: int,
+@app.get("/api/students/{student_id}", status_code=200)
+async def get_student(
+    student_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    return await services.get_person(person_id, user, db)
+    return await services.get_student(student_id, user, db)
 
 
-@app.post("/api/persons", response_model=schemas.Person)
-async def create_person(
-    person: schemas.PersonCreate,
+@app.post("/api/students", response_model=schemas.Student)
+async def create_student(
+    student: schemas.StudentCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    return await services.create_person(user=user, db=db, person=person)
+    return await services.create_student(user=user, db=db, student=student)
 
 
-@app.put("/api/persons/{person_id}", status_code=200)
-async def update_person(
-    person_id: int,
-    person: schemas.PersonCreate,
+@app.put("/api/students/{student_id}", status_code=200)
+async def update_student(
+    student_id: int,
+    student: schemas.StudentCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    await services.update_person(person_id, person, user, db)
+    await services.update_student(student_id, student, user, db)
     return {"message", "Successfully Updated."}
 
 
-@app.delete("/api/persons/{person_id}", status_code=204)
-async def delete_person(
-    person_id: int,
+@app.delete("/api/students/{student_id}", status_code=204)
+async def delete_student(
+    student_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
-    await services.delete_person(person_id, user, db)
+    await services.delete_student(student_id, user, db)
     return {"message", "Successfully Deleted."}
 
 
