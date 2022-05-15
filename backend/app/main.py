@@ -139,12 +139,29 @@ async def create_match_faces(
     await services.create_match_faces(user, db)
     return {"message", "Successfully finished matcheing all faces."}
 
+
 @app.get("/api/get_match_faces", status_code=200)
 async def get_match_faces(
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
     return await services.get_match_faces(user, db)
+
+
+@app.get("/api/get_match_faces", status_code=200)
+async def get_match_faces(
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_match_faces(user, db)
+
+
+# @app.get("/api/reports", response_model=List[schemas.Report])
+# async def get_reports(
+#         user: schemas.User = fastapi.Depends(services.get_current_user),
+#         db: orm.Session = fastapi.Depends(services.get_db),
+# ):
+#     return await services.get_reports(user=user, db=db)
 
 
 @app.get("/api")
