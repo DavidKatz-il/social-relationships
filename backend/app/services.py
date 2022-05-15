@@ -189,6 +189,7 @@ async def delete_person(person_id: int, user: schemas.User, db: orm.Session):
     face_person_db = await _get_object_by_name(obj_name=person_db.name, user_id=user.id, model=models.FacePerson, db=db)
     await delete_face_person(face_person_id=face_person_db.id, user=user, db=db)
 
+
 async def validate_image(image: schemas.ImageCreate):
     if not image.name or not image.image:
         raise fastapi.HTTPException(
@@ -414,3 +415,22 @@ async def get_locations_and_encodings_from_images(images: list):
         encodings.append(face_encodings[0])
 
     return locations, encodings
+
+
+async def get_reports(user: schemas.User, db: orm.Session):
+    # images = db.query(models.Image).filter_by(owner_id=user.id)
+
+    # return list(map(schemas.Image.from_orm, images))
+    return {"info": "blaaaaaaaa"}
+
+async def create_report(
+    user: schemas.User, db: orm.Session
+):
+    info = "bla bla bla"
+
+    report = models.Report(info)
+    db.add(report)
+    db.commit()
+    db.refresh(report)
+
+    return schemas.Report.from_orm(report)
