@@ -32,7 +32,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
 
   useEffect(() => {
     if (id) getStudent();
-  }, [id, token]);
+  }, [id, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function cleanFormData() {
     setName("");

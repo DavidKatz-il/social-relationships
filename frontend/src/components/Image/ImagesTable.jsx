@@ -24,7 +24,7 @@ export const ImagesTable = () => {
 
     useEffect(() => {
         getImages();
-    }, []);
+    }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         console.log("search: " + search);

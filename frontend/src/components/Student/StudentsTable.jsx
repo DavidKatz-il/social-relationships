@@ -30,7 +30,7 @@ export const StudentsTable = () => {
 
   useEffect(() => {
     getStudents();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     console.log("search: " + search);

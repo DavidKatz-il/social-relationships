@@ -49,6 +49,7 @@ export const HeaderTabs = () => {
                                 </li>
                                 {/*<li style={{ paddingRight: 70, paddingLeft: 70 }} />*/}
                             </>}
+                            {/*
                             <li className={activeTab === "about" ? "is-active" : ""} onClick={() => setActiveTab("about")}>
                                 <NavLink to="/about">
                                     <i className="icon is-small fa fa-info-circle" />
@@ -61,6 +62,7 @@ export const HeaderTabs = () => {
                                     <span>Contact us</span>
                                 </NavLink>
                             </li>
+                            */}
                         </ul>
                     </div></div>
                 <div className="navbar-end">
