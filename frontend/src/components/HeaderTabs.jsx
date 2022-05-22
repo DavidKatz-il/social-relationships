@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import logo from '../logo.jpeg';
+import logo from '../logo.png';
+import logo_social_relationships from '../social_relationships.png';
 
 export const HeaderTabs = () => {
     const [token, setToken] = useContext(UserContext);
@@ -95,12 +96,12 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </nav>
-        <section className="hero is-info">
+        <section className="hero is-small is-primary">
             <div style={{ padding: 30 }}>
                 <div className="container">
-                    <img src={logo} alt="Logo" width="100" height="100" />
-                    <h1 className="title">Social Relationships</h1>
-                    <h2 className="subtitle">based on face recognition</h2>
+                    <img src={logo_social_relationships} alt="social_relationships" width="200" height="100" />
+                    <h1 className="title">Page</h1>
+                    <h2 className="subtitle">some info about the page</h2>
                 </div>
             </div>
         </section>

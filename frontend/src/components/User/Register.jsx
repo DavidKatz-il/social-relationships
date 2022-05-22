@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import { ErrorMessage } from "../Info/ErrorMessage";
-import logo from '../../logo.jpeg';
+import logo from '../../logo.png';
 import { NavLink } from "react-router-dom";
 import * as g from "../../Global";
 

@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { ErrorMessage } from "../Info/ErrorMessage";
 import { UserContext } from "../../context/UserContext";
-import logo from '../../logo.jpeg';
+import logo from '../../logo.png';
 import { fetchData } from "../../Global";
 
 export const Login = () => {
