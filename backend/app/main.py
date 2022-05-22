@@ -156,12 +156,12 @@ async def get_match_faces(
     return await services.get_match_faces(user, db)
 
 
-# @app.get("/api/reports", response_model=List[schemas.Report])
-# async def get_reports(
-#         user: schemas.User = fastapi.Depends(services.get_current_user),
-#         db: orm.Session = fastapi.Depends(services.get_db),
-# ):
-#     return await services.get_reports(user=user, db=db)
+@app.get("/api/reports", response_model=List[schemas.Report])
+async def get_reports(
+        user: schemas.User = fastapi.Depends(services.get_current_user),
+        db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_reports(user=user, db=db)
 
 
 @app.get("/api")
