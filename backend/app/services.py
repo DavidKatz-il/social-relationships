@@ -410,8 +410,14 @@ async def get_match_faces(user: schemas.User, db: orm.Session):
 
 
 async def get_locations_and_encodings_from_image(image_base64: str):
+    def get_locations(image):
+        locations = face_recognition.face_locations(image, number_of_times_to_upsample=1, model='hog')
+        if len(locations) == 0:
+            locations = face_recognition.face_locations(image, number_of_times_to_upsample=2, model='cnn')
+        return locations
+
     image = face_recognition.load_image_file(urlopen(image_base64))
-    face_locations = face_recognition.face_locations(image)
+    face_locations = get_locations(image)
     if len(face_locations) == 0:
         raise fastapi.HTTPException(
             status_code=400, detail="Cannot recognize a face in the image."
