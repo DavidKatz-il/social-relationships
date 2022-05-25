@@ -1,3 +1,4 @@
+import re
 import json
 import operator
 from datetime import datetime
@@ -32,7 +33,24 @@ async def get_user_by_email(email: str, db: orm.Session):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+async def validate_user(user: schemas.UserCreate):
+    min_pass_len = 6
+    email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    
+    if not user.email or not re.match(email_regex, user.email):
+        raise fastapi.HTTPException(
+            status_code=400, detail="Invalid email address."
+        )
+    
+    if user.hashed_password < min_pass_len:
+        raise fastapi.HTTPException(
+            status_code=400, detail=f"The password must contain at least {min_pass_len} characters."
+        )
+
+
 async def create_user(user: schemas.UserCreate, db: orm.Session):
+    await validate_user(user=user)
+
     user_obj = models.User(
         email=user.email, hashed_password=bcrypt.hash(user.hashed_password)
     )
