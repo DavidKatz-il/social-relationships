@@ -80,6 +80,7 @@ class FaceStudent(FaceStudentCreate):
     class Config:
         orm_mode = True
 
+
 class FaceImageCreate(_FaceBase):
     student_names: List[str]
     face_locations: List[List[int]]
@@ -92,5 +93,20 @@ class FaceImage(FaceImageCreate):
     datetime_created: datetime
     datetime_updated: datetime
 
+    class Config:
+        orm_mode = True
+
+
+class _ReportBase(BaseModel):
+    id: str
+    info: list
+    datetime_created: datetime
+
+
+class ReportCreate(_StudentBase):
+    pass
+
+
+class Report(_ReportBase):
     class Config:
         orm_mode = True
