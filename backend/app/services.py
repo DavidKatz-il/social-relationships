@@ -420,10 +420,19 @@ async def get_locations_and_encodings_from_images(images: list):
 
 
 async def get_reports(user: schemas.User, db: orm.Session):
+    name_list = []
+    await create_match_faces(user, db)
+    for lst_info in (await get_match_faces(user, db)).values():
+        for dict_info in lst_info:
+            name_list.append(dict_info["student_name"])
+
+    my_dict = {i: name_list.count(i) for i in name_list}
+
     return [
         {
             "id": 0,
-            "info": ["blaaaaaaaa"],
+            "name": "Total appearance",
+            "info": [f"{my_dict}"],
             "datetime_created": "2022-05-22T21:05:00.799Z"
         }
     ]
