@@ -7,6 +7,8 @@ import * as g from "../../Global";
 
 export const Register = () => {
   const [email, setEmail] = useState("");
+  const [teacherName, setTeacherName] = useState("");
+  const [schoolName, setSchoolName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmationPassword, setConfirmationPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,7 +19,7 @@ export const Register = () => {
   }
 
   async function submitRegistration() {
-    const body = JSON.stringify({ email: email, hashed_password: password });
+    const body = JSON.stringify({ email: email, hashed_password: password, teacher_name: teacherName, school_name: schoolName });
     await g.fetchData("POST", "application/json", undefined, "/api/users", setErrorMessage, "", setData, undefined, body);
     /*const requestOptions = {
       method: "POST",
@@ -53,6 +55,18 @@ export const Register = () => {
                 <div className="control">
                   <input className="input is-large" type="email" placeholder="Enter your email" autoFocus=""
                     value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+              </div>
+              <div className="field">
+                <div className="control">
+                  <input className="input is-large" type="text" placeholder="Enter your name" autoFocus=""
+                    value={teacherName} onChange={(e) => setTeacherName(e.target.value)} required />
+                </div>
+              </div>
+              <div className="field">
+                <div className="control">
+                  <input className="input is-large" type="text" placeholder="Enter the school name" autoFocus=""
+                    value={schoolName} onChange={(e) => setSchoolName(e.target.value)} required />
                 </div>
               </div>
               <div className="field">
