@@ -98,7 +98,8 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
-    id: str
+    id: int
+    name: str
     info: list
     datetime_created: datetime
 
