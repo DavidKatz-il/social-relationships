@@ -426,21 +426,36 @@ async def get_reports(user: schemas.User, db: orm.Session):
         for dict_info in lst_info:
             name_list.append(dict_info["student_name"])
 
-    total_apprer = {i: name_list.count(i) for i in name_list}
-    fin_max = max(total_apprer, key=total_apprer.get)
-
+    # total_apper = {name: name_list.count(name) for name in name_list}
+    total_apper = {
+        0: ['name', 'count'],
+        **{
+            i + 1: [name, name_list.count(name)]
+            for i, name in enumerate(set(name_list))
+        }
+    }
+    most_apper = max(total_apper, key=total_apper.get)
 
     return [
         {
             "id": 0,
             "name": "Total appearance",
-            "info": [f"{total_apprer}"],
+            "info": f"{total_apper}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         },
         {
             "id": 0,
             "name": "Most appearance",
-            "info": [f"{fin_max}: {total_apprer[fin_max]}"],
+            "info": f"{most_apper}: {total_apper[most_apper]}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         }
     ]
+
+
+'''
+report_closet_friends = {
+  0: ["student name", "closet friends"],
+  1: ["yakkov dayan", "haim hugi"],
+   ...
+}
+'''
