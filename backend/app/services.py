@@ -426,7 +426,6 @@ async def get_reports(user: schemas.User, db: orm.Session):
         for dict_info in lst_info:
             name_list.append(dict_info["student_name"])
 
-    # total_apper = {name: name_list.count(name) for name in name_list}
     total_apper = {
         0: ['name', 'count'],
         **{
@@ -434,7 +433,16 @@ async def get_reports(user: schemas.User, db: orm.Session):
             for i, name in enumerate(set(name_list))
         }
     }
-    most_apper = max(total_apper, key=total_apper.get)
+
+    total_count = {name: name_list.count(name) for name in name_list}
+    most_apper = max(total_count, key=total_count.get)
+
+    # dict_together = {name: 0 for name in name_list}
+
+    # for name in name_list:
+    #     for lst_info in (await get_match_faces(user, db)).values():
+    #         for dict_info in lst_info:
+    #             name_list.append(dict_info["student_name"])
 
     return [
         {
@@ -446,7 +454,7 @@ async def get_reports(user: schemas.User, db: orm.Session):
         {
             "id": 0,
             "name": "Most appearance",
-            "info": f"{most_apper}: {total_apper[most_apper]}",
+            "info": f"{most_apper}: {total_count[most_apper]}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         }
     ]
