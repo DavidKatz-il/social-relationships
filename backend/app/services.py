@@ -426,13 +426,21 @@ async def get_reports(user: schemas.User, db: orm.Session):
         for dict_info in lst_info:
             name_list.append(dict_info["student_name"])
 
-    my_dict = {i: name_list.count(i) for i in name_list}
+    total_apprer = {i: name_list.count(i) for i in name_list}
+    fin_max = max(total_apprer, key=total_apprer.get)
+
 
     return [
         {
             "id": 0,
             "name": "Total appearance",
-            "info": [f"{my_dict}"],
+            "info": [f"{total_apprer}"],
+            "datetime_created": "2022-05-22T21:05:00.799Z"
+        },
+        {
+            "id": 0,
+            "name": "Most appearance",
+            "info": [f"{fin_max}: {total_apprer[fin_max]}"],
             "datetime_created": "2022-05-22T21:05:00.799Z"
         }
     ]
