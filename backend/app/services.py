@@ -389,6 +389,18 @@ async def get_match_faces(user: schemas.User, db: orm.Session):
     return images_student_names
 
 
+async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
+    faces_image = db.query(models.FaceImage).filter_by(owner_id=user.id)
+    student_list = await get_students_list(user, db)
+    images_by_name = {name: [] for name in student_list}
+    for face_image in faces_image:
+        if face_image.student_names:
+            for stdnt_name in face_image.student_names:
+                images_by_name[stdnt_name].append(face_image.name)
+
+    return images_by_name
+
+
 async def get_locations_and_encodings_from_image(image_base64: str):
     image = face_recognition.load_image_file(urlopen(image_base64))
     face_locations = face_recognition.face_locations(image)
