@@ -419,12 +419,17 @@ async def get_locations_and_encodings_from_images(images: list):
     return locations, encodings
 
 
-async def get_reports(user: schemas.User, db: orm.Session):
+async def get_students_list(user: schemas.User, db: orm.Session) -> list:
     name_list = []
-    await create_match_faces(user, db)
     for lst_info in (await get_match_faces(user, db)).values():
         for dict_info in lst_info:
             name_list.append(dict_info["student_name"])
+    return name_list
+
+
+async def get_reports(user: schemas.User, db: orm.Session):
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
 
     total_apper = {
         0: ['name', 'count'],
@@ -437,17 +442,14 @@ async def get_reports(user: schemas.User, db: orm.Session):
     total_count = {name: name_list.count(name) for name in name_list}
     most_apper = max(total_count, key=total_count.get)
 
-    # dict_together = {name: 0 for name in name_list}
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
-    # for name in name_list:
-    #     for lst_info in (await get_match_faces(user, db)).values():
-    #         for dict_info in lst_info:
-    #             name_list.append(dict_info["student_name"])
 
     return [
         {
             "id": 0,
             "name": "Total appearance",
+            # "info": f"{a}",
             "info": f"{total_apper}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         },
