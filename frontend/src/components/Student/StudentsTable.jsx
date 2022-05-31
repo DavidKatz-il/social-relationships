@@ -85,5 +85,11 @@ export const StudentsTable = () => {
           ))}
         </div>
       </section>
-    ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+    ) : <section className="container">
+          <div>
+            <p style={{ textAlign: "center" }}><br />Loading your students</p>
+            <progress className="progress is-small is-primary" max="100">99%</progress>
+          </div>
+        </section>
+    }</>
 };

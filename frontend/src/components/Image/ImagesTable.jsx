@@ -75,5 +75,11 @@ export const ImagesTable = () => {
                     ))}
                 </div>
             </section>
-        ) : <p style={{ textAlign: "center" }}><br />Loading...</p>}</>
+        ) : <section className="container">
+                <div>
+                    <p style={{ textAlign: "center" }}><br />Loading your images</p>
+                    <progress className="progress is-small is-primary" max="100">99%</progress>
+                </div>
+            </section>
+        }</>
 };
