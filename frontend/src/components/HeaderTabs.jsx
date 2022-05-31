@@ -96,12 +96,20 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </nav>
-        <section className="hero is-small is-primary">
-            <div style={{ padding: 30 }}>
+        <section className="hero is-primary">
+            <div style={{ padding: 20 }}>
                 <div className="container">
-                    <img src={logo_social_relationships} alt="social_relationships" width="200" height="100" />
-                    <h1 className="title">Page</h1>
-                    <h2 className="subtitle">some info about the page</h2>
+                    <div className="columns">
+                        <div className="column">
+                            <img src={logo_social_relationships} alt="social_relationships" width="200" height="100" />
+                        </div>
+                        <div className="column">
+                            <h1 className="title">Page</h1>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle">some info about the page</h2>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
