@@ -456,12 +456,22 @@ async def get_reports(user: schemas.User, db: orm.Session):
 
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
+    besties = {stndt_name: {} for stndt_name in name_list}
+    for nested_stndt_name in besties:
+        besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
+
+    for stdnt in stdnt_list_by_name:
+        for nesten_stdnt in stdnt_list_by_name:
+            if stdnt == nesten_stdnt:
+                continue
+            match_pic =\
+                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
+            besties[stdnt][nesten_stdnt] = len(match_pic)
 
     return [
         {
             "id": 0,
             "name": "Total appearance",
-            # "info": f"{a}",
             "info": f"{total_apper}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         },
