@@ -483,22 +483,25 @@ async def get_reports(user: schemas.User, db: orm.Session):
 
     return [
         {
-            "id": 0,
+            "report_id": 0,
             "name": "Total appearance",
             "info": f"{total_apper}",
-            "datetime_created": "2022-05-22T21:05:00.799Z"
+            "datetime_created": "2022-05-22T21:05:00.799Z",
+            "datetime_updated": "2022-05-22T21:05:00.799Z"
         },
         {
-            "id": 0,
+            "report_id": 1,
             "name": "Most appearance",
             "info": f"{most_apper}: {total_count[most_apper]}",
-            "datetime_created": "2022-05-22T21:05:00.799Z"
+            "datetime_created": "2022-05-22T21:05:00.799Z",
+            "datetime_updated": "2022-05-22T21:05:00.799Z"
         },
         {
-            "id": 0,
+            "report_id": 2,
             "name": "Most appearance",
             "info": f"{besties_counter}",
-            "datetime_created": "2022-05-22T21:05:00.799Z"
+            "datetime_created": "2022-05-22T21:05:00.799Z",
+            "datetime_updated": "2022-05-22T21:05:00.799Z"
         }
     ]
 
