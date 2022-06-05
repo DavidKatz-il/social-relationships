@@ -1,4 +1,5 @@
 import json
+import operator
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -467,6 +468,18 @@ async def get_reports(user: schemas.User, db: orm.Session):
             match_pic =\
                 list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
             besties[stdnt][nesten_stdnt] = len(match_pic)
+    try:
+        del besties['Unknown']
+    except KeyError:
+        pass
+
+    besties_counter = {
+        0: ['name', 'besties', 'count'],
+        **{
+            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+            for i, name in enumerate(set(besties))
+        }
+    }
 
     return [
         {
@@ -479,6 +492,12 @@ async def get_reports(user: schemas.User, db: orm.Session):
             "id": 0,
             "name": "Most appearance",
             "info": f"{most_apper}: {total_count[most_apper]}",
+            "datetime_created": "2022-05-22T21:05:00.799Z"
+        },
+        {
+            "id": 0,
+            "name": "Most appearance",
+            "info": f"{besties_counter}",
             "datetime_created": "2022-05-22T21:05:00.799Z"
         }
     ]
