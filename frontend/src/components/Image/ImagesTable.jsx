@@ -13,12 +13,12 @@ export const ImagesTable = () => {
     const [search, setSearch] = useState("");
 
     async function handleDelete(id) {
-        await g.fetchData("DELETE", "application/json", token, `/api/images/${id}`, setErrorMessage,
+        await g.fetchData("DELETE", "application/json", token, `images/${id}`, setErrorMessage,
             "Failed to delete image", undefined, getImages);
     }
 
     async function getImages() {
-        await g.fetchData("GET", "application/json", token, "/api/images", setErrorMessage,
+        await g.fetchData("GET", "application/json", token, "images", setErrorMessage,
             "Something went wrong. Couldn't load the images", setImages, () => setLoaded(true));
     }
 

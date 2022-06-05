@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { ErrorMessage } from "../Info/ErrorMessage";
 import { UserContext } from "../../context/UserContext";
 import logo from '../../logo.png';
-import { fetchData } from "../../Global";
+import * as g from "../../Global";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,19 +17,8 @@ export const Login = () => {
 
   async function submitLogin() {
     const body = JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`);
-    await fetchData("POST", "application/x-www-form-urlencoded", undefined, "/api/token", setErrorMessage,
+    await g.fetchData("POST", "application/x-www-form-urlencoded", undefined, "token", setErrorMessage,
       "", setData, undefined, body);
-    /*const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: JSON.stringify(`grant_type=&username=${email}&password=${password}&scope=&client_id=&client_secret=`),
-    };
-    const response = await fetch("/api/token", requestOptions);
-    const data = await response.json();
-    if (!response.ok)
-      setErrorMessage(data.detail);
-    else
-      setToken(data.access_token);*/
   }
 
   function handleSubmit(e) {
