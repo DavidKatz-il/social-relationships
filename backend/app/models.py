@@ -88,3 +88,19 @@ class FaceImage(database.Base):
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
     owner = sql.orm.relationship("User", back_populates="faces_images")
+
+
+# class Reports(database.Base):
+    # __tablename__ = "reports"
+    #
+    # id = sql.Column(sql.Integer, primary_key=True, index=True)
+    # owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
+    #
+    # report_id = sql.Column(sql.String, sql.ForeignKey("students.name"))
+    # name = sql.Column(sql.JSON)
+    # info = sql.Column(sql.JSON)
+    #
+    # datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
+    # datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
+    #
+    # owner = sql.orm.relationship("User", back_populates="reports")
