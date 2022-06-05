@@ -98,10 +98,11 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
-    id: int
+    report_id: int
     name: str
     info: str
     datetime_created: datetime
+    datetime_updated: datetime
 
 
 class ReportCreate(_StudentBase):
