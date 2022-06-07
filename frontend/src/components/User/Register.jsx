@@ -20,7 +20,7 @@ export const Register = () => {
 
   async function submitRegistration() {
     const body = JSON.stringify({ email: email, hashed_password: password, teacher_name: teacherName, school_name: schoolName });
-    await g.fetchData("POST", "application/json", undefined, "/api/users", setErrorMessage, "", setData, undefined, body);
+    await g.fetchData("POST", "application/json", undefined, "users", setErrorMessage, "", setData, undefined, body);
   }
 
   const handleSubmit = (e) => {
