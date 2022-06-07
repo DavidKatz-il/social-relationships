@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 class _UserBase(BaseModel):
     email: str
+    teacher_name: str
+    school_name: str
 
 
 class UserCreate(_UserBase):
@@ -62,8 +64,6 @@ class Image(_ImageBase):
 
 class _FaceBase(BaseModel):
     name: str
-    # class Config:
-    #     arbitrary_types_allowed = True
 
 
 class FaceStudentCreate(_FaceBase):
