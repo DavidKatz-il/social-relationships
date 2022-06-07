@@ -7,6 +7,8 @@ import logo_social_relationships from '../social_relationships.png';
 export const HeaderTabs = () => {
     const [token, setToken] = useContext(UserContext);
     const [activeTab, setActiveTab] = useState(window.location.pathname.substring(1, window.location.pathname.length));
+    const [pageTitle,setPageTitle] = useState("Page");
+    const [pageInfo,setPageInfo] = useState("some info about the page");
 
     const handleLogout = () => {
         setToken(null);
@@ -96,12 +98,20 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </nav>
-        <section className="hero is-small is-primary">
-            <div style={{ padding: 30 }}>
+        <section className="hero is-primary">
+            <div style={{ padding: 7 }}>
                 <div className="container">
-                    <img src={logo_social_relationships} alt="social_relationships" width="200" height="100" />
-                    <h1 className="title">Page</h1>
-                    <h2 className="subtitle">some info about the page</h2>
+                    <div className="columns">
+                        <div className="column">
+                            <img src={logo_social_relationships} alt="social_relationships" width="120" height="60" />
+                        </div>
+                        <div className="column">
+                            <h1 className="title">{pageTitle}</h1>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle">{pageInfo}</h2>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

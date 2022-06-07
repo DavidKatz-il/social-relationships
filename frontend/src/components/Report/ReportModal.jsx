@@ -1,5 +1,8 @@
 import React from "react"
 
 export const ReportModal = () => {
-    return <h1 className="title" style={{ textAlign: "center" }}>Reports Modal...</h1>
+    return <>
+        <h1 className="title" style={{ textAlign: "center" }}>Reports Modal...</h1>
+        <h1 className="title" style={{ textAlign: "center" }}>Reports Modal...</h1>
+    </>
 }

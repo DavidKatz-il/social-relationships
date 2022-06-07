@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import * as g from "../Global";
 
 export const UserContext = createContext();
 
@@ -7,16 +8,8 @@ export const UserProvider = (props) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      };
-      const response = await fetch("/api/users/user", requestOptions);
-      if (!response.ok) setToken(null);
-      localStorage.setItem("socialRelationshipsToken", token);
+      await g.fetchData("GET", "application/json", token, "users/user", undefined, "", undefined,
+        () => localStorage.setItem("socialRelationshipsToken", token), undefined, setToken);
     };
     fetchUser();
   }, [token]);

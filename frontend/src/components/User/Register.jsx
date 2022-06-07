@@ -21,17 +21,6 @@ export const Register = () => {
   async function submitRegistration() {
     const body = JSON.stringify({ email: email, hashed_password: password, teacher_name: teacherName, school_name: schoolName });
     await g.fetchData("POST", "application/json", undefined, "/api/users", setErrorMessage, "", setData, undefined, body);
-    /*const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, hashed_password: password }),
-    };
-    const response = await fetch("/api/users", requestOptions);
-    const data = await response.json();
-    if (!response.ok)
-      setErrorMessage(data.detail);
-    else
-      setToken(data.access_token);*/
   }
 
   const handleSubmit = (e) => {

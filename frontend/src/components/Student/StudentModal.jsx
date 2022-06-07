@@ -26,7 +26,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   }
 
   async function getStudent() {
-    await g.fetchData("GET", "application/json", token, `/api/students/${id}`, setErrorMessage,
+    await g.fetchData("GET", "application/json", token, `students/${id}`, setErrorMessage,
       "Could not get the student", setData, undefined, undefined);
   };
 
@@ -48,14 +48,14 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
   async function handleCreateStudent(e) {
     e.preventDefault();
     const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
-    await g.fetchData("POST", "application/json", token, "/api/students", setErrorMessage,
+    await g.fetchData("POST", "application/json", token, "students", setErrorMessage,
       "Something went wrong when creating student", undefined, handleClose, body);
   }
 
   async function handleUpdateStudent(e) {
     e.preventDefault();
     const body = JSON.stringify({ name: name, images: JSON.stringify(images), });
-    await g.fetchData("PUT", "application/json", token, `/api/students/${id}`, setErrorMessage,
+    await g.fetchData("PUT", "application/json", token, `students/${id}`, setErrorMessage,
       "Something went wrong when updating student", undefined, handleClose, body);
   }
 
@@ -63,7 +63,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
     <div className="modal-background" onClick={handleClose}></div>
     <div className="modal-card">
       <header className="modal-card-head has-background-primary-light">
-        <h1 className="modal-card-title">{id ? "Update Student" : "Create Student"}</h1>
+        <h1 className="modal-card-title">{id ? "Update " : "Create "}Student</h1>
       </header>
       <section className="modal-card-body">
         <form>
