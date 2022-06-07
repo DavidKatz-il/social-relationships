@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from pydantic import BaseModel
 
@@ -98,17 +98,19 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
-    report_id: int
     name: str
-    info: str
-    datetime_created: datetime
-    datetime_updated: datetime
+    info: Dict[int, List]
 
 
-class ReportCreate(_StudentBase):
+class ReportCreate(_ReportBase):
     pass
 
 
 class Report(_ReportBase):
+    id: int
+    owner_id: int
+    datetime_created: datetime
+    datetime_updated: datetime
+
     class Config:
         orm_mode = True

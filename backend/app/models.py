@@ -20,6 +20,7 @@ class User(database.Base):
     images = sql.orm.relationship("Image", back_populates="owner")
     faces_students = sql.orm.relationship("FaceStudent", back_populates="owner")
     faces_images = sql.orm.relationship("FaceImage", back_populates="owner")
+    reports = sql.orm.relationship("Report", back_populates="owner")
 
     def verify_password(self, password: str):
         return bcrypt.verify(password, self.hashed_password)
@@ -90,17 +91,16 @@ class FaceImage(database.Base):
     owner = sql.orm.relationship("User", back_populates="faces_images")
 
 
-# class Reports(database.Base):
-    # __tablename__ = "reports"
-    #
-    # id = sql.Column(sql.Integer, primary_key=True, index=True)
-    # owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    #
-    # report_id = sql.Column(sql.String, sql.ForeignKey("students.name"))
-    # name = sql.Column(sql.JSON)
-    # info = sql.Column(sql.JSON)
-    #
-    # datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
-    # datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
-    #
-    # owner = sql.orm.relationship("User", back_populates="reports")
+class Report(database.Base):
+    __tablename__ = "reports"
+    
+    id = sql.Column(sql.Integer, primary_key=True, index=True)
+    owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
+    
+    name = sql.Column(sql.String, index=True)
+    info = sql.Column(sql.JSON)
+    
+    datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
+    datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
+    
+    owner = sql.orm.relationship("User", back_populates="reports")
