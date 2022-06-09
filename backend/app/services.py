@@ -440,10 +440,12 @@ async def get_students_list(user: schemas.User, db: orm.Session) -> list:
     return name_list
 
 
-async def get_reports(user: schemas.User, db: orm.Session):
+async def create_reports(
+        user: schemas.User,
+        db: orm.Session,
+):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
-
     total_apper = {
         0: ['name', 'count'],
         **{
@@ -452,58 +454,94 @@ async def get_reports(user: schemas.User, db: orm.Session):
         }
     }
 
-    total_count = {name: name_list.count(name) for name in name_list}
-    most_apper = max(total_count, key=total_count.get)
+    rprt = schemas.Report(
+        name="Moshe", info=total_apper,
+    )
+    a = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(a)
+    db.commit()
+    db.refresh(a)
 
-    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+    return [schemas.Report.from_orm(rprt)]
 
-    besties = {stndt_name: {} for stndt_name in name_list}
-    for nested_stndt_name in besties:
-        besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
 
-    for stdnt in stdnt_list_by_name:
-        for nesten_stdnt in stdnt_list_by_name:
-            if stdnt == nesten_stdnt:
-                continue
-            match_pic =\
-                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
-            besties[stdnt][nesten_stdnt] = len(match_pic)
-    try:
-        del besties['Unknown']
-    except KeyError:
-        pass
+async def get_reports(
+        user: schemas.User,
+        db: orm.Session,
+        report_id: schemas.Report
+):
+    report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
 
-    besties_counter = {
-        0: ['name', 'besties', 'count'],
-        **{
-            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-            for i, name in enumerate(set(besties))
-        }
-    }
+    return schemas.Report.from_orm(report_db)
 
-    return [
-        {
-            "report_id": 0,
-            "name": "Total appearance",
-            "info": f"{total_apper}",
-            "datetime_created": "2022-05-22T21:05:00.799Z",
-            "datetime_updated": "2022-05-22T21:05:00.799Z"
-        },
-        {
-            "report_id": 1,
-            "name": "Most appearance",
-            "info": f"{most_apper}: {total_count[most_apper]}",
-            "datetime_created": "2022-05-22T21:05:00.799Z",
-            "datetime_updated": "2022-05-22T21:05:00.799Z"
-        },
-        {
-            "report_id": 2,
-            "name": "Most appearance",
-            "info": f"{besties_counter}",
-            "datetime_created": "2022-05-22T21:05:00.799Z",
-            "datetime_updated": "2022-05-22T21:05:00.799Z"
-        }
-    ]
+
+# await create_match_faces(user, db)
+# name_list = await get_students_list(user, db)
+#
+# total_apper = {
+#     0: ['name', 'count'],
+#     **{
+#         i + 1: [name, name_list.count(name)]
+#         for i, name in enumerate(set(name_list))
+#     }
+# }
+#
+# total_count = {name: name_list.count(name) for name in name_list}
+# most_apper = max(total_count, key=total_count.get)
+#
+# stdnt_list_by_name = await get_match_faces_by_student(user, db)
+#
+# besties = {stndt_name: {} for stndt_name in name_list}
+# for nested_stndt_name in besties:
+#     besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
+#
+# for stdnt in stdnt_list_by_name:
+#     for nesten_stdnt in stdnt_list_by_name:
+#         if stdnt == nesten_stdnt:
+#             continue
+#         match_pic = \
+#             list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
+#         besties[stdnt][nesten_stdnt] = len(match_pic)
+# try:
+#     del besties['Unknown']
+# except KeyError:
+#     pass
+#
+# besties_counter = {
+#     0: ['name', 'besties', 'count'],
+#     **{
+#         i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+#         for i, name in enumerate(set(besties))
+#     }
+# }
+#
+# rprt = models.Report(besties_counter, owner_id=user.id)
+#
+# return [besties_counter]
+
+# return [
+# {
+#     # "name": "Total appearance",
+#     # "info": f"{total_apper}",
+#     "id": 0,
+#     "datetime_created": "2022-05-22T21:05:00.799Z",
+#     "datetime_updated": "2022-05-22T21:05:00.799Z"
+# },
+# {
+#     "report_id": 1,
+#     "name": "Most appearance",
+#     "info": f"{most_apper}: {total_count[most_apper]}",
+#     "datetime_created": "2022-05-22T21:05:00.799Z",
+#     "datetime_updated": "2022-05-22T21:05:00.799Z"
+# },
+# {
+#     "report_id": 2,
+#     "name": "Most appearance",
+#     "info": f"{besties_counter}",
+#     "datetime_created": "2022-05-22T21:05:00.799Z",
+#     "datetime_updated": "2022-05-22T21:05:00.799Z"
+# }
+# ]
 
 
 '''
