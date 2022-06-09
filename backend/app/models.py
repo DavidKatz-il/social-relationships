@@ -67,7 +67,7 @@ class FaceStudent(database.Base):
     name = sql.Column(sql.String, sql.ForeignKey("students.name"))
     face_locations = sql.Column(sql.JSON)
     face_encodings = sql.Column(sql.JSON)
-    
+
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
@@ -93,14 +93,14 @@ class FaceImage(database.Base):
 
 class Report(database.Base):
     __tablename__ = "reports"
-    
+
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    
+
     name = sql.Column(sql.String, index=True)
     info = sql.Column(sql.JSON)
-    
+
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
-    
+
     owner = sql.orm.relationship("User", back_populates="reports")
