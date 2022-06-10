@@ -440,13 +440,36 @@ async def get_students_list(user: schemas.User, db: orm.Session) -> list:
     return name_list
 
 
+async def validate_report_not_exist(
+        report_name: str,
+        user_id: int,
+        db: orm.Session
+):
+    report_db = await _get_object_by_name(
+        obj_name=report_name,
+        user_id=user_id,
+        model=models.Report,
+        db=db
+    )
+    if report_db:
+        raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
+
+
 async def create_reports(
         user: schemas.User,
         db: orm.Session,
 ):
+    name_of_report1 = "Total appear"
+
+    await validate_report_not_exist(
+        report_name=name_of_report1,
+        user_id=user.id,
+        db=db
+    )
+
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
-    total_apper = {
+    total_appear = {
         0: ['name', 'count'],
         **{
             i + 1: [name, name_list.count(name)]
@@ -455,7 +478,7 @@ async def create_reports(
     }
 
     rprt = schemas.Report(
-        name="Moshe", info=total_apper,
+        name=name_of_report1, info=total_appear,
     )
     a = models.Report(**rprt.dict(), owner_id=user.id)
     db.add(a)
@@ -465,7 +488,13 @@ async def create_reports(
     return [schemas.Report.from_orm(rprt)]
 
 
-async def get_reports(
+async def get_reports(user: schemas.User, db: orm.Session):
+    report = db.query(models.Report).filter_by(owner_id=user.id)
+
+    return list(map(schemas.Report.from_orm, report))
+
+
+async def get_report(
         user: schemas.User,
         db: orm.Session,
         report_id: schemas.Report
@@ -478,7 +507,7 @@ async def get_reports(
 # await create_match_faces(user, db)
 # name_list = await get_students_list(user, db)
 #
-# total_apper = {
+# total_appear = {
 #     0: ['name', 'count'],
 #     **{
 #         i + 1: [name, name_list.count(name)]
@@ -522,7 +551,7 @@ async def get_reports(
 # return [
 # {
 #     # "name": "Total appearance",
-#     # "info": f"{total_apper}",
+#     # "info": f"{total_appear}",
 #     "id": 0,
 #     "datetime_created": "2022-05-22T21:05:00.799Z",
 #     "datetime_updated": "2022-05-22T21:05:00.799Z"
