@@ -456,15 +456,9 @@ async def validate_report_not_exist(
 
 
 async def create_report1(
-        report_name: str,
         user: schemas.User,
         db: orm.Session,
 ):
-    await validate_report_not_exist(
-        report_name=report_name,
-        user_id=user.id,
-        db=db
-    )
 
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
@@ -481,16 +475,9 @@ async def create_report1(
 
 
 async def create_report2(
-        report_name,
         user: schemas.User,
         db: orm.Session,
 ):
-    await validate_report_not_exist(
-        report_name=report_name,
-        user_id=user.id,
-        db=db
-    )
-
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
@@ -505,18 +492,11 @@ async def create_report2(
 
 
 async def create_report3(
-        report_name: str,
         user: schemas.User,
         db: orm.Session,
 ):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
-
-    await validate_report_not_exist(
-        report_name=report_name,
-        user_id=user.id,
-        db=db
-    )
 
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
@@ -572,15 +552,29 @@ async def create_reports(
     name_of_report2 = "Most appearance"
     name_of_report3 = "Besties"
 
-    report_info = await create_report1(name_of_report1, user, db)
+    await validate_report_not_exist(
+        report_name=name_of_report1,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report1(user, db)
     await save_report_in_db(name_of_report1, report_info, user, db)
 
-    report_info = await create_report2(name_of_report2, user, db)
+    await validate_report_not_exist(
+        report_name=name_of_report2,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report2(user, db)
     await save_report_in_db(name_of_report2, report_info, user, db)
 
-    report_info = await create_report3(name_of_report3, user, db)
+    await validate_report_not_exist(
+        report_name=name_of_report3,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report3(user, db)
     await save_report_in_db(name_of_report3, report_info, user, db)
-
 
     return {"message", "Successfully finished reports creating."}
 
