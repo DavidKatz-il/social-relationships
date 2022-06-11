@@ -455,28 +455,14 @@ async def validate_report_not_exist(
         raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
 
 
-async def create_reports(
+async def create_report1(
         user: schemas.User,
         db: orm.Session,
 ):
     name_of_report1 = "Total appear"
-    name_of_report2 = "Most appearance"
-    name_of_report3 = "Besties"
 
     await validate_report_not_exist(
         report_name=name_of_report1,
-        user_id=user.id,
-        db=db
-    )
-
-    await validate_report_not_exist(
-        report_name=name_of_report2,
-        user_id=user.id,
-        db=db
-    )
-
-    await validate_report_not_exist(
-        report_name=name_of_report3,
         user_id=user.id,
         db=db
     )
@@ -485,35 +471,70 @@ async def create_reports(
     name_list = await get_students_list(user, db)
 
     total_appear = {
-        0: ['name', 'count'],
-        **{
-            i + 1: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list)) if name != 'Unknown'
+            0: ['name', 'count'],
+            **{
+                i + 1: [name, name_list.count(name)]
+                for i, name in enumerate(set(name_list)) if name != 'Unknown'
+            }
         }
-    }
 
     rprt = schemas.Report(
-        name=name_of_report1, info=total_appear,
+        name=name_of_report1,
+        info=total_appear,
     )
+
     new_report = models.Report(**rprt.dict(), owner_id=user.id)
     db.add(new_report)
     db.commit()
     db.refresh(new_report)
 
+
+async def create_report2(
+        user: schemas.User,
+        db: orm.Session,
+):
+    name_of_report2 = "Most appearance"
+
+    await validate_report_not_exist(
+        report_name=name_of_report2,
+        user_id=user.id,
+        db=db
+    )
+
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
     most_appear = max(total_count, key=total_count.get)
+
     most_popular_student = {
         0: ['name', 'count'],
         1: [total_count[most_appear], most_appear]
     }
 
     rprt = schemas.Report(
-        name=name_of_report2, info=most_popular_student,
+        name=name_of_report2,
+        info=most_popular_student,
     )
+
     new_report = models.Report(**rprt.dict(), owner_id=user.id)
     db.add(new_report)
     db.commit()
     db.refresh(new_report)
+
+
+async def create_report3(
+        user: schemas.User,
+        db: orm.Session,
+):
+    name_of_report3 = "Besties"
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
+
+    await validate_report_not_exist(
+        report_name=name_of_report3,
+        user_id=user.id,
+        db=db
+    )
 
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
@@ -549,6 +570,15 @@ async def create_reports(
     db.commit()
     db.refresh(new_report)
 
+async def create_reports(
+        user: schemas.User,
+        db: orm.Session,
+):
+
+    await create_report1(user, db)
+    await create_report2(user, db)
+    await create_report3(user, db)
+
     # return [schemas.Report.from_orm(rprt)]
     return {"message", "Successfully finished reports creating."}
 
@@ -567,81 +597,3 @@ async def get_report(
     report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
 
     return schemas.Report.from_orm(report_db)
-
-
-# await create_match_faces(user, db)
-# name_list = await get_students_list(user, db)
-#
-# total_appear = {
-#     0: ['name', 'count'],
-#     **{
-#         i + 1: [name, name_list.count(name)]
-#         for i, name in enumerate(set(name_list))
-#     }
-# }
-#
-# total_count = {name: name_list.count(name) for name in name_list}
-# most_apper = max(total_count, key=total_count.get)
-#
-# stdnt_list_by_name = await get_match_faces_by_student(user, db)
-#
-# besties = {stndt_name: {} for stndt_name in name_list}
-# for nested_stndt_name in besties:
-#     besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
-#
-# for stdnt in stdnt_list_by_name:
-#     for nesten_stdnt in stdnt_list_by_name:
-#         if stdnt == nesten_stdnt:
-#             continue
-#         match_pic = \
-#             list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
-#         besties[stdnt][nesten_stdnt] = len(match_pic)
-# try:
-#     del besties['Unknown']
-# except KeyError:
-#     pass
-#
-# besties_counter = {
-#     0: ['name', 'besties', 'count'],
-#     **{
-#         i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-#         for i, name in enumerate(set(besties))
-#     }
-# }
-#
-# rprt = models.Report(besties_counter, owner_id=user.id)
-#
-# return [besties_counter]
-
-# return [
-# {
-#     # "name": "Total appearance",
-#     # "info": f"{total_appear}",
-#     "id": 0,
-#     "datetime_created": "2022-05-22T21:05:00.799Z",
-#     "datetime_updated": "2022-05-22T21:05:00.799Z"
-# },
-# {
-#     "report_id": 1,
-#     "name": "Most appearance",
-#     "info": f"{most_apper}: {total_count[most_apper]}",
-#     "datetime_created": "2022-05-22T21:05:00.799Z",
-#     "datetime_updated": "2022-05-22T21:05:00.799Z"
-# },
-# {
-#     "report_id": 2,
-#     "name": "Most appearance",
-#     "info": f"{besties_counter}",
-#     "datetime_created": "2022-05-22T21:05:00.799Z",
-#     "datetime_updated": "2022-05-22T21:05:00.799Z"
-# }
-# ]
-
-
-'''
-report_closet_friends = {
-  0: ["student name", "closet friends"],
-  1: ["yakkov dayan", "haim hugi"],
-   ...
-}
-'''
