@@ -632,7 +632,7 @@ async def update_report(
         3: create_report3,
     }
 
-    report_db.info = report_creator[report_id](user, db)
+    report_db.info = await report_creator[report_id](user, db)
     report_db.datetime_updated = datetime.utcnow()
 
     db.commit()
