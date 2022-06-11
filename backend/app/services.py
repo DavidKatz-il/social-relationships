@@ -547,6 +547,23 @@ async def create_report3(
     return besties_counter
 
 
+async def save_report_in_db(
+        name_of_report,
+        report_info,
+        user: schemas.User,
+        db: orm.Session,
+):
+    rprt = schemas.Report(
+        name=name_of_report,
+        info=report_info,
+    )
+
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+
 async def create_reports(
         user: schemas.User,
         db: orm.Session,
@@ -556,37 +573,14 @@ async def create_reports(
     name_of_report3 = "Besties"
 
     report_info = await create_report1(name_of_report1, user, db)
-    rprt = schemas.Report(
-        name=name_of_report1,
-        info=report_info,
-    )
-
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
+    await save_report_in_db(name_of_report1, report_info, user, db)
 
     report_info = await create_report2(name_of_report2, user, db)
-    rprt = schemas.Report(
-        name=name_of_report2,
-        info=report_info,
-    )
-
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
+    await save_report_in_db(name_of_report2, report_info, user, db)
 
     report_info = await create_report3(name_of_report3, user, db)
-    rprt = schemas.Report(
-        name=name_of_report3,
-        info=report_info,
-    )
+    await save_report_in_db(name_of_report3, report_info, user, db)
 
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
 
     return {"message", "Successfully finished reports creating."}
 
