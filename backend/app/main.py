@@ -162,7 +162,7 @@ async def get_reports(
         db: orm.Session = fastapi.Depends(services.get_db)
 
 ):
-    return await services.get_reports(user=user, db=db)
+    return await services.get_all_reports(user=user, db=db)
 
 
 @app.get("/api/report/{report_id}", status_code=200)
@@ -172,7 +172,7 @@ async def get_report(
         db: orm.Session = fastapi.Depends(services.get_db)
 
 ):
-    return await services.get_report(report_id=report_id, user=user, db=db)
+    return await services.get_specific_report(report_id=report_id, user=user, db=db)
 
 
 @app.get("/api")
