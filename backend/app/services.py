@@ -543,14 +543,14 @@ async def create_report3(
         besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
 
     for stdnt in stdnt_list_by_name:
-        for nesten_stdnt in stdnt_list_by_name:
-            if stdnt == nesten_stdnt:
+        for nested_stdnt in stdnt_list_by_name:
+            if stdnt == nested_stdnt:
                 continue
             match_pic = \
-                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
-            besties[stdnt][nesten_stdnt] = len(match_pic)
+                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nested_stdnt]))
+            besties[stdnt][nested_stdnt] = len(match_pic)
     try:
-        del besties['Unknown']
+        del besties['Unknown']  # Remove 'Unknown' student
     except KeyError:
         pass
 
@@ -570,6 +570,7 @@ async def create_report3(
     db.commit()
     db.refresh(new_report)
 
+
 async def create_reports(
         user: schemas.User,
         db: orm.Session,
@@ -579,21 +580,28 @@ async def create_reports(
     await create_report2(user, db)
     await create_report3(user, db)
 
-    # return [schemas.Report.from_orm(rprt)]
     return {"message", "Successfully finished reports creating."}
 
 
-async def get_reports(user: schemas.User, db: orm.Session):
+async def get_all_reports(
+        user: schemas.User,
+        db: orm.Session
+):
     report = db.query(models.Report).filter_by(owner_id=user.id)
 
     return list(map(schemas.Report.from_orm, report))
 
 
-async def get_report(
+async def get_specific_report(
         user: schemas.User,
         db: orm.Session,
         report_id: schemas.Report
 ):
-    report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
+    report_db = await _get_object_by_id(
+        obj_id=report_id,
+        user_id=user.id,
+        model=models.Report,
+        db=db
+    )
 
     return schemas.Report.from_orm(report_db)
