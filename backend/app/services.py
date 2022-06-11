@@ -456,13 +456,12 @@ async def validate_report_not_exist(
 
 
 async def create_report1(
+        report_name: str,
         user: schemas.User,
         db: orm.Session,
 ):
-    name_of_report1 = "Total appear"
-
     await validate_report_not_exist(
-        report_name=name_of_report1,
+        report_name=report_name,
         user_id=user.id,
         db=db
     )
@@ -478,25 +477,16 @@ async def create_report1(
         }
     }
 
-    rprt = schemas.Report(
-        name=name_of_report1,
-        info=total_appear,
-    )
-
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
+    return total_appear
 
 
 async def create_report2(
+        report_name,
         user: schemas.User,
         db: orm.Session,
 ):
-    name_of_report2 = "Most appearance"
-
     await validate_report_not_exist(
-        report_name=name_of_report2,
+        report_name=report_name,
         user_id=user.id,
         db=db
     )
@@ -511,27 +501,19 @@ async def create_report2(
         1: [total_count[most_appear], most_appear]
     }
 
-    rprt = schemas.Report(
-        name=name_of_report2,
-        info=most_popular_student,
-    )
-
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
+    return most_popular_student
 
 
 async def create_report3(
+        report_name: str,
         user: schemas.User,
         db: orm.Session,
 ):
-    name_of_report3 = "Besties"
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
 
     await validate_report_not_exist(
-        report_name=name_of_report3,
+        report_name=report_name,
         user_id=user.id,
         db=db
     )
@@ -562,22 +544,49 @@ async def create_report3(
         }
     }
 
-    rprt = schemas.Report(
-        name=name_of_report3, info=besties_counter,
-    )
-    new_report = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
+    return besties_counter
 
 
 async def create_reports(
         user: schemas.User,
         db: orm.Session,
 ):
-    await create_report1(user, db)
-    await create_report2(user, db)
-    await create_report3(user, db)
+    name_of_report1 = "Total appear"
+    name_of_report2 = "Most appearance"
+    name_of_report3 = "Besties"
+
+    report_info = await create_report1(name_of_report1, user, db)
+    rprt = schemas.Report(
+        name=name_of_report1,
+        info=report_info,
+    )
+
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    report_info = await create_report2(name_of_report2, user, db)
+    rprt = schemas.Report(
+        name=name_of_report2,
+        info=report_info,
+    )
+
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    report_info = await create_report3(name_of_report3, user, db)
+    rprt = schemas.Report(
+        name=name_of_report3,
+        info=report_info,
+    )
+
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
 
     return {"message", "Successfully finished reports creating."}
 
