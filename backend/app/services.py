@@ -626,7 +626,13 @@ async def update_report(
         db=db
     )
 
-    report_db.info = {1: ["this is test"]}
+    report_creator = {
+        1: create_report1,
+        2: create_report2,
+        3: create_report3,
+    }
+
+    report_db.info = report_creator[report_id](user, db)
     report_db.datetime_updated = datetime.utcnow()
 
     db.commit()
