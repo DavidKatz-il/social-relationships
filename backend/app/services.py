@@ -460,6 +460,7 @@ async def create_reports(
         db: orm.Session,
 ):
     name_of_report1 = "Total appear"
+    name_of_report2 = "Most appearance"
 
     await validate_report_not_exist(
         report_name=name_of_report1,
@@ -467,8 +468,15 @@ async def create_reports(
         db=db
     )
 
+    await validate_report_not_exist(
+        report_name=name_of_report2,
+        user_id=user.id,
+        db=db
+    )
+
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
+
     total_appear = {
         0: ['name', 'count'],
         **{
@@ -480,12 +488,28 @@ async def create_reports(
     rprt = schemas.Report(
         name=name_of_report1, info=total_appear,
     )
-    a = models.Report(**rprt.dict(), owner_id=user.id)
-    db.add(a)
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
     db.commit()
-    db.refresh(a)
+    db.refresh(new_report)
 
-    return [schemas.Report.from_orm(rprt)]
+    total_count = {name: name_list.count(name) for name in name_list}
+    most_appear = max(total_count, key=total_count.get)
+    most_popular_student = {
+        0: ['name', 'count'],
+        1: [total_count[most_appear], most_appear]
+    }
+
+    rprt = schemas.Report(
+        name=name_of_report2, info=most_popular_student,
+    )
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    # return [schemas.Report.from_orm(rprt)]
+    return {"message", "Successfully finished reports creating."}
 
 
 async def get_reports(user: schemas.User, db: orm.Session):
