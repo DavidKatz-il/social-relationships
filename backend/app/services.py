@@ -605,3 +605,14 @@ async def get_specific_report(
     )
 
     return schemas.Report.from_orm(report_db)
+
+
+async def delete_report(
+        report_id: int,
+        user: schemas.User,
+        db: orm.Session
+):
+    report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
+
+    db.delete(report_db)
+    db.commit()
