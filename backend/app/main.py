@@ -148,7 +148,7 @@ async def get_match_faces(
     return await services.get_match_faces(user, db)
 
 
-@app.post("/api/reports", response_model=List[schemas.Report])
+@app.post("/api/reports", status_code=200)
 async def create_reports(
         user: schemas.User = fastapi.Depends(services.get_current_user),
         db: orm.Session = fastapi.Depends(services.get_db),
