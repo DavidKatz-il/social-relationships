@@ -461,6 +461,7 @@ async def create_reports(
 ):
     name_of_report1 = "Total appear"
     name_of_report2 = "Most appearance"
+    name_of_report3 = "Besties"
 
     await validate_report_not_exist(
         report_name=name_of_report1,
@@ -470,6 +471,12 @@ async def create_reports(
 
     await validate_report_not_exist(
         report_name=name_of_report2,
+        user_id=user.id,
+        db=db
+    )
+
+    await validate_report_not_exist(
+        report_name=name_of_report3,
         user_id=user.id,
         db=db
     )
@@ -502,6 +509,40 @@ async def create_reports(
 
     rprt = schemas.Report(
         name=name_of_report2, info=most_popular_student,
+    )
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+
+    besties = {stndt_name: {} for stndt_name in name_list}
+    for nested_stndt_name in besties:
+        besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
+
+    for stdnt in stdnt_list_by_name:
+        for nesten_stdnt in stdnt_list_by_name:
+            if stdnt == nesten_stdnt:
+                continue
+            match_pic = \
+                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nesten_stdnt]))
+            besties[stdnt][nesten_stdnt] = len(match_pic)
+    try:
+        del besties['Unknown']
+    except KeyError:
+        pass
+
+    besties_counter = {
+        0: ['name', 'besties', 'count'],
+        **{
+            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+            for i, name in enumerate(set(besties))
+        }
+    }
+
+    rprt = schemas.Report(
+        name=name_of_report3, info=besties_counter,
     )
     new_report = models.Report(**rprt.dict(), owner_id=user.id)
     db.add(new_report)
