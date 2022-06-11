@@ -176,13 +176,23 @@ async def get_report(
 
 
 @app.delete("/api/report/{report_id}", status_code=204)
-async def delete_student(
+async def delete_report(
     report_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
     await services.delete_report(report_id, user, db)
     return {"message", "Successfully Deleted."}
+
+
+@app.put("/api/report/{report_id}", status_code=200)
+async def update_report(
+    report_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.update_report(report_id, user, db)
+    return {"message", "Successfully Updated."}
 
 
 @app.get("/api")
