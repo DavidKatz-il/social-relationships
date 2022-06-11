@@ -488,7 +488,7 @@ async def create_reports(
         0: ['name', 'count'],
         **{
             i + 1: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list))
+            for i, name in enumerate(set(name_list)) if name != 'Unknown'
         }
     }
 
