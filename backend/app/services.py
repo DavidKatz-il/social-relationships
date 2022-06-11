@@ -471,12 +471,12 @@ async def create_report1(
     name_list = await get_students_list(user, db)
 
     total_appear = {
-            0: ['name', 'count'],
-            **{
-                i + 1: [name, name_list.count(name)]
-                for i, name in enumerate(set(name_list)) if name != 'Unknown'
-            }
+        0: ['name', 'count'],
+        **{
+            i + 1: [name, name_list.count(name)]
+            for i, name in enumerate(set(name_list)) if name != 'Unknown'
         }
+    }
 
     rprt = schemas.Report(
         name=name_of_report1,
@@ -575,7 +575,6 @@ async def create_reports(
         user: schemas.User,
         db: orm.Session,
 ):
-
     await create_report1(user, db)
     await create_report2(user, db)
     await create_report3(user, db)
@@ -616,3 +615,24 @@ async def delete_report(
 
     db.delete(report_db)
     db.commit()
+
+
+async def update_report(
+        report_id: int,
+        user: schemas.User,
+        db: orm.Session
+):
+    report_db = await _get_object_by_id(
+        obj_id=report_id,
+        user_id=user.id,
+        model=models.Report,
+        db=db
+    )
+
+    report_db.info = {1: ["this is test"]}
+    report_db.datetime_updated = datetime.utcnow()
+
+    db.commit()
+    db.refresh(report_db)
+
+    return schemas.Report.from_orm(report_db)
