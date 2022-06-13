@@ -1,3 +1,4 @@
+import re
 import json
 import operator
 from datetime import datetime
@@ -32,7 +33,24 @@ async def get_user_by_email(email: str, db: orm.Session):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+async def validate_user(user: schemas.UserCreate):
+    min_pass_len = 6
+    email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    
+    if not user.email or not re.match(email_regex, user.email):
+        raise fastapi.HTTPException(
+            status_code=400, detail="Invalid email address."
+        )
+    
+    if user.hashed_password < min_pass_len:
+        raise fastapi.HTTPException(
+            status_code=400, detail=f"The password must contain at least {min_pass_len} characters."
+        )
+
+
 async def create_user(user: schemas.UserCreate, db: orm.Session):
+    await validate_user(user=user)
+
     user_obj = models.User(
         email=user.email, hashed_password=bcrypt.hash(user.hashed_password)
     )
@@ -155,26 +173,29 @@ async def update_student(
         student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
     student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+
     if student.name != student_db.name:
         await validate_student_name_not_exist(
             student_name=student.name, user_id=user.id, db=db
         )
-
-    student_db.name = student.name
-    student_db.images = student.images
+        student_db.name = student.name
+    
+    if student.images != student_db.images:
+        student_db.images = student.images
+        locations, encodings = await get_locations_and_encodings_from_images(
+            images=json.loads(student.images)
+        )
+    else:
+        locations, encodings = face_student_db.face_locations, face_student_db.face_encodings
+        
     student_db.datetime_updated = datetime.utcnow()
-
     await validate_student(student=student_db)
-    locations, encodings = await get_locations_and_encodings_from_images(
-        images=json.loads(student.images)
-    )
+    
     face_student = schemas.FaceStudentCreate(
-        face_locations=locations, face_encodings=encodings, name=student.name
+        face_locations=locations, face_encodings=encodings, name=student_db.name
     )
-    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent,
-                                                db=db)
-    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user,
-                                             db=db)
+    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user, db=db)
 
     db.commit()
     db.refresh(student_db)
@@ -403,8 +424,14 @@ async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
 
 
 async def get_locations_and_encodings_from_image(image_base64: str):
+    def get_locations(image):
+        locations = face_recognition.face_locations(image, number_of_times_to_upsample=1, model='hog')
+        if len(locations) == 0:
+            locations = face_recognition.face_locations(image, number_of_times_to_upsample=2, model='cnn')
+        return locations
+
     image = face_recognition.load_image_file(urlopen(image_base64))
-    face_locations = face_recognition.face_locations(image)
+    face_locations = get_locations(image)
     if len(face_locations) == 0:
         raise fastapi.HTTPException(
             status_code=400, detail="Cannot recognize a face in the image."

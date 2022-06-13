@@ -14,6 +14,8 @@ class User(database.Base):
     
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     email = sql.Column(sql.String, unique=True, index=True)
+    teacher_name = sql.Column(sql.String)
+    school_name = sql.Column(sql.String)
     hashed_password = sql.Column(sql.String)
 
     students = sql.orm.relationship("Student", back_populates="owner")

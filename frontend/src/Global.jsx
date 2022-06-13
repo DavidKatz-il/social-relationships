@@ -7,7 +7,7 @@ export function fileToDataUri(image) {
     });
 };
 
-export async function fetchData(method, contentType, token, api, setErrorMessage, standrdErrorMessage, setData, refresher, body) {
+export async function fetchData(method, contentType, token, api, setErrorMessage, standrdErrorMessage, setData, refresher, body, setToken) {
     const requestOptions = {
         method: method,
         headers: {
@@ -20,13 +20,15 @@ export async function fetchData(method, contentType, token, api, setErrorMessage
     var data;
     try { data = await response.json(); } catch (e) { }
     if (!response.ok) {
-        if (data && data.detail) setErrorMessage(data.detail);
+        if (data && data.detail && setErrorMessage) setErrorMessage(data.detail);
+        else if (setToken) {
+            setToken(null);
+            if (refresher) refresher();
+        }
         else setErrorMessage(standrdErrorMessage);
-        // return false;
     }
     else {
         if (setData && data) setData(data);
         if (refresher) refresher();
-        //return true;
     }
 }

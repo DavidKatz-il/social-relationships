@@ -29,7 +29,7 @@ export const ImageModal = ({ active, handleModal, token }) => {
 
     async function handleCreateImage(e) {
         e.preventDefault();
-        await g.fetchData("POST", "application/json", token, "/api/images", setErrorMessage,
+        await g.fetchData("POST", "application/json", token, "images", setErrorMessage,
             "Something went wrong when creating image", undefined, handleClose, JSON.stringify({ name: name, image: image, }));
     }
 
