@@ -107,10 +107,5 @@ class ReportCreate(_ReportBase):
 
 
 class Report(_ReportBase):
-    # id: int
-    # owner_id: int
-    # datetime_created: datetime
-    # datetime_updated: datetime
-
     class Config:
         orm_mode = True
