@@ -173,26 +173,29 @@ async def update_student(
         student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
     student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+
     if student.name != student_db.name:
         await validate_student_name_not_exist(
             student_name=student.name, user_id=user.id, db=db
         )
-
-    student_db.name = student.name
-    student_db.images = student.images
+        student_db.name = student.name
+    
+    if student.images != student_db.images:
+        student_db.images = student.images
+        locations, encodings = await get_locations_and_encodings_from_images(
+            images=json.loads(student.images)
+        )
+    else:
+        locations, encodings = face_student_db.face_locations, face_student_db.face_encodings
+        
     student_db.datetime_updated = datetime.utcnow()
-
     await validate_student(student=student_db)
-    locations, encodings = await get_locations_and_encodings_from_images(
-        images=json.loads(student.images)
-    )
+    
     face_student = schemas.FaceStudentCreate(
-        face_locations=locations, face_encodings=encodings, name=student.name
+        face_locations=locations, face_encodings=encodings, name=student_db.name
     )
-    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent,
-                                                db=db)
-    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user,
-                                             db=db)
+    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user, db=db)
 
     db.commit()
     db.refresh(student_db)
