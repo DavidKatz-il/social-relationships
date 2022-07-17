@@ -81,8 +81,8 @@ async def create_token(user: models.User):
 
 
 async def get_current_user(
-        db: orm.Session = fastapi.Depends(get_db),
-        token: str = fastapi.Depends(oauth2schema),
+    db: orm.Session = fastapi.Depends(get_db),
+    token: str = fastapi.Depends(oauth2schema),
 ):
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
@@ -96,9 +96,9 @@ async def get_current_user(
 async def _get_object_by_id(obj_id: int, user_id: int, model: database.Base, db: orm.Session):
     obj_db = (
         db.query(model)
-            .filter_by(owner_id=user_id)
-            .filter(model.id == obj_id)
-            .first()
+        .filter_by(owner_id=user_id)
+        .filter(model.id == obj_id)
+        .first()
     )
 
     if obj_db is None:
@@ -110,9 +110,9 @@ async def _get_object_by_id(obj_id: int, user_id: int, model: database.Base, db:
 async def _get_object_by_name(obj_name: str, user_id: int, model: database.Base, db: orm.Session):
     return (
         db.query(model)
-            .filter_by(owner_id=user_id)
-            .filter(model.name == obj_name)
-            .first()
+        .filter_by(owner_id=user_id)
+        .filter(model.name == obj_name)
+        .first()
     )
 
 
@@ -124,7 +124,7 @@ async def validate_student(student: schemas.StudentCreate):
 
 
 async def validate_student_name_not_exist(
-        student_name: str, user_id: int, db: orm.Session
+student_name: str, user_id: int, db: orm.Session
 ):
     student_db = await _get_object_by_name(
         obj_name=student_name, user_id=user_id, model=models.Student, db=db
@@ -146,9 +146,8 @@ async def get_student(student_id: int, user: schemas.User, db: orm.Session):
 
 
 async def create_student(
-        user: schemas.User, db: orm.Session, student: schemas.StudentCreate
+    user: schemas.User, db: orm.Session, student: schemas.StudentCreate
 ):
-    await validate_student(student=student)
     await validate_student_name_not_exist(
         student_name=student.name, user_id=user.id, db=db
     )
@@ -169,8 +168,9 @@ async def create_student(
     return schemas.Student.from_orm(student)
 
 
+
 async def update_student(
-        student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
+student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
     student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
     face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
@@ -222,7 +222,7 @@ async def validate_image(image: schemas.ImageCreate):
 
 
 async def validate_image_name_not_exist(
-        image_name: str, user_id: int, db: orm.Session
+    image_name: str, user_id: int, db: orm.Session
 ):
     image_db = await _get_object_by_name(
         obj_name=image_name, user_id=user_id, model=models.Image, db=db
@@ -244,7 +244,7 @@ async def get_image(image_id: int, user: schemas.User, db: orm.Session):
 
 
 async def create_image(
-        user: schemas.User, db: orm.Session, image: schemas.ImageCreate
+    user: schemas.User, db: orm.Session, image: schemas.ImageCreate
 ):
     await validate_image(image=image)
     await validate_image_name_not_exist(
@@ -291,7 +291,7 @@ async def get_face_student(face_student_id: int, user: schemas.User, db: orm.Ses
 
 
 async def create_face_student(
-        user: schemas.User, db: orm.Session, face_student: schemas.FaceStudentCreate
+    user: schemas.User, db: orm.Session, face_student: schemas.FaceStudentCreate
 ):
     face_student = models.FaceStudent(**face_student.dict(), owner_id=user.id)
 
@@ -302,7 +302,7 @@ async def create_face_student(
 
 
 async def update_face_student(
-        face_student_id: int, face_student: schemas.FaceStudentCreate, user: schemas.User, db: orm.Session
+    face_student_id: int, face_student: schemas.FaceStudentCreate, user: schemas.User, db: orm.Session
 ):
     face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
 
@@ -337,7 +337,7 @@ async def get_face_image(face_image_id: int, user: schemas.User, db: orm.Session
 
 
 async def create_face_image(
-        user: schemas.User, db: orm.Session, face_image: schemas.FaceImageCreate
+    user: schemas.User, db: orm.Session, face_image: schemas.FaceImageCreate
 ):
     face_image = models.FaceImage(**face_image.dict(), owner_id=user.id)
 
@@ -348,7 +348,7 @@ async def create_face_image(
 
 
 async def update_face_image(
-        face_image_id: int, face_image: schemas.FaceImageCreate, user: schemas.User, db: orm.Session
+    face_image_id: int, face_image: schemas.FaceImageCreate, user: schemas.User, db: orm.Session
 ):
     face_image_db = await _get_object_by_id(obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db)
 
@@ -439,8 +439,8 @@ async def get_locations_and_encodings_from_image(image_base64: str):
 
     face_encodings = face_recognition.face_encodings(image, face_locations)
 
-    locations = list(map(list, face_locations))
-    encodings = list(map(lambda e: e.tolist(), face_encodings))
+    locations=list(map(list, face_locations))
+    encodings=list(map(lambda e: e.tolist(), face_encodings))
 
     return locations, encodings
 
