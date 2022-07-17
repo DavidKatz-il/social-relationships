@@ -124,7 +124,7 @@ async def validate_student(student: schemas.StudentCreate):
 
 
 async def validate_student_name_not_exist(
-student_name: str, user_id: int, db: orm.Session
+    student_name: str, user_id: int, db: orm.Session
 ):
     student_db = await _get_object_by_name(
         obj_name=student_name, user_id=user_id, model=models.Student, db=db
@@ -170,7 +170,7 @@ async def create_student(
 
 
 async def update_student(
-student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
+    student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
     student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
     face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
