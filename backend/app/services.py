@@ -42,7 +42,7 @@ async def validate_user(user: schemas.UserCreate):
             status_code=400, detail="Invalid email address."
         )
     
-    if user.hashed_password < min_pass_len:
+    if len(user.hashed_password) < min_pass_len:
         raise fastapi.HTTPException(
             status_code=400, detail=f"The password must contain at least {min_pass_len} characters."
         )
@@ -51,9 +51,9 @@ async def validate_user(user: schemas.UserCreate):
 async def create_user(user: schemas.UserCreate, db: orm.Session):
     await validate_user(user=user)
 
-    user_obj = models.User(
-        email=user.email, hashed_password=bcrypt.hash(user.hashed_password)
-    )
+    user.hashed_password = bcrypt.hash(user.hashed_password)
+    user_obj = models.User(**user.dict())
+
     db.add(user_obj)
     db.commit()
     db.refresh(user_obj)
