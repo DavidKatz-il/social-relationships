@@ -1,5 +1,6 @@
 import re
 import json
+import operator
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -11,7 +12,6 @@ from passlib.hash import bcrypt
 from sqlalchemy import orm
 
 from app import database, models, schemas
-
 
 JWT_SECRET = "special-jwt-secret"
 oauth2schema = fastapi.security.OAuth2PasswordBearer(tokenUrl="/api/token")
@@ -42,7 +42,7 @@ async def validate_user(user: schemas.UserCreate):
             status_code=400, detail="Invalid email address."
         )
     
-    if user.hashed_password < min_pass_len:
+    if len(user.hashed_password) < min_pass_len:
         raise fastapi.HTTPException(
             status_code=400, detail=f"The password must contain at least {min_pass_len} characters."
         )
@@ -51,9 +51,9 @@ async def validate_user(user: schemas.UserCreate):
 async def create_user(user: schemas.UserCreate, db: orm.Session):
     await validate_user(user=user)
 
-    user_obj = models.User(
-        email=user.email, hashed_password=bcrypt.hash(user.hashed_password)
-    )
+    user.hashed_password = bcrypt.hash(user.hashed_password)
+    user_obj = models.User(**user.dict())
+
     db.add(user_obj)
     db.commit()
     db.refresh(user_obj)
@@ -148,7 +148,6 @@ async def get_student(student_id: int, user: schemas.User, db: orm.Session):
 async def create_student(
     user: schemas.User, db: orm.Session, student: schemas.StudentCreate
 ):
-    await validate_student(student=student)
     await validate_student_name_not_exist(
         student_name=student.name, user_id=user.id, db=db
     )
@@ -167,6 +166,7 @@ async def create_student(
     face_student = await create_face_student(user=user, db=db, face_student=face_student)
 
     return schemas.Student.from_orm(student)
+
 
 
 async def update_student(
@@ -209,8 +209,10 @@ async def delete_student(student_id: int, user: schemas.User, db: orm.Session):
     db.delete(student_db)
     db.commit()
 
-    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent,
+                                                db=db)
     await delete_face_student(face_student_id=face_student_db.id, user=user, db=db)
+
 
 async def validate_image(image: schemas.ImageCreate):
     if not image.name or not image.image:
@@ -255,14 +257,14 @@ async def create_image(
     face_image = schemas.FaceImageCreate(
         face_locations=locations, face_encodings=encodings, name=image.name, student_names=[]
     )
-    
+
     image = models.Image(**image.dict(), owner_id=user.id)
     db.add(image)
     db.commit()
     db.refresh(image)
-    
+
     face_image = await create_face_image(user=user, db=db, face_image=face_image)
-    
+
     return schemas.Image.from_orm(image)
 
 
@@ -355,7 +357,7 @@ async def update_face_image(
     face_image_db.face_locations = face_image.face_locations
     face_image_db.face_encodings = face_image.face_encodings
     face_image_db.datetime_updated = datetime.utcnow()
-    
+
     db.commit()
     db.refresh(face_image_db)
 
@@ -388,7 +390,7 @@ async def create_match_faces(user: schemas.User, db: orm.Session):
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
             student_names.append(name)
-        
+
         face_image.student_names = student_names
         face_image = await update_face_image(face_image_id=face_image.id, face_image=face_image, user=user, db=db)
 
@@ -399,14 +401,26 @@ async def get_match_faces(user: schemas.User, db: orm.Session):
     for face_image in faces_image:
         if face_image.student_names:
             images_student_names[face_image.name] = [
-                {   
+                {
                     'student_name': student_name,
                     'location': {'top': top, 'right': right, 'bottom': bottom, 'left': left}
                 }
                 for student_name, (top, right, bottom, left) in zip(face_image.student_names, face_image.face_locations)
-            ]            
+            ]
 
     return images_student_names
+
+
+async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
+    faces_image = db.query(models.FaceImage).filter_by(owner_id=user.id)
+    student_list = await get_students_list(user, db)
+    images_by_name = {name: [] for name in student_list}
+    for face_image in faces_image:
+        if face_image.student_names:
+            for stdnt_name in face_image.student_names:
+                images_by_name[stdnt_name].append(face_image.name)
+
+    return images_by_name
 
 
 async def get_locations_and_encodings_from_image(image_base64: str):
@@ -443,3 +457,212 @@ async def get_locations_and_encodings_from_images(images: list):
         encodings.append(face_encodings[0])
 
     return locations, encodings
+
+
+async def get_students_list(user: schemas.User, db: orm.Session) -> list:
+    name_list = []
+    for lst_info in (await get_match_faces(user, db)).values():
+        for dict_info in lst_info:
+            name_list.append(dict_info["student_name"])
+    return name_list
+
+
+async def validate_report_not_exist(
+        report_name: str,
+        user_id: int,
+        db: orm.Session
+):
+    report_db = await _get_object_by_name(
+        obj_name=report_name,
+        user_id=user_id,
+        model=models.Report,
+        db=db
+    )
+    if report_db:
+        raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
+
+
+async def create_report1(
+        user: schemas.User,
+        db: orm.Session,
+):
+
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
+
+    total_appear = {
+        0: ['name', 'count'],
+        **{
+            i + 1: [name, name_list.count(name)]
+            for i, name in enumerate(set(name_list)) if name != 'Unknown'
+        }
+    }
+
+    return total_appear
+
+
+async def create_report2(
+        user: schemas.User,
+        db: orm.Session,
+):
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
+    total_count = {name: name_list.count(name) for name in name_list}
+    most_appear = max(total_count, key=total_count.get)
+
+    most_popular_student = {
+        0: ['name', 'count'],
+        1: [total_count[most_appear], most_appear]
+    }
+
+    return most_popular_student
+
+
+async def create_report3(
+        user: schemas.User,
+        db: orm.Session,
+):
+    await create_match_faces(user, db)
+    name_list = await get_students_list(user, db)
+
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+
+    besties = {stndt_name: {} for stndt_name in name_list}
+    for nested_stndt_name in besties:
+        besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
+
+    for stdnt in stdnt_list_by_name:
+        for nested_stdnt in stdnt_list_by_name:
+            if stdnt == nested_stdnt:
+                continue
+            match_pic = \
+                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nested_stdnt]))
+            besties[stdnt][nested_stdnt] = len(match_pic)
+    try:
+        del besties['Unknown']  # Remove 'Unknown' student
+    except KeyError:
+        pass
+
+    besties_counter = {
+        0: ['name', 'besties', 'count'],
+        **{
+            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+            for i, name in enumerate(set(besties))
+        }
+    }
+
+    return besties_counter
+
+
+async def save_report_in_db(
+        name_of_report,
+        report_info,
+        user: schemas.User,
+        db: orm.Session,
+):
+    rprt = schemas.Report(
+        name=name_of_report,
+        info=report_info,
+    )
+
+    new_report = models.Report(**rprt.dict(), owner_id=user.id)
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+
+async def create_reports(
+        user: schemas.User,
+        db: orm.Session,
+):
+    name_of_report1 = "Total appear"
+    name_of_report2 = "Most appearance"
+    name_of_report3 = "Besties"
+
+    await validate_report_not_exist(
+        report_name=name_of_report1,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report1(user, db)
+    await save_report_in_db(name_of_report1, report_info, user, db)
+
+    await validate_report_not_exist(
+        report_name=name_of_report2,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report2(user, db)
+    await save_report_in_db(name_of_report2, report_info, user, db)
+
+    await validate_report_not_exist(
+        report_name=name_of_report3,
+        user_id=user.id,
+        db=db
+    )
+    report_info = await create_report3(user, db)
+    await save_report_in_db(name_of_report3, report_info, user, db)
+
+    return {"message", "Successfully finished reports creating."}
+
+
+async def get_all_reports(
+        user: schemas.User,
+        db: orm.Session
+):
+    report = db.query(models.Report).filter_by(owner_id=user.id)
+
+    return list(map(schemas.Report.from_orm, report))
+
+
+async def get_specific_report(
+        user: schemas.User,
+        db: orm.Session,
+        report_id: schemas.Report
+):
+    report_db = await _get_object_by_id(
+        obj_id=report_id,
+        user_id=user.id,
+        model=models.Report,
+        db=db
+    )
+
+    return schemas.Report.from_orm(report_db)
+
+
+async def delete_report(
+        report_id: int,
+        user: schemas.User,
+        db: orm.Session
+):
+    report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
+
+    db.delete(report_db)
+    db.commit()
+
+
+async def update_report(
+        report_id: int,
+        user: schemas.User,
+        db: orm.Session
+):
+    report_db = await _get_object_by_id(
+        obj_id=report_id,
+        user_id=user.id,
+        model=models.Report,
+        db=db
+    )
+
+    report_creator = {
+        1: create_report1,
+        2: create_report2,
+        3: create_report3,
+    }
+
+    report_db.info = await report_creator[report_id](user, db)
+    report_db.datetime_updated = datetime.utcnow()
+
+    db.commit()
+    db.refresh(report_db)
+
+    return schemas.Report.from_orm(report_db)

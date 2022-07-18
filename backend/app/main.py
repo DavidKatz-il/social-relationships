@@ -139,12 +139,60 @@ async def create_match_faces(
     await services.create_match_faces(user, db)
     return {"message", "Successfully finished matcheing all faces."}
 
+
 @app.get("/api/get_match_faces", status_code=200)
 async def get_match_faces(
     user: schemas.User = fastapi.Depends(services.get_current_user),
     db: orm.Session = fastapi.Depends(services.get_db),
 ):
     return await services.get_match_faces(user, db)
+
+
+@app.post("/api/reports", status_code=200)
+async def create_reports(
+        user: schemas.User = fastapi.Depends(services.get_current_user),
+        db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.create_reports(user=user, db=db)
+
+
+@app.get("/api/reports", status_code=200)
+async def get_reports(
+        user: schemas.User = fastapi.Depends(services.get_current_user),
+        db: orm.Session = fastapi.Depends(services.get_db)
+
+):
+    return await services.get_all_reports(user=user, db=db)
+
+
+@app.get("/api/report/{report_id}", status_code=200)
+async def get_report(
+        report_id: int,
+        user: schemas.User = fastapi.Depends(services.get_current_user),
+        db: orm.Session = fastapi.Depends(services.get_db)
+
+):
+    return await services.get_specific_report(report_id=report_id, user=user, db=db)
+
+
+@app.delete("/api/report/{report_id}", status_code=204)
+async def delete_report(
+    report_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.delete_report(report_id, user, db)
+    return {"message", "Successfully Deleted."}
+
+
+@app.put("/api/report/{report_id}", status_code=200)
+async def update_report(
+    report_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.update_report(report_id, user, db)
+    return {"message", "Successfully Updated."}
 
 
 @app.get("/api")
