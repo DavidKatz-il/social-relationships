@@ -11,7 +11,7 @@ USERS_ID = "users.id"
 
 class User(database.Base):
     __tablename__ = "users"
-    
+
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     email = sql.Column(sql.String, unique=True, index=True)
     teacher_name = sql.Column(sql.String)
@@ -34,10 +34,10 @@ class Student(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    
+
     name = sql.Column(sql.String, index=True)
     images = sql.Column(sql.String)
-    
+
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
@@ -50,10 +50,10 @@ class Image(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    
+
     name = sql.Column(sql.String, index=True)
     image = sql.Column(sql.String)
-    
+
     datetime_created = sql.Column(sql.DateTime, default=datetime.utcnow)
     datetime_updated = sql.Column(sql.DateTime, default=datetime.utcnow)
 
@@ -65,7 +65,7 @@ class FaceStudent(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    
+
     name = sql.Column(sql.String, sql.ForeignKey("students.name"))
     face_locations = sql.Column(sql.JSON)
     face_encodings = sql.Column(sql.JSON)
@@ -81,7 +81,7 @@ class FaceImage(database.Base):
 
     id = sql.Column(sql.Integer, primary_key=True, index=True)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey(USERS_ID))
-    
+
     name = sql.Column(sql.String, sql.ForeignKey("images.name"))
     face_locations = sql.Column(sql.JSON)
     face_encodings = sql.Column(sql.JSON)

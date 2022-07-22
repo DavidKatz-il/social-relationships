@@ -36,15 +36,14 @@ async def get_user_by_email(email: str, db: orm.Session):
 async def validate_user(user: schemas.UserCreate):
     min_pass_len = 6
     email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    
+
     if not user.email or not re.match(email_regex, user.email):
-        raise fastapi.HTTPException(
-            status_code=400, detail="Invalid email address."
-        )
-    
+        raise fastapi.HTTPException(status_code=400, detail="Invalid email address.")
+
     if len(user.hashed_password) < min_pass_len:
         raise fastapi.HTTPException(
-            status_code=400, detail=f"The password must contain at least {min_pass_len} characters."
+            status_code=400,
+            detail=f"The password must contain at least {min_pass_len} characters.",
         )
 
 
@@ -93,12 +92,11 @@ async def get_current_user(
     return schemas.User.from_orm(user)
 
 
-async def _get_object_by_id(obj_id: int, user_id: int, model: database.Base, db: orm.Session):
+async def _get_object_by_id(
+    obj_id: int, user_id: int, model: database.Base, db: orm.Session
+):
     obj_db = (
-        db.query(model)
-        .filter_by(owner_id=user_id)
-        .filter(model.id == obj_id)
-        .first()
+        db.query(model).filter_by(owner_id=user_id).filter(model.id == obj_id).first()
     )
 
     if obj_db is None:
@@ -107,7 +105,9 @@ async def _get_object_by_id(obj_id: int, user_id: int, model: database.Base, db:
     return obj_db
 
 
-async def _get_object_by_name(obj_name: str, user_id: int, model: database.Base, db: orm.Session):
+async def _get_object_by_name(
+    obj_name: str, user_id: int, model: database.Base, db: orm.Session
+):
     return (
         db.query(model)
         .filter_by(owner_id=user_id)
@@ -140,7 +140,9 @@ async def get_students(user: schemas.User, db: orm.Session):
 
 
 async def get_student(student_id: int, user: schemas.User, db: orm.Session):
-    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+    student_db = await _get_object_by_id(
+        obj_id=student_id, user_id=user.id, model=models.Student, db=db
+    )
 
     return schemas.Student.from_orm(student_db)
 
@@ -163,39 +165,49 @@ async def create_student(
     db.add(student)
     db.commit()
     db.refresh(student)
-    face_student = await create_face_student(user=user, db=db, face_student=face_student)
+    face_student = await create_face_student(
+        user=user, db=db, face_student=face_student
+    )
 
     return schemas.Student.from_orm(student)
-
 
 
 async def update_student(
     student_id: int, student: schemas.StudentCreate, user: schemas.User, db: orm.Session
 ):
-    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
-    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db)
+    student_db = await _get_object_by_id(
+        obj_id=student_id, user_id=user.id, model=models.Student, db=db
+    )
+    face_student_db = await _get_object_by_name(
+        obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db
+    )
 
     if student.name != student_db.name:
         await validate_student_name_not_exist(
             student_name=student.name, user_id=user.id, db=db
         )
         student_db.name = student.name
-    
+
     if student.images != student_db.images:
         student_db.images = student.images
         locations, encodings = await get_locations_and_encodings_from_images(
             images=json.loads(student.images)
         )
     else:
-        locations, encodings = face_student_db.face_locations, face_student_db.face_encodings
-        
+        locations, encodings = (
+            face_student_db.face_locations,
+            face_student_db.face_encodings,
+        )
+
     student_db.datetime_updated = datetime.utcnow()
     await validate_student(student=student_db)
-    
+
     face_student = schemas.FaceStudentCreate(
         face_locations=locations, face_encodings=encodings, name=student_db.name
     )
-    face_student = await update_face_student(face_student_id=face_student_db.id, face_student=face_student, user=user, db=db)
+    face_student = await update_face_student(
+        face_student_id=face_student_db.id, face_student=face_student, user=user, db=db
+    )
 
     db.commit()
     db.refresh(student_db)
@@ -204,13 +216,16 @@ async def update_student(
 
 
 async def delete_student(student_id: int, user: schemas.User, db: orm.Session):
-    student_db = await _get_object_by_id(obj_id=student_id, user_id=user.id, model=models.Student, db=db)
+    student_db = await _get_object_by_id(
+        obj_id=student_id, user_id=user.id, model=models.Student, db=db
+    )
 
     db.delete(student_db)
     db.commit()
 
-    face_student_db = await _get_object_by_name(obj_name=student_db.name, user_id=user.id, model=models.FaceStudent,
-                                                db=db)
+    face_student_db = await _get_object_by_name(
+        obj_name=student_db.name, user_id=user.id, model=models.FaceStudent, db=db
+    )
     await delete_face_student(face_student_id=face_student_db.id, user=user, db=db)
 
 
@@ -221,9 +236,7 @@ async def validate_image(image: schemas.ImageCreate):
         )
 
 
-async def validate_image_name_not_exist(
-    image_name: str, user_id: int, db: orm.Session
-):
+async def validate_image_name_not_exist(image_name: str, user_id: int, db: orm.Session):
     image_db = await _get_object_by_name(
         obj_name=image_name, user_id=user_id, model=models.Image, db=db
     )
@@ -238,24 +251,25 @@ async def get_images(user: schemas.User, db: orm.Session):
 
 
 async def get_image(image_id: int, user: schemas.User, db: orm.Session):
-    image_db = await _get_object_by_id(obj_id=image_id, user_id=user.id, model=models.Image, db=db)
+    image_db = await _get_object_by_id(
+        obj_id=image_id, user_id=user.id, model=models.Image, db=db
+    )
 
     return schemas.Image.from_orm(image_db)
 
 
-async def create_image(
-    user: schemas.User, db: orm.Session, image: schemas.ImageCreate
-):
+async def create_image(user: schemas.User, db: orm.Session, image: schemas.ImageCreate):
     await validate_image(image=image)
-    await validate_image_name_not_exist(
-        image_name=image.name, user_id=user.id, db=db
-    )
+    await validate_image_name_not_exist(image_name=image.name, user_id=user.id, db=db)
 
     locations, encodings = await get_locations_and_encodings_from_image(
         image_base64=image.image
     )
     face_image = schemas.FaceImageCreate(
-        face_locations=locations, face_encodings=encodings, name=image.name, student_names=[]
+        face_locations=locations,
+        face_encodings=encodings,
+        name=image.name,
+        student_names=[],
     )
 
     image = models.Image(**image.dict(), owner_id=user.id)
@@ -269,12 +283,16 @@ async def create_image(
 
 
 async def delete_image(image_id: int, user: schemas.User, db: orm.Session):
-    image_db = await _get_object_by_id(obj_id=image_id, user_id=user.id, model=models.Image, db=db)
+    image_db = await _get_object_by_id(
+        obj_id=image_id, user_id=user.id, model=models.Image, db=db
+    )
 
     db.delete(image_db)
     db.commit()
 
-    face_image_db = await _get_object_by_name(obj_name=image_db.name, user_id=user.id, model=models.FaceImage, db=db)
+    face_image_db = await _get_object_by_name(
+        obj_name=image_db.name, user_id=user.id, model=models.FaceImage, db=db
+    )
     await delete_face_image(face_image_id=face_image_db.id, user=user, db=db)
 
 
@@ -285,7 +303,9 @@ async def get_faces_students(user: schemas.User, db: orm.Session):
 
 
 async def get_face_student(face_student_id: int, user: schemas.User, db: orm.Session):
-    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
+    face_student_db = await _get_object_by_id(
+        obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db
+    )
 
     return schemas.FaceStudent.from_orm(face_student_db)
 
@@ -302,9 +322,14 @@ async def create_face_student(
 
 
 async def update_face_student(
-    face_student_id: int, face_student: schemas.FaceStudentCreate, user: schemas.User, db: orm.Session
+    face_student_id: int,
+    face_student: schemas.FaceStudentCreate,
+    user: schemas.User,
+    db: orm.Session,
 ):
-    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
+    face_student_db = await _get_object_by_id(
+        obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db
+    )
 
     face_student_db.name = face_student.name
     face_student_db.face_locations = face_student.face_locations
@@ -317,8 +342,12 @@ async def update_face_student(
     return schemas.FaceStudent.from_orm(face_student_db)
 
 
-async def delete_face_student(face_student_id: int, user: schemas.User, db: orm.Session):
-    face_student_db = await _get_object_by_id(obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db)
+async def delete_face_student(
+    face_student_id: int, user: schemas.User, db: orm.Session
+):
+    face_student_db = await _get_object_by_id(
+        obj_id=face_student_id, user_id=user.id, model=models.FaceStudent, db=db
+    )
 
     db.delete(face_student_db)
     db.commit()
@@ -331,7 +360,9 @@ async def get_faces_images(user: schemas.User, db: orm.Session):
 
 
 async def get_face_image(face_image_id: int, user: schemas.User, db: orm.Session):
-    face_image_db = await _get_object_by_id(obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db)
+    face_image_db = await _get_object_by_id(
+        obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db
+    )
 
     return schemas.FaceImage.from_orm(face_image_db)
 
@@ -348,9 +379,14 @@ async def create_face_image(
 
 
 async def update_face_image(
-    face_image_id: int, face_image: schemas.FaceImageCreate, user: schemas.User, db: orm.Session
+    face_image_id: int,
+    face_image: schemas.FaceImageCreate,
+    user: schemas.User,
+    db: orm.Session,
 ):
-    face_image_db = await _get_object_by_id(obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db)
+    face_image_db = await _get_object_by_id(
+        obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db
+    )
 
     face_image_db.name = face_image.name
     face_image_db.student_names = face_image.student_names
@@ -365,7 +401,9 @@ async def update_face_image(
 
 
 async def delete_face_image(face_image_id: int, user: schemas.User, db: orm.Session):
-    face_image_db = await _get_object_by_id(obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db)
+    face_image_db = await _get_object_by_id(
+        obj_id=face_image_id, user_id=user.id, model=models.FaceImage, db=db
+    )
 
     db.delete(face_image_db)
     db.commit()
@@ -384,15 +422,21 @@ async def create_match_faces(user: schemas.User, db: orm.Session):
         student_names = []
         for encoding in face_image.face_encodings:
             name = "Unknown"
-            matches = face_recognition.compare_faces(np.array(known_face_encodings), np.array(encoding))
-            face_distances = face_recognition.face_distance(np.array(known_face_encodings), np.array(encoding))
+            matches = face_recognition.compare_faces(
+                np.array(known_face_encodings), np.array(encoding)
+            )
+            face_distances = face_recognition.face_distance(
+                np.array(known_face_encodings), np.array(encoding)
+            )
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
             student_names.append(name)
 
         face_image.student_names = student_names
-        face_image = await update_face_image(face_image_id=face_image.id, face_image=face_image, user=user, db=db)
+        face_image = await update_face_image(
+            face_image_id=face_image.id, face_image=face_image, user=user, db=db
+        )
 
 
 async def get_match_faces(user: schemas.User, db: orm.Session):
@@ -402,10 +446,17 @@ async def get_match_faces(user: schemas.User, db: orm.Session):
         if face_image.student_names:
             images_student_names[face_image.name] = [
                 {
-                    'student_name': student_name,
-                    'location': {'top': top, 'right': right, 'bottom': bottom, 'left': left}
+                    "student_name": student_name,
+                    "location": {
+                        "top": top,
+                        "right": right,
+                        "bottom": bottom,
+                        "left": left,
+                    },
                 }
-                for student_name, (top, right, bottom, left) in zip(face_image.student_names, face_image.face_locations)
+                for student_name, (top, right, bottom, left) in zip(
+                    face_image.student_names, face_image.face_locations
+                )
             ]
 
     return images_student_names
@@ -425,9 +476,13 @@ async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
 
 async def get_locations_and_encodings_from_image(image_base64: str):
     def get_locations(image):
-        locations = face_recognition.face_locations(image, number_of_times_to_upsample=1, model='hog')
+        locations = face_recognition.face_locations(
+            image, number_of_times_to_upsample=1, model="hog"
+        )
         if len(locations) == 0:
-            locations = face_recognition.face_locations(image, number_of_times_to_upsample=2, model='cnn')
+            locations = face_recognition.face_locations(
+                image, number_of_times_to_upsample=2, model="cnn"
+            )
         return locations
 
     image = face_recognition.load_image_file(urlopen(image_base64))
@@ -439,8 +494,8 @@ async def get_locations_and_encodings_from_image(image_base64: str):
 
     face_encodings = face_recognition.face_encodings(image, face_locations)
 
-    locations=list(map(list, face_locations))
-    encodings=list(map(lambda e: e.tolist(), face_encodings))
+    locations = list(map(list, face_locations))
+    encodings = list(map(lambda e: e.tolist(), face_encodings))
 
     return locations, encodings
 
@@ -448,7 +503,9 @@ async def get_locations_and_encodings_from_image(image_base64: str):
 async def get_locations_and_encodings_from_images(images: list):
     locations, encodings = [], []
     for image_base64 in images:
-        face_locations, face_encodings = await get_locations_and_encodings_from_image(image_base64)
+        face_locations, face_encodings = await get_locations_and_encodings_from_image(
+            image_base64
+        )
         if len(face_locations) != 1:
             raise fastapi.HTTPException(
                 status_code=400, detail="Must be only on face in the image."
@@ -467,43 +524,37 @@ async def get_students_list(user: schemas.User, db: orm.Session) -> list:
     return name_list
 
 
-async def validate_report_not_exist(
-        report_name: str,
-        user_id: int,
-        db: orm.Session
-):
+async def validate_report_not_exist(report_name: str, user_id: int, db: orm.Session):
     report_db = await _get_object_by_name(
-        obj_name=report_name,
-        user_id=user_id,
-        model=models.Report,
-        db=db
+        obj_name=report_name, user_id=user_id, model=models.Report, db=db
     )
     if report_db:
         raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
 
 
 async def create_report1(
-        user: schemas.User,
-        db: orm.Session,
+    user: schemas.User,
+    db: orm.Session,
 ):
 
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
 
     total_appear = {
-        0: ['name', 'count'],
+        0: ["name", "count"],
         **{
             i + 1: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list)) if name != 'Unknown'
-        }
+            for i, name in enumerate(set(name_list))
+            if name != "Unknown"
+        },
     }
 
     return total_appear
 
 
 async def create_report2(
-        user: schemas.User,
-        db: orm.Session,
+    user: schemas.User,
+    db: orm.Session,
 ):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
@@ -511,16 +562,16 @@ async def create_report2(
     most_appear = max(total_count, key=total_count.get)
 
     most_popular_student = {
-        0: ['name', 'count'],
-        1: [total_count[most_appear], most_appear]
+        0: ["name", "count"],
+        1: [total_count[most_appear], most_appear],
     }
 
     return most_popular_student
 
 
 async def create_report3(
-        user: schemas.User,
-        db: orm.Session,
+    user: schemas.User,
+    db: orm.Session,
 ):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
@@ -529,36 +580,41 @@ async def create_report3(
 
     besties = {stndt_name: {} for stndt_name in name_list}
     for nested_stndt_name in besties:
-        besties[nested_stndt_name] = {name: 0 for name in name_list if name != nested_stndt_name}
+        besties[nested_stndt_name] = {
+            name: 0 for name in name_list if name != nested_stndt_name
+        }
 
     for stdnt in stdnt_list_by_name:
         for nested_stdnt in stdnt_list_by_name:
             if stdnt == nested_stdnt:
                 continue
-            match_pic = \
-                list(set(stdnt_list_by_name[stdnt]).intersection(stdnt_list_by_name[nested_stdnt]))
+            match_pic = list(
+                set(stdnt_list_by_name[stdnt]).intersection(
+                    stdnt_list_by_name[nested_stdnt]
+                )
+            )
             besties[stdnt][nested_stdnt] = len(match_pic)
     try:
-        del besties['Unknown']  # Remove 'Unknown' student
+        del besties["Unknown"]  # Remove 'Unknown' student
     except KeyError:
         pass
 
     besties_counter = {
-        0: ['name', 'besties', 'count'],
+        0: ["name", "besties", "count"],
         **{
             i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
             for i, name in enumerate(set(besties))
-        }
+        },
     }
 
     return besties_counter
 
 
 async def save_report_in_db(
-        name_of_report,
-        report_info,
-        user: schemas.User,
-        db: orm.Session,
+    name_of_report,
+    report_info,
+    user: schemas.User,
+    db: orm.Session,
 ):
     rprt = schemas.Report(
         name=name_of_report,
@@ -572,85 +628,56 @@ async def save_report_in_db(
 
 
 async def create_reports(
-        user: schemas.User,
-        db: orm.Session,
+    user: schemas.User,
+    db: orm.Session,
 ):
     name_of_report1 = "Total appear"
     name_of_report2 = "Most appearance"
     name_of_report3 = "Besties"
 
-    await validate_report_not_exist(
-        report_name=name_of_report1,
-        user_id=user.id,
-        db=db
-    )
+    await validate_report_not_exist(report_name=name_of_report1, user_id=user.id, db=db)
     report_info = await create_report1(user, db)
     await save_report_in_db(name_of_report1, report_info, user, db)
 
-    await validate_report_not_exist(
-        report_name=name_of_report2,
-        user_id=user.id,
-        db=db
-    )
+    await validate_report_not_exist(report_name=name_of_report2, user_id=user.id, db=db)
     report_info = await create_report2(user, db)
     await save_report_in_db(name_of_report2, report_info, user, db)
 
-    await validate_report_not_exist(
-        report_name=name_of_report3,
-        user_id=user.id,
-        db=db
-    )
+    await validate_report_not_exist(report_name=name_of_report3, user_id=user.id, db=db)
     report_info = await create_report3(user, db)
     await save_report_in_db(name_of_report3, report_info, user, db)
 
     return {"message", "Successfully finished reports creating."}
 
 
-async def get_all_reports(
-        user: schemas.User,
-        db: orm.Session
-):
+async def get_all_reports(user: schemas.User, db: orm.Session):
     report = db.query(models.Report).filter_by(owner_id=user.id)
 
     return list(map(schemas.Report.from_orm, report))
 
 
 async def get_specific_report(
-        user: schemas.User,
-        db: orm.Session,
-        report_id: schemas.Report
+    user: schemas.User, db: orm.Session, report_id: schemas.Report
 ):
     report_db = await _get_object_by_id(
-        obj_id=report_id,
-        user_id=user.id,
-        model=models.Report,
-        db=db
+        obj_id=report_id, user_id=user.id, model=models.Report, db=db
     )
 
     return schemas.Report.from_orm(report_db)
 
 
-async def delete_report(
-        report_id: int,
-        user: schemas.User,
-        db: orm.Session
-):
-    report_db = await _get_object_by_id(obj_id=report_id, user_id=user.id, model=models.Report, db=db)
+async def delete_report(report_id: int, user: schemas.User, db: orm.Session):
+    report_db = await _get_object_by_id(
+        obj_id=report_id, user_id=user.id, model=models.Report, db=db
+    )
 
     db.delete(report_db)
     db.commit()
 
 
-async def update_report(
-        report_id: int,
-        user: schemas.User,
-        db: orm.Session
-):
+async def update_report(report_id: int, user: schemas.User, db: orm.Session):
     report_db = await _get_object_by_id(
-        obj_id=report_id,
-        user_id=user.id,
-        model=models.Report,
-        db=db
+        obj_id=report_id, user_id=user.id, model=models.Report, db=db
     )
 
     report_creator = {
