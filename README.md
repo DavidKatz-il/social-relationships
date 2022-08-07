@@ -14,7 +14,7 @@ docker compose up
 #### Format python code style:
 ##### Fron inside the `backend` folder run
 ```bash
-make format
+make lint
 ```
 
 ### Authors
