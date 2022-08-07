@@ -98,11 +98,12 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
+    id: int
     name: str
 
 
 class ReportCreate(_ReportBase):
-    id: int
+    pass
 
 
 class Report(ReportCreate):

@@ -611,12 +611,14 @@ async def create_report3(
 
 
 async def save_report_in_db(
+    id_of_report,
     name_of_report,
     report_info,
     user: schemas.User,
     db: orm.Session,
 ):
     rprt = schemas.Report(
+        id=id_of_report,
         name=name_of_report,
         info=report_info,
     )
@@ -637,15 +639,15 @@ async def create_reports(
 
     await validate_report_not_exist(report_name=name_of_report1, user_id=user.id, db=db)
     report_info = await create_report1(user, db)
-    await save_report_in_db(name_of_report1, report_info, user, db)
+    await save_report_in_db(1, name_of_report1, report_info, user, db)
 
     await validate_report_not_exist(report_name=name_of_report2, user_id=user.id, db=db)
     report_info = await create_report2(user, db)
-    await save_report_in_db(name_of_report2, report_info, user, db)
+    await save_report_in_db(2, name_of_report2, report_info, user, db)
 
     await validate_report_not_exist(report_name=name_of_report3, user_id=user.id, db=db)
     report_info = await create_report3(user, db)
-    await save_report_in_db(name_of_report3, report_info, user, db)
+    await save_report_in_db(3, name_of_report3, report_info, user, db)
 
     return {"message", "Successfully finished reports creating."}
 
