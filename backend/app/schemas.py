@@ -98,15 +98,19 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
-    id: int
     name: str
-    info: Dict[int, List]
 
 
 class ReportCreate(_ReportBase):
-    pass
+    id: int
 
 
-class Report(_ReportBase):
+class Report(ReportCreate):
+    info: Dict[int, List]
+
+    class Config:
+        orm_mode = True
+
+class ReportInfo(ReportCreate):
     class Config:
         orm_mode = True
