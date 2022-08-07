@@ -698,5 +698,9 @@ async def update_report(report_id: int, user: schemas.User, db: orm.Session):
 
 
 async def get_reports_info(user: schemas.User, db: orm.Session):
-    reports = db.query(models.Report).filter_by(owner_id=user.id).with_entities(models.Report.id, models.Report.name)
+    reports = (
+        db.query(models.Report)
+        .filter_by(owner_id=user.id)
+        .with_entities(models.Report.id, models.Report.name)
+    )
     return list(map(schemas.ReportInfo.from_orm, reports))

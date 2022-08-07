@@ -112,6 +112,7 @@ class Report(ReportCreate):
     class Config:
         orm_mode = True
 
+
 class ReportInfo(ReportCreate):
     class Config:
         orm_mode = True
