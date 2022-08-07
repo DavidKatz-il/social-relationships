@@ -3,16 +3,16 @@ import { ErrorMessage } from "../Info/ErrorMessage";
 import { UserContext } from "../../context/UserContext";
 import * as g from "../../Global";
 
-export const MostAppearance = (ID) => {
+export const TotalAppearance = (ID) => {
   const [state, setState] = useState(null);
   const [token] = useContext(UserContext);
   const [errorMessage, setErrorMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [colCount, setColCount] = useState(0);
 
   async function GetData() {
     setLoaded(false);
-    var i = ID.valueOf().ID//.toString(); //String(ID).valueOf();
-    await g.fetchData("GET", "application/json", token, "report/" + i, setErrorMessage,
+    await g.fetchData("GET", "application/json", token, "report/" + ID.valueOf().ID, setErrorMessage,
       "Something went wrong. Couldn't load the report", setState);
     setLoaded(true);
   }
@@ -21,23 +21,30 @@ export const MostAppearance = (ID) => {
     GetData();
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (state) setColCount(Object.values(state.info[0]).length);
+  }, [state]);// eslint-disable-line react-hooks/exhaustive-deps
+
   return <section className="container">
     <br /><ErrorMessage message={errorMessage} /><br />
     {(loaded && state) ?
       <>
         <h1 className="title" style={{ textAlign: "center" }}>{state.name}</h1>
         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
-          <thead>
-            <tr>{Object.values(state.info[0]).map((v) => {
-              <th>{v}</th>
-            })}
-            </tr>
-          </thead>
-          <tbody><tr>{Object.keys(state.info).map((key, i) => (
-            <></>
-
-          ))}
-          </tr></tbody>
+          <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
+          <tbody>{Object.values(state.info).map((v, i) => {
+            if (i > 0) {
+              return <tr>{/*rowCount.map((v)=>())}{/*() => {
+                for (var index = 0; index < rowCount; index++) {
+                  <td>{v[index]}</td>
+                }
+              }}*/}
+                <td>{v[0]}</td>
+                <td>{v[1]}</td>
+              </tr>
+            }
+          }
+          )}</tbody>
         </table>
       </>
       :
