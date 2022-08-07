@@ -543,9 +543,8 @@ async def create_report1(
     total_appear = {
         0: ["name", "count"],
         **{
-            i + 1: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list))
-            if name != "Unknown"
+            i: [name, name_list.count(name)]
+            for i, name in enumerate(set(name_list) - set(["Unknown"]), start=1)
         },
     }
 
@@ -602,8 +601,8 @@ async def create_report3(
     besties_counter = {
         0: ["name", "besties", "count"],
         **{
-            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-            for i, name in enumerate(set(besties))
+            i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+            for i, name in enumerate(set(besties), start=1)
         },
     }
 
