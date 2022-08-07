@@ -4,5 +4,5 @@ docker_build:
 docker_run:
 	docker run -v ${PWD}/data:/backend/data -v ${PWD}/data:/backend/data -p 8000:8000 --rm backend
 
-format:
-	docker run --rm --volume ${PWD}/app:/src --workdir /src pyfound/black:latest_release black --check .
+lint:
+	docker run --rm --volume ${PWD}/app:/src --workdir /src pyfound/black:latest_release black .

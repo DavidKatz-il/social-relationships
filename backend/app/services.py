@@ -543,9 +543,8 @@ async def create_report1(
     total_appear = {
         0: ["name", "count"],
         **{
-            i + 1: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list))
-            if name != "Unknown"
+            i: [name, name_list.count(name)]
+            for i, name in enumerate(set(name_list) - set(["Unknown"]), start=1)
         },
     }
 
@@ -602,8 +601,8 @@ async def create_report3(
     besties_counter = {
         0: ["name", "besties", "count"],
         **{
-            i + 1: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-            for i, name in enumerate(set(besties))
+            i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
+            for i, name in enumerate(set(besties), start=1)
         },
     }
 
@@ -698,5 +697,9 @@ async def update_report(report_id: int, user: schemas.User, db: orm.Session):
 
 
 async def get_reports_info(user: schemas.User, db: orm.Session):
-    reports = db.query(models.Report).filter_by(owner_id=user.id).with_entities(models.Report.id, models.Report.name)
+    reports = (
+        db.query(models.Report)
+        .filter_by(owner_id=user.id)
+        .with_entities(models.Report.id, models.Report.name)
+    )
     return list(map(schemas.ReportInfo.from_orm, reports))
