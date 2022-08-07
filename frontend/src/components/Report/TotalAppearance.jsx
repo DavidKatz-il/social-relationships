@@ -11,13 +11,13 @@ export const TotalAppearance = () => {
 
   async function GetData() {
     setLoaded(false);
-    /*await g.fetchData("GET", "application/json", token, "get_match_faces", setErrorMessage,
-      "Something went wrong. Couldn't load the report", setState);*/
-      /*setState('{
-        0: ["student name", "total appearance"],
-        1: ["yakkov dayan", 10],
-        2: ["david katz, 5]
-      }')*/
+    await g.fetchData("GET", "application/json", token, "get_match_faces", setErrorMessage,
+      "Something went wrong. Couldn't load the report", setState);
+    /*setState('{
+      0: ["student name", "total appearance"],
+      1: ["yakkov dayan", 10],
+      2: ["david katz, 5]
+    }')*/
     setLoaded(true);
   }
 

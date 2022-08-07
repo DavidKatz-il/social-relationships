@@ -3,22 +3,27 @@ import { ErrorMessage } from "../Info/ErrorMessage";
 import { UserContext } from "../../context/UserContext";
 import * as g from "../../Global";
 import { ReportModal } from "./ReportModal";
-import { MatchFaces } from "./MatchFaces";
 import { TotalAppearance } from "./TotalAppearance";
-import { NavLink } from "react-router-dom";
+import { MostAppearance } from "./MostAppearance";
 
 export const ReportsTable = () => {
     const [reports, setReports] = useState(null);
-    const [activeTab, setActiveTab] = useState("");
+    const [activeTab, setActiveTab] = useState("", 0);
     const [token] = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
 
     async function handleCreate() {
         setLoaded(false);
-        await g.fetchData("POST", "application/json", token, "create_match_faces", setErrorMessage,
+        await g.fetchData("POST", "application/json", token, "reports", setErrorMessage,
             "Something went wrong. Couldn't create reports");
-        setReports(["MatchFaces", "TotalAppearance", "Second", "Third"]);
+        handleGet();
+    }
+
+    async function handleGet() {
+        setLoaded(false);
+        await g.fetchData("GET", "application/json", token, "reports", setErrorMessage,
+            "Something went wrong. Couldn't get reports", setReports);
         setLoaded(true);
     }
 
@@ -34,17 +39,16 @@ export const ReportsTable = () => {
             <p className="menu-label"><b>Reports</b></p>
             <ul className="menu-list">
                 {reports && reports.map(r => {
-                    return <li><a className={activeTab === r ? "is-active" : ""} onClick={() => setActiveTab(r)} >{r}</a></li>
+                    return <li><a className={activeTab === r.name ? "is-active" : ""} onClick={() => setActiveTab(r.name,)} >{r.name}</a></li>
                 })}
             </ul>
         </aside>
         <section className="container">
             <br /><ErrorMessage message={errorMessage} /><br />
-            {(loaded && reports) ? <>{{
-                "MatchFaces": <MatchFaces />,
-                "TotalAppearance": <TotalAppearance />,
-                "Second": <ReportModal />,
-                "Third": <ReportModal />
+            {(loaded && reports.length) ? <>{{
+                "Total appear": <TotalAppearance />,
+                "Most appearance": <MostAppearance ID={2} />,
+                "Besties": <ReportModal />
             }[activeTab]}</>
                 :
                 <div>
