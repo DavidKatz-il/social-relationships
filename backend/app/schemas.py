@@ -98,6 +98,7 @@ class FaceImage(FaceImageCreate):
 
 
 class _ReportBase(BaseModel):
+    id: int
     name: str
     info: Dict[int, List]
 
