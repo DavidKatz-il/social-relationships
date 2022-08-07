@@ -563,7 +563,7 @@ async def create_report2(
 
     most_popular_student = {
         0: ["name", "count"],
-        1: [total_count[most_appear], most_appear],
+        1: [most_appear, total_count[most_appear]],
     }
 
     return most_popular_student
