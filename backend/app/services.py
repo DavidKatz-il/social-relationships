@@ -532,10 +532,7 @@ async def validate_report_not_exist(report_name: str, user_id: int, db: orm.Sess
         raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
 
 
-async def create_report1(
-    user: schemas.User,
-    db: orm.Session,
-):
+async def create_report1(user: schemas.User, db: orm.Session):
 
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
@@ -551,10 +548,7 @@ async def create_report1(
     return total_appear
 
 
-async def create_report2(
-    user: schemas.User,
-    db: orm.Session,
-):
+async def create_report2(user: schemas.User, db: orm.Session):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
@@ -568,10 +562,7 @@ async def create_report2(
     return most_popular_student
 
 
-async def create_report3(
-    user: schemas.User,
-    db: orm.Session,
-):
+async def create_report3(user: schemas.User, db: orm.Session):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
 
@@ -628,10 +619,7 @@ async def save_report_in_db(
     db.refresh(new_report)
 
 
-async def create_reports(
-    user: schemas.User,
-    db: orm.Session,
-):
+async def create_reports(user: schemas.User, db: orm.Session):
     name_of_report1 = "Total appear"
     name_of_report2 = "Most appearance"
     name_of_report3 = "Besties"
@@ -651,7 +639,14 @@ async def create_reports(
     return {"message", "Successfully finished reports creating."}
 
 
-async def get_all_reports(user: schemas.User, db: orm.Session):
+async def update_reports(user: schemas.User, db: orm.Session):
+    for report in await get_reports_info(user, db):
+        await update_report(report.id, user, db)
+
+    return {"message", "Successfully finished reports updates."}
+
+
+async def get_reports(user: schemas.User, db: orm.Session):
     report = db.query(models.Report).filter_by(owner_id=user.id)
 
     return list(map(schemas.Report.from_orm, report))

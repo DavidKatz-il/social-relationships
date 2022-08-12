@@ -19,6 +19,13 @@ export const ReportsTable = () => {
         getReportsData();
     }
 
+    async function handleUpdate() {
+        setLoaded(false);
+        await g.fetchData("PUT", "application/json", token, "reports", setErrorMessage,
+            "Something went wrong. Couldn't create reports");
+        getReportsData();
+    }
+
     async function getReportsData() {
         setLoaded(false);
         await g.fetchData("GET", "application/json", token, "reports_info", setErrorMessage,
@@ -39,9 +46,17 @@ export const ReportsTable = () => {
         <aside className="menu" style={{ padding: 25, float: "right" }}>
             <ul className="menu-list">
                 <li>
-                    <button className="button is-fullwidth is-primary" onClick={handleCreate}>
-                        <b>{(reports && reports.length) ? "Renew " : "Create "}Reports</b>
-                    </button>
+                    {
+                        (reports && reports.length) ? <>
+                            <button className="button is-fullwidth is-primary" onClick={handleUpdate}>
+                                <b>Renew Reports</b>
+                            </button>
+                        </> : <>
+                            <button className="button is-fullwidth is-primary" onClick={handleCreate}>
+                                <b>Create Reports</b>
+                            </button>
+                        </>
+                    }
                 </li>
             </ul>
             <p className="menu-label"><b>Reports</b></p>
