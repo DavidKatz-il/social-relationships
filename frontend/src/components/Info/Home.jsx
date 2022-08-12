@@ -30,13 +30,9 @@ export const Home = () => {
     }, ""); // eslint-disable-line react-hooks/exhaustive-deps
     
     return <>
+        <br /><ErrorMessage message={errorMessage} /><br />
         {(token) ? <>
             <div className="container">
-                <div>
-                    <br />
-                    <ErrorMessage message={errorMessage} />
-                    <br />    
-                </div>
                 <div className="columns">
                     <div className="column">
                         <section className="hero is-primary welcome is-small">
