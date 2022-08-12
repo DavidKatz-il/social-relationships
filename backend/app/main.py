@@ -17,7 +17,7 @@ async def startup():
     services.create_database()
 
 
-@app.get("/api/users/user", response_model=schemas.User)
+@app.get("/api/user", response_model=schemas.User)
 async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
     return user
 

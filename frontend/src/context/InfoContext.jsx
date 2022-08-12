@@ -16,7 +16,7 @@ export const InfoProvider = (props) => {
                     Authorization: "Bearer " + token,
                 },
             };
-            const response = await fetch("/api/users/user", requestOptions);
+            const response = await fetch("/api/user", requestOptions);
             if (!response.ok) setToken(null);
             localStorage.setItem("socialRelationshipsToken", token);
         };

@@ -98,6 +98,7 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </nav>
+        {/*
         <section className="hero is-primary">
             <div style={{ padding: 7 }}>
                 <div className="container">
@@ -115,6 +116,7 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </section>
+        */}
         <br />
     </>);
 };

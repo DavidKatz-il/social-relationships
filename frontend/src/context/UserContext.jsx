@@ -8,7 +8,7 @@ export const UserProvider = (props) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      await g.fetchData("GET", "application/json", token, "users/user", undefined, "", undefined,
+      await g.fetchData("GET", "application/json", token, "user", undefined, "", undefined,
         () => localStorage.setItem("socialRelationshipsToken", token), undefined, setToken);
     };
     fetchUser();
