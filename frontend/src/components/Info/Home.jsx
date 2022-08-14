@@ -5,27 +5,25 @@ import * as g from "../../Global";
 
 export const Home = () => {
     const [token] = useContext(UserContext);
-    const [id, setId] = useState("");
-    const [email, setEmail] = useState("");
     const [teacherName, setTeacherName] = useState("");
     const [schoolName, setSchoolName] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     function setData(data) {
         if (data) {
-            setId(data.id);
-            setEmail(data.email);
             setTeacherName(data.teacher_name);
             setSchoolName(data.school_name);
         }
     }
     
     async function getUser() {
-        await g.fetchData("GET", "application/json", token, 'user', setErrorMessage,
-          "Could not get the user", setData, undefined, undefined);
+        if (token !== 'null') {
+            await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setData, undefined, undefined);
+        }
     };
     
     useEffect(() => {
+        setErrorMessage("");
         getUser();
     }, ""); // eslint-disable-line react-hooks/exhaustive-deps
     
