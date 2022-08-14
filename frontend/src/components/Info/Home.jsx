@@ -23,7 +23,6 @@ export const Home = () => {
     };
     
     useEffect(() => {
-        setErrorMessage("");
         getUser();
     }, ""); // eslint-disable-line react-hooks/exhaustive-deps
     
