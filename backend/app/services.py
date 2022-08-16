@@ -698,3 +698,21 @@ async def get_reports_info(user: schemas.User, db: orm.Session):
         .with_entities(models.Report.id, models.Report.name)
     )
     return list(map(schemas.ReportInfo.from_orm, reports))
+
+
+async def get_user_info(user: schemas.User, db: orm.Session):
+    students_count = (
+        db.query(models.Student)
+        .filter_by(owner_id=user.id)
+        .count()
+    )
+    images_count = (
+        db.query(models.Image)
+        .filter_by(owner_id=user.id)
+        .count()
+    )
+    user_info = {
+        "students_count": students_count,
+        "images_count": images_count
+    }
+    return schemas.UserInfo(**user_info)

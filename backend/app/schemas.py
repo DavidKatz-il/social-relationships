@@ -24,6 +24,11 @@ class User(_UserBase):
         orm_mode = True
 
 
+class UserInfo(BaseModel):
+    students_count: int
+    images_count: int
+
+
 class _StudentBase(BaseModel):
     name: str
     images: str

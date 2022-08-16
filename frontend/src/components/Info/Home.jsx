@@ -7,23 +7,32 @@ export const Home = () => {
     const [token] = useContext(UserContext);
     const [teacherName, setTeacherName] = useState("");
     const [schoolName, setSchoolName] = useState("");
+    const [studentsCount, setStudentsCount] = useState("");
+    const [imagesCount, setImagesCount] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    function setData(data) {
+    function setUserData(data) {
         if (data) {
             setTeacherName(data.teacher_name);
             setSchoolName(data.school_name);
         }
     }
-    
-    async function getUser() {
+    function setUserInfoData(data) {
+        if (data) {
+            setStudentsCount(data.students_count);
+            setImagesCount(data.images_count);
+        }
+    }
+
+    async function getUserData() {
         if (token !== 'null') {
-            await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setData, undefined, undefined);
+            await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setUserData, undefined, undefined);
+            await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData, undefined, undefined);
         }
     };
     
     useEffect(() => {
-        getUser();
+        getUserData();
     }, ""); // eslint-disable-line react-hooks/exhaustive-deps
     
     return <>
@@ -35,7 +44,7 @@ export const Home = () => {
                         <section className="hero is-primary welcome is-small">
                             <div className="hero-body">
                                 <div className="container">
-                                    <h1 className="title"> Hello, {teacherName} from {schoolName}. </h1>
+                                    <h1 className="title"> Hello, <b>{teacherName}</b> from <b>{schoolName}</b>. </h1>
                                     <h2 className="subtitle"> You are welcome to the platform that helps you track the social relationships of your students. </h2>
                                 </div>
                             </div>
@@ -43,13 +52,13 @@ export const Home = () => {
                         <section className="info-tiles">
                             <div className="tile is-parent has-text-centered">
                                 <article className="tile is-child box">
-                                    <p className="title">4</p>
+                                    <p className="title">{studentsCount}</p>
                                     <p className="subtitle">Students</p>
                                 </article>
                             </div>
                             <div className="tile is-parent has-text-centered">
                                 <article className="tile is-child box">
-                                    <p className="title">12</p>
+                                    <p className="title">{imagesCount}</p>
                                     <p className="subtitle">Images</p>
                                 </article>
                             </div>

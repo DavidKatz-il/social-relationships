@@ -22,6 +22,14 @@ async def get_user(user: schemas.User = fastapi.Depends(services.get_current_use
     return user
 
 
+@app.get("/api/user_info", response_model=schemas.UserInfo)
+async def get_user_info(
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_user_info(user, db)
+
+
 @app.post("/api/users")
 async def create_user(
     user: schemas.UserCreate, db: orm.Session = fastapi.Depends(services.get_db)
