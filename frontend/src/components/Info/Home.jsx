@@ -72,7 +72,7 @@ export const Home = () => {
                     <section className="hero is-primary welcome is-small">
                         <div className="hero-body">
                             <div className="container">
-                                <h1 className="title"> Hello, you need to register to continue. </h1>
+                                <h1 className="title"> Please login or register to continue. </h1>
                                 <h2 className="subtitle"> You are welcome to the platform that helps you track the social relationships of your students. </h2>
                             </div>
                         </div>
