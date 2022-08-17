@@ -469,7 +469,7 @@ async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
     for face_image in faces_image:
         if face_image.student_names:
             for stdnt_name in face_image.student_names:
-                if stdnt_name != 'Unknown':
+                if stdnt_name != "Unknown":
                     images_by_name[stdnt_name].append(face_image.name)
 
     return images_by_name
@@ -521,7 +521,7 @@ async def get_students_list(user: schemas.User, db: orm.Session) -> list:
     name_list = []
     for lst_info in (await get_match_faces(user, db)).values():
         for dict_info in lst_info:
-            if dict_info["student_name"] != 'Unknown':
+            if dict_info["student_name"] != "Unknown":
                 name_list.append(dict_info["student_name"])
     return name_list
 
@@ -555,14 +555,13 @@ async def create_report2(user: schemas.User, db: orm.Session):
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
     max_count = max(total_count.values())
-    names_most_appear = [name for name, count in total_count.items() if count == max_count]
+    names_most_appear = [
+        name for name, count in total_count.items() if count == max_count
+    ]
 
     most_popular_student = {
         0: ["name", "count"],
-        **{
-            i: [name, max_count]
-            for i, name in enumerate(names_most_appear, start=1)
-        },
+        **{i: [name, max_count] for i, name in enumerate(names_most_appear, start=1)},
     }
 
     return most_popular_student
@@ -572,8 +571,8 @@ async def create_report3(user: schemas.User, db: orm.Session):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
-    if 'Unknown' in stdnt_list_by_name:
-        stdnt_list_by_name.pop('Unknown')
+    if "Unknown" in stdnt_list_by_name:
+        stdnt_list_by_name.pop("Unknown")
 
     besties = {stndt_name: {} for stndt_name in name_list}
     for nested_stndt_name in besties:
@@ -678,9 +677,9 @@ async def update_report(report_id: int, user: schemas.User, db: orm.Session):
     )
 
     report_creator = {
-        'Total appear': create_report1,
-        'Most appearance': create_report2,
-        'Besties': create_report3,
+        "Total appear": create_report1,
+        "Most appearance": create_report2,
+        "Besties": create_report3,
     }
 
     report_db.info = await report_creator[report_db.name](user, db)
@@ -702,18 +701,7 @@ async def get_reports_info(user: schemas.User, db: orm.Session):
 
 
 async def get_user_info(user: schemas.User, db: orm.Session):
-    students_count = (
-        db.query(models.Student)
-        .filter_by(owner_id=user.id)
-        .count()
-    )
-    images_count = (
-        db.query(models.Image)
-        .filter_by(owner_id=user.id)
-        .count()
-    )
-    user_info = {
-        "students_count": students_count,
-        "images_count": images_count
-    }
+    students_count = db.query(models.Student).filter_by(owner_id=user.id).count()
+    images_count = db.query(models.Image).filter_by(owner_id=user.id).count()
+    user_info = {"students_count": students_count, "images_count": images_count}
     return schemas.UserInfo(**user_info)

@@ -119,5 +119,6 @@ class Report(ReportCreate):
 
 class ReportInfo(_ReportBase):
     id: int
+
     class Config:
         orm_mode = True
