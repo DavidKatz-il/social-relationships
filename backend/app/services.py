@@ -538,12 +538,14 @@ async def create_report1(user: schemas.User, db: orm.Session):
 
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
+    total_count = {name: name_list.count(name) for name in name_list}
+    total_count_sorted = sorted(total_count.items(), key=lambda item: item[1], reverse=True)
 
     total_appear = {
         0: ["name", "count"],
         **{
             i: [name, name_list.count(name)]
-            for i, name in enumerate(set(name_list), start=1)
+            for i, (name, count) in enumerate(total_count_sorted, start=1)
         },
     }
 
