@@ -540,9 +540,12 @@ async def validate_report_not_exist(report_name: str, user_id: int, db: orm.Sess
         raise fastapi.HTTPException(status_code=400, detail="Report already exist.")
 
 
-async def create_report1(user: schemas.User, db: orm.Session):
+async def create_report1(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
 
-    await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
     total_count_sorted = sorted(
@@ -560,8 +563,12 @@ async def create_report1(user: schemas.User, db: orm.Session):
     return total_appear
 
 
-async def create_report2(user: schemas.User, db: orm.Session):
-    await create_match_faces(user, db)
+async def create_report2(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
     max_count = max(total_count.values())
@@ -577,8 +584,12 @@ async def create_report2(user: schemas.User, db: orm.Session):
     return most_popular_student
 
 
-async def create_report3(user: schemas.User, db: orm.Session):
-    await create_match_faces(user, db)
+async def create_report3(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
     name_list = await get_students_list(user, db)
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
@@ -611,9 +622,12 @@ async def create_report3(user: schemas.User, db: orm.Session):
     return besties_counter
 
 
-async def create_report4(user: schemas.User, db: orm.Session):
+async def create_report4(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
 
-    await create_match_faces(user, db)
     stdnt_list_by_name = await get_match_faces_by_student(
         user, db, exclude_unknown=False
     )
@@ -648,6 +662,8 @@ async def save_report_in_db(
 
 
 async def create_reports(user: schemas.User, db: orm.Session):
+    await create_match_faces(user, db)
+
     reports_creators = {
         "Total appear": create_report1,
         "Most appearance": create_report2,
@@ -656,15 +672,17 @@ async def create_reports(user: schemas.User, db: orm.Session):
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
-        report = await report_creator(user, db)
+        report = await report_creator(user, db, recreate_match_faces=False)
         await save_report_in_db(report_name, report, user, db)
 
     return {"message", "Successfully finished reports creating."}
 
 
 async def update_reports(user: schemas.User, db: orm.Session):
+    await create_match_faces(user, db)
+
     for report in await get_reports_info(user, db):
-        await update_report(report.id, user, db)
+        await update_report(report.id, user, db, recreate_match_faces=False)
 
     return {"message", "Successfully finished reports updates."}
 
@@ -694,7 +712,12 @@ async def delete_report(report_id: int, user: schemas.User, db: orm.Session):
     db.commit()
 
 
-async def update_report(report_id: int, user: schemas.User, db: orm.Session):
+async def update_report(
+    report_id: int,
+    user: schemas.User,
+    db: orm.Session,
+    recreate_match_faces: bool = True,
+):
     report_db = await _get_object_by_id(
         obj_id=report_id, user_id=user.id, model=models.Report, db=db
     )
@@ -706,7 +729,9 @@ async def update_report(report_id: int, user: schemas.User, db: orm.Session):
         "Unknown": create_report4,
     }
 
-    report_db.info = await report_creator[report_db.name](user, db)
+    report_db.info = await report_creator[report_db.name](
+        user, db, recreate_match_faces
+    )
     report_db.datetime_updated = datetime.utcnow()
 
     db.commit()
