@@ -462,15 +462,18 @@ async def get_match_faces(user: schemas.User, db: orm.Session):
     return images_student_names
 
 
-async def get_match_faces_by_student(user: schemas.User, db: orm.Session):
+async def get_match_faces_by_student(
+    user: schemas.User, db: orm.Session, exclude_unknown: bool = True
+):
     faces_image = db.query(models.FaceImage).filter_by(owner_id=user.id)
-    student_list = await get_students_list(user, db)
+    student_list = await get_students_list(user, db, exclude_unknown)
     images_by_name = {name: [] for name in student_list}
     for face_image in faces_image:
         if face_image.student_names:
             for stdnt_name in face_image.student_names:
-                if stdnt_name != "Unknown":
-                    images_by_name[stdnt_name].append(face_image.name)
+                if exclude_unknown and stdnt_name == "Unknown":
+                    continue
+                images_by_name[stdnt_name].append(face_image.name)
 
     return images_by_name
 
@@ -517,12 +520,15 @@ async def get_locations_and_encodings_from_images(images: list):
     return locations, encodings
 
 
-async def get_students_list(user: schemas.User, db: orm.Session) -> list:
+async def get_students_list(
+    user: schemas.User, db: orm.Session, exclude_unknown: bool = True
+) -> list:
     name_list = []
     for lst_info in (await get_match_faces(user, db)).values():
         for dict_info in lst_info:
-            if dict_info["student_name"] != "Unknown":
-                name_list.append(dict_info["student_name"])
+            if exclude_unknown and dict_info["student_name"] == "Unknown":
+                continue
+            name_list.append(dict_info["student_name"])
     return name_list
 
 
@@ -539,7 +545,9 @@ async def create_report1(user: schemas.User, db: orm.Session):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     total_count = {name: name_list.count(name) for name in name_list}
-    total_count_sorted = sorted(total_count.items(), key=lambda item: item[1], reverse=True)
+    total_count_sorted = sorted(
+        total_count.items(), key=lambda item: item[1], reverse=True
+    )
 
     total_appear = {
         0: ["name", "count"],
@@ -573,8 +581,6 @@ async def create_report3(user: schemas.User, db: orm.Session):
     await create_match_faces(user, db)
     name_list = await get_students_list(user, db)
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
-    if "Unknown" in stdnt_list_by_name:
-        stdnt_list_by_name.pop("Unknown")
 
     besties = {stndt_name: {} for stndt_name in name_list}
     for nested_stndt_name in besties:
@@ -605,6 +611,24 @@ async def create_report3(user: schemas.User, db: orm.Session):
     return besties_counter
 
 
+async def create_report4(user: schemas.User, db: orm.Session):
+
+    await create_match_faces(user, db)
+    stdnt_list_by_name = await get_match_faces_by_student(
+        user, db, exclude_unknown=False
+    )
+
+    total_appear = {
+        0: ["image name", "count"],
+        **{
+            i: [image_name, stdnt_list_by_name["Unknown"].count(image_name)]
+            for i, image_name in enumerate(set(stdnt_list_by_name["Unknown"]), start=1)
+        },
+    }
+
+    return total_appear
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
@@ -622,21 +646,16 @@ async def save_report_in_db(
 
 
 async def create_reports(user: schemas.User, db: orm.Session):
-    name_of_report1 = "Total appear"
-    name_of_report2 = "Most appearance"
-    name_of_report3 = "Besties"
-
-    await validate_report_not_exist(report_name=name_of_report1, user_id=user.id, db=db)
-    report_info = await create_report1(user, db)
-    await save_report_in_db(name_of_report1, report_info, user, db)
-
-    await validate_report_not_exist(report_name=name_of_report2, user_id=user.id, db=db)
-    report_info = await create_report2(user, db)
-    await save_report_in_db(name_of_report2, report_info, user, db)
-
-    await validate_report_not_exist(report_name=name_of_report3, user_id=user.id, db=db)
-    report_info = await create_report3(user, db)
-    await save_report_in_db(name_of_report3, report_info, user, db)
+    reports_creators = {
+        "Total appear": create_report1,
+        "Most appearance": create_report2,
+        "Besties": create_report3,
+        "Unknown": create_report4,
+    }
+    for report_name, report_creator in reports_creators.items():
+        await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
+        report = await report_creator(user, db)
+        await save_report_in_db(report_name, report, user, db)
 
     return {"message", "Successfully finished reports creating."}
 
@@ -682,6 +701,7 @@ async def update_report(report_id: int, user: schemas.User, db: orm.Session):
         "Total appear": create_report1,
         "Most appearance": create_report2,
         "Besties": create_report3,
+        "Unknown": create_report4,
     }
 
     report_db.info = await report_creator[report_db.name](user, db)
