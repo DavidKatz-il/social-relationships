@@ -604,7 +604,7 @@ async def create_report3(user: schemas.User, db: orm.Session):
         0: ["name", "besties", "count"],
         **{
             i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-            for i, name in enumerate(set(besties), start=1)
+            for i, name in enumerate(set(sorted(besties)), start=1)
         },
     }
 
@@ -622,7 +622,9 @@ async def create_report4(user: schemas.User, db: orm.Session):
         0: ["image name", "count"],
         **{
             i: [image_name, stdnt_list_by_name["Unknown"].count(image_name)]
-            for i, image_name in enumerate(set(stdnt_list_by_name["Unknown"]), start=1)
+            for i, image_name in enumerate(
+                set(sorted(stdnt_list_by_name["Unknown"])), start=1
+            )
         },
     }
 
