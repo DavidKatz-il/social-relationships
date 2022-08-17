@@ -10,7 +10,7 @@ export const ImagesTable = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [activeModal, setActiveModal] = useState(false);
-    const [search, setSearch] = useState("");
+    //const [search, setSearch] = useState("");
 
     async function handleDelete(id) {
         await g.fetchData("DELETE", "application/json", token, `images/${id}`, setErrorMessage,
@@ -26,10 +26,10 @@ export const ImagesTable = () => {
         getImages();
     }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
+    /*useEffect(() => {
         console.log("search: " + search);
         //search for images....
-    }, [search]);
+    }, [search]);*/
 
     function handleModal() {
         setActiveModal(!activeModal);
@@ -44,10 +44,10 @@ export const ImagesTable = () => {
                     <button className="button is-fullwidth is-primary" onClick={() => setActiveModal(true)}
                     >Add a new image</button>
                 </div>
-                <div className="column">
+                {/*<div className="column">
                     <input className="input is-fullwidth" placeholder="Search images" type="search"
                         value={search} onChange={e => setSearch(e.target.value)} />
-                </div>
+                </div>*/}
             </div>
         </section>
         <br /><ErrorMessage message={errorMessage} /><br />
@@ -57,7 +57,7 @@ export const ImagesTable = () => {
                     {images.map((img) => (
                         <div className="column is-4" key={img.id}>
                             <div className="card is-shady">
-                                <div className="card-image">
+                                <div className="card-image" onClick={() => { setActiveModal(true); }}>
                                     <figure className="image is-3by2">
                                         <img src={img.image} alt="" />
                                     </figure>
@@ -76,10 +76,10 @@ export const ImagesTable = () => {
                 </div>
             </section>
         ) : <section className="container">
-                <div>
-                    <p style={{ textAlign: "center" }}><br />Loading your images</p>
-                    <progress className="progress is-small is-primary" max="100">99%</progress>
-                </div>
-            </section>
+            <div>
+                <p style={{ textAlign: "center" }}><br />Loading your images</p>
+                <progress className="progress is-small is-primary" max="100">99%</progress>
+            </div>
+        </section>
         }</>
 };

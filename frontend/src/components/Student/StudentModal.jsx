@@ -79,7 +79,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
               <input type="file" placeholder="Images" multiple onChange={uploadImage} className="input" required />
               {images && images.map((imageObj, i) => {
                 return <div key={i}>
-                  <img width="50" src={imageObj} alt="" />
+                  <img width="250" src={imageObj} alt="" />
                   <button class="delete" onClick={() => setImages(images.filter(x => x !== imageObj))} />
                 </div>
               })}

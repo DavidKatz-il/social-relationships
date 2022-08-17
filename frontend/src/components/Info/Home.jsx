@@ -30,11 +30,11 @@ export const Home = () => {
             await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData, undefined, undefined);
         }
     };
-    
+
     useEffect(() => {
         getUserData();
-    }, ""); // eslint-disable-line react-hooks/exhaustive-deps
-    
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     return <>
         <br /><ErrorMessage message={errorMessage} /><br />
         {(token) ? <>

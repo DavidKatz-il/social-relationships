@@ -11,7 +11,7 @@ export const StudentsTable = () => {
   const [loaded, setLoaded] = useState(false);
   const [activeModal, setActiveModal] = useState(false);
   const [id, setId] = useState(null);
-  const [search, setSearch] = useState("");
+  //const [search, setSearch] = useState("");
 
   async function handleUpdate(id) {
     setId(id);
@@ -32,10 +32,10 @@ export const StudentsTable = () => {
     getStudents();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
+  {/*useEffect(() => {
     console.log("search: " + search);
     //search for students....
-  }, [search]);
+  }, [search]);*/}
 
   function handleModal() {
     setActiveModal(!activeModal);
@@ -50,10 +50,10 @@ export const StudentsTable = () => {
         <div className="column">
           <button className="button is-fullwidth is-primary" onClick={() => setActiveModal(true)}>Add a new student</button>
         </div>
-        <div className="column">
+        {/*<div className="column">
           <input className="input is-fullwidth" placeholder="Search students" type="search"
             value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
+</div>*/}
       </div>
     </section>
     <br />
@@ -63,11 +63,11 @@ export const StudentsTable = () => {
       <section className="container">
         <div className="columns is-multiline">
           {students.map((student) => (
-            <div className="column is-2" key={student.id}>
-              <div className="card is-shady">
+            <div className="column is-3" key={student.id}>
+              <div className="card is-shady" onClick={() => handleUpdate(student.id)} >
                 <div className="card-image">
-                  <figure className="image is-3by2">
-                    <img src={JSON.parse(student.images)[0]} alt={student.name} />
+                  <figure className="image is-6by3">
+                    <img src={JSON.parse(student.images)[0]} alt={student.name} style={{ height: 320 }} />
                   </figure>
                 </div>
                 <div className="card-content">
@@ -86,10 +86,10 @@ export const StudentsTable = () => {
         </div>
       </section>
     ) : <section className="container">
-          <div>
-            <p style={{ textAlign: "center" }}><br />Loading your students</p>
-            <progress className="progress is-small is-primary" max="100">99%</progress>
-          </div>
-        </section>
+      <div>
+        <p style={{ textAlign: "center" }}><br />Loading your students</p>
+        <progress className="progress is-small is-primary" max="100">99%</progress>
+      </div>
+    </section>
     }</>
 };

@@ -11,13 +11,13 @@ export const ReportsTable = () => {
     const [token] = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
-    const [search, setSearch] = useState("");
+    //const [search, setSearch] = useState("");
 
-    useEffect(() => {
-        console.log("search: " + search);
-        //search for reports....
-    }, [search]);
-    
+    //useEffect(() => {
+    //    console.log("search: " + search);
+    //search for reports....
+    //}, [search]);
+
     async function handleCreate() {
         setLoaded(false);
         await g.fetchData("POST", "application/json", token, "reports", setErrorMessage,
@@ -52,17 +52,17 @@ export const ReportsTable = () => {
         <section className="container">
             <div className="columns">
                 <div className="column">
-                { (reports && reports.length) ? <>
-                    <button className="button is-fullwidth is-primary" onClick={handleUpdate}>Update reports</button>
+                    {(reports && reports.length) ? <>
+                        <button className="button is-fullwidth is-primary" onClick={handleUpdate}>Update reports</button>
                     </> : <>
-                    <button className="button is-fullwidth is-primary" onClick={handleCreate}>Create reports</button>                    
+                        <button className="button is-fullwidth is-primary" onClick={handleCreate}>Create reports</button>
                     </>
-                }
+                    }
                 </div>
-                <div className="column">
-                <input className="input is-fullwidth" placeholder="Search reports" type="search"
-                    value={search} onChange={e => setSearch(e.target.value)} />
-                </div>
+                {/*<div className="column">
+                    <input className="input is-fullwidth" placeholder="Search reports" type="search"
+                        value={search} onChange={e => setSearch(e.target.value)} />
+                </div>*/}
             </div>
         </section>
 

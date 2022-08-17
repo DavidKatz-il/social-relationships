@@ -8,8 +8,6 @@ import { ImagesTable } from "./components/Image/ImagesTable";
 import { StudentsTable } from "./components/Student/StudentsTable";
 import { ReportsTable } from "./components/Report/ReportsTable";
 import { Home } from "./components/Info/Home";
-import { About } from "./components/Info/About";
-import { Contact } from "./components/Info/Contact";
 
 export const App = () => {
   const [token] = useContext(UserContext);
@@ -20,8 +18,6 @@ export const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={token ? <Home /> : <Login />} />
         <Route path="/register" element={token ? <Home /> : <Register />} />
         <Route path="/students" element={token ? <StudentsTable /> : <Home />} />
