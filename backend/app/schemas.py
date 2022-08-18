@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from pydantic import BaseModel
 
@@ -107,7 +107,7 @@ class _ReportBase(BaseModel):
 
 
 class ReportCreate(_ReportBase):
-    info: Dict[int, List]
+    info: Dict[Union[int, str], List]
 
 
 class Report(ReportCreate):

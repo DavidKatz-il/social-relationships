@@ -1,16 +1,21 @@
+import io
 import re
 import json
+import base64
 import operator
+import itertools
 from datetime import datetime
 from urllib.request import urlopen
 
 import numpy as np
+import networkx as nx
 import fastapi
 import jwt
 import face_recognition
+import matplotlib.pyplot as plt
 from passlib.hash import bcrypt
 from sqlalchemy import orm
-
+from networkx.algorithms.community import louvain_communities
 from app import database, models, schemas
 
 JWT_SECRET = "special-jwt-secret"
@@ -478,6 +483,20 @@ async def get_match_faces_by_student(
     return images_by_name
 
 
+async def get_match_faces_by_image(
+    user: schemas.User, db: orm.Session, exclude_unknown: bool = True
+):
+    faces_image = db.query(models.FaceImage).filter_by(owner_id=user.id)
+    images_by_name = {}
+    for face_image in faces_image:
+        if face_image.student_names:
+            if exclude_unknown and "Unknown" in face_image.student_names:
+                face_image.student_names.remove("Unknown")
+            images_by_name[face_image.name] = list(face_image.student_names)
+
+    return images_by_name
+
+
 async def get_locations_and_encodings_from_image(image_base64: str):
     def get_locations(image):
         locations = face_recognition.face_locations(
@@ -645,6 +664,66 @@ async def create_report4(
     return total_appear
 
 
+async def create_report5(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    image_list_by_student = await get_match_faces_by_image(user, db)
+    edgelist = [
+        tuple(pair)
+        for studens in image_list_by_student.values()
+        for pair in itertools.combinations(studens, 2)
+    ]
+    G = nx.from_edgelist(edgelist)
+
+    communities = sorted(map(sorted, louvain_communities(G)))
+    communities_report = {
+        0: ["community name", "community members"],
+        **{
+            i: [f"community {i}", ", ".join(community)]
+            for i, community in enumerate(communities, start=1)
+        },
+    }
+
+    return communities_report
+
+
+async def create_report6(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    image_list_by_student = await get_match_faces_by_image(user, db)
+    edgelist = [
+        tuple(pair)
+        for studens in image_list_by_student.values()
+        for pair in itertools.combinations(studens, 2)
+    ]
+    G = nx.from_edgelist(edgelist)
+
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos=pos, with_labels=True, node_color="skyblue", font_size=8)
+    nx.draw_networkx_edge_labels(
+        G,
+        pos,
+        edge_labels=nx.get_edge_attributes(G, "weight"),
+        rotate=False,
+        font_size=8,
+    )
+    s = io.BytesIO()
+    plt.savefig(s, format="png", bbox_inches="tight")
+    s = base64.b64encode(s.getvalue()).decode("utf-8").replace("\n", "")
+
+    graph_draw_report = {
+        "images": [f"data:image/png;base64,{s}"],
+    }
+
+    return graph_draw_report
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
@@ -669,6 +748,8 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Most appearance": create_report2,
         "Besties": create_report3,
         "Unknown": create_report4,
+        "Communities": create_report5,
+        "Graph": create_report6,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -727,6 +808,8 @@ async def update_report(
         "Most appearance": create_report2,
         "Besties": create_report3,
         "Unknown": create_report4,
+        "Communities": create_report5,
+        "Graph": create_report6,
     }
 
     report_db.info = await report_creator[report_db.name](

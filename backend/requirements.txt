@@ -6,4 +6,6 @@ fastapi[all]
 pyjwt
 passlib[bcrypt]
 numpy
+networkx
 face_recognition
+matplotlib
