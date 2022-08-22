@@ -724,6 +724,52 @@ async def create_report6(
     return graph_draw_report
 
 
+async def create_report7(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    name_list = await get_students_list(user, db)
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+
+    my_friends = {stndt_name: {} for stndt_name in name_list}
+    for nested_stndt_name in my_friends:
+        my_friends[nested_stndt_name] = {
+            name: 0 for name in name_list if name != nested_stndt_name
+        }
+
+    for stdnt in stdnt_list_by_name:
+        for nested_stdnt in stdnt_list_by_name:
+            if stdnt == nested_stdnt:
+                continue
+            match_pic = list(
+                set(stdnt_list_by_name[stdnt]).intersection(
+                    stdnt_list_by_name[nested_stdnt]
+                )
+            )
+            if len(match_pic) > 0:
+                my_friends[stdnt][nested_stdnt] = len(match_pic)
+
+    student_group = {}
+
+    for stdnt_name in my_friends.keys():
+        student_group[stdnt_name] = []
+        for friend in my_friends[stdnt_name]:
+            if my_friends[stdnt_name][friend] > 0:
+                student_group[stdnt_name].append(friend)
+
+    student_group_report = {
+        0: ["student name", "friend amount"],
+        **{
+            i: [name, len(student_group[name])]
+            for i, name in enumerate(set(sorted(student_group)), start=1)
+        },
+    }
+
+    return student_group_report
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
