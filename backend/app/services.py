@@ -857,6 +857,7 @@ async def update_report(
         "Unknown": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
+        "Friends count": create_report7,
     }
 
     report_db.info = await report_creator[report_db.name](
