@@ -796,6 +796,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Unknown": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
+        "Friends count": create_report7,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
