@@ -760,7 +760,7 @@ async def create_report7(
                 student_group[stdnt_name].append(friend)
 
     student_group_cnt_report = {
-        0: ["student name", "friend amount"],
+        0: ["student name", "friends amount"],
         **{
             i: [name, len(student_group[name])]
             for i, name in enumerate(set(sorted(student_group)), start=1)
@@ -806,7 +806,7 @@ async def create_report8(
                 student_group[stdnt_name].append(friend)
 
     student_group_report = {
-        0: ["student name", "friend amount"],
+        0: ["student name", "friends name"],
         **{
             i: [name, student_group[name]]
             for i, name in enumerate(set(sorted(student_group)), start=1)
