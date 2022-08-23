@@ -759,10 +759,56 @@ async def create_report7(
             if my_friends[stdnt_name][friend] > 0:
                 student_group[stdnt_name].append(friend)
 
-    student_group_report = {
+    student_group_cnt_report = {
         0: ["student name", "friend amount"],
         **{
             i: [name, len(student_group[name])]
+            for i, name in enumerate(set(sorted(student_group)), start=1)
+        },
+    }
+
+    return student_group_cnt_report
+
+
+async def create_report8(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    name_list = await get_students_list(user, db)
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+
+    my_friends = {stndt_name: {} for stndt_name in name_list}
+    for nested_stndt_name in my_friends:
+        my_friends[nested_stndt_name] = {
+            name: 0 for name in name_list if name != nested_stndt_name
+        }
+
+    for stdnt in stdnt_list_by_name:
+        for nested_stdnt in stdnt_list_by_name:
+            if stdnt == nested_stdnt:
+                continue
+            match_pic = list(
+                set(stdnt_list_by_name[stdnt]).intersection(
+                    stdnt_list_by_name[nested_stdnt]
+                )
+            )
+            if len(match_pic) > 0:
+                my_friends[stdnt][nested_stdnt] = len(match_pic)
+
+    student_group = {}
+
+    for stdnt_name in my_friends.keys():
+        student_group[stdnt_name] = []
+        for friend in my_friends[stdnt_name]:
+            if my_friends[stdnt_name][friend] > 0:
+                student_group[stdnt_name].append(friend)
+
+    student_group_report = {
+        0: ["student name", "friend amount"],
+        **{
+            i: [name, student_group[name]]
             for i, name in enumerate(set(sorted(student_group)), start=1)
         },
     }
@@ -797,6 +843,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Communities": create_report5,
         "Graph": create_report6,
         "Friends count": create_report7,
+        "Friends group": create_report8,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -858,6 +905,7 @@ async def update_report(
         "Communities": create_report5,
         "Graph": create_report6,
         "Friends count": create_report7,
+        "Friends group": create_report8,
     }
 
     report_db.info = await report_creator[report_db.name](
