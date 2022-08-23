@@ -808,7 +808,7 @@ async def create_report8(
     student_group_report = {
         0: ["student name", "friends name"],
         **{
-            i: [name, ', '.join(sorted(student_group[name]))]
+            i: [name, ", ".join(sorted(student_group[name]))]
             for i, name in enumerate(set(sorted(student_group)), start=1)
         },
     }
