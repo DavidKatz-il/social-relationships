@@ -20,7 +20,7 @@ export const HeaderTabs = () => {
             </div>
             <div className="navbar-menu">
                 <div className={"navbar-start"}>
-                    <div className="tabs is-toggle is-large" >
+                    <div className="tabs is-toggle is-medium" >
                         <ul className="navbar-item">
                             <li className={activeTab === "home" || activeTab === "" ? "is-active" : ""} onClick={() => setActiveTab("home")}>
                                 <NavLink to="/home">
