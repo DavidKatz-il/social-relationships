@@ -817,6 +817,31 @@ async def create_report8(
     return student_group_report
 
 
+async def create_report9(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    students_in_images = await get_students_list(user, db)
+    all_students = (
+        db.query(models.Student)
+        .filter_by(owner_id=user.id)
+        .with_entities(models.Student.name)
+        .distinct()
+        .all()
+    )
+    missing_students = set([student_name for student_name, in all_students]) - set(
+        students_in_images
+    )
+    not_appear_report = {
+        0: ["name"],
+        **{i: [name] for i, name in enumerate(sorted(missing_students), start=1)},
+    }
+
+    return not_appear_report
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
@@ -845,6 +870,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Graph": create_report6,
         "Friends count": create_report7,
         "Friends group": create_report8,
+        "Not appear": create_report9,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -907,6 +933,7 @@ async def update_report(
         "Graph": create_report6,
         "Friends count": create_report7,
         "Friends group": create_report8,
+        "Not appear": create_report9,
     }
 
     report_db.info = await report_creator[report_db.name](
