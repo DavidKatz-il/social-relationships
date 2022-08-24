@@ -9,12 +9,19 @@ export const ReportModal = (ID) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [myID, setMyID] = useState(ID.valueOf().ID);
+    const [isImages, setIsImages] = useState(false);
+    const [images, setImages] = useState(null);
 
     async function GetData() {
         setLoaded(false);
         await g.fetchData("GET", "application/json", token, "report/" + ID.valueOf().ID, setErrorMessage,
             "Something went wrong. Couldn't load the report", setState);
         setLoaded(true);
+    }
+
+    function getImage() {
+        const file = Object.values(state.info);
+        setImages(file);
     }
 
     useEffect(() => {
@@ -26,6 +33,13 @@ export const ReportModal = (ID) => {
         setMyID(ID.valueOf().ID);
         if (myID > 0) GetData();
     }
+    useEffect(() => {
+        if (state) {
+            const isimg = Object.keys(state.info).includes("images")
+            setIsImages(isimg);
+            if (isimg) getImage();
+        }
+    }, [state]);
 
 
     return <section className="container">
@@ -33,19 +47,18 @@ export const ReportModal = (ID) => {
         {(loaded && state) ?
             <>
                 <h1 className="title" style={{ textAlign: "center" }}>{state.name}</h1>
-                <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
-                    <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
-                    <tbody>{Object.values(state.info).map((v, i) => {
-                        if (i > 0) {
-                            return <tr>{v.map((c) => (<td>{c}</td>))}
-                                {/*
-                                <td>{v[0]}</td>
-                                <td>{v[1]}</td>
-                                <td>{v[2]}</td>*/}
-                            </tr>
-                        }
-                    })}</tbody>
-                </table>
+                {(isImages) ? (images) && <div style={{ textAlign: "center" }}>{
+                    images.map((img) => {
+                        return <img src={img} alt={"report " + img} />
+                    })
+                }</div>
+                    :
+                    <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
+                        <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
+                        <tbody>{Object.values(state.info).map((v, i) => {
+                            if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
+                        })}</tbody>
+                    </table>}
             </>
             :
             <div>
@@ -54,9 +67,4 @@ export const ReportModal = (ID) => {
             </div>
         }
     </section >
-    {/*return <>
-        <h1 className="title" style={{ textAlign: "center" }}>Reports Modal...</h1>
-        <h1 className="title" style={{ textAlign: "center" }}>{"report/" + ID.valueOf().ID}</h1>
-        <h1 className="title" style={{ textAlign: "center" }}>Reports Modal...</h1>
-</>*/}
 }

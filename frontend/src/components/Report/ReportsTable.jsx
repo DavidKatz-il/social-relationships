@@ -11,24 +11,13 @@ export const ReportsTable = () => {
     const [token] = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
-    //const [search, setSearch] = useState("");
 
-    //useEffect(() => {
-    //    console.log("search: " + search);
-    //search for reports....
-    //}, [search]);
-
-    async function handleCreate() {
+    async function handleCreateOrUpdate() {
         setLoaded(false);
-        await g.fetchData("POST", "application/json", token, "reports", setErrorMessage,
-            "Something went wrong. Couldn't create reports");
-        getReportsData();
-    }
-
-    async function handleUpdate() {
-        setLoaded(false);
-        await g.fetchData("PUT", "application/json", token, "reports", setErrorMessage,
-            "Something went wrong. Couldn't create reports");
+        var method = (reports && reports.length) ? "PUT" : "POST"
+        var action = (reports && reports.length) ? "Update" : "Create"
+        await g.fetchData(method, "application/json", token, "reports", setErrorMessage,
+            "Something went wrong. Couldn't " + action + " reports");
         getReportsData();
     }
 
@@ -52,17 +41,9 @@ export const ReportsTable = () => {
         <section className="container">
             <div className="columns">
                 <div className="column">
-                    {(reports && reports.length) ? <>
-                        <button className="button is-fullwidth is-primary" onClick={handleUpdate}>Update reports</button>
-                    </> : <>
-                        <button className="button is-fullwidth is-primary" onClick={handleCreate}>Create reports</button>
-                    </>
-                    }
+                    <button className="button is-fullwidth is-primary" onClick={handleCreateOrUpdate}
+                    >{(reports && reports.length) ? "Update" : "Create"} reports</button>
                 </div>
-                {/*<div className="column">
-                    <input className="input is-fullwidth" placeholder="Search reports" type="search"
-                        value={search} onChange={e => setSearch(e.target.value)} />
-                </div>*/}
             </div>
         </section>
 
@@ -77,7 +58,6 @@ export const ReportsTable = () => {
         <section className="container">
             <br /><ErrorMessage message={errorMessage} /><br />
             {(loaded && reports.length && activeID > 0) ? <ReportModal ID={activeID} />
-
                 :
                 <>
                     {(loaded && reports.length) ?

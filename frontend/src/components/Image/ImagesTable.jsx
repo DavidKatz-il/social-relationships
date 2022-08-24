@@ -10,7 +10,6 @@ export const ImagesTable = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [activeModal, setActiveModal] = useState(false);
-    //const [search, setSearch] = useState("");
 
     async function handleDelete(id) {
         await g.fetchData("DELETE", "application/json", token, `images/${id}`, setErrorMessage,
@@ -26,11 +25,6 @@ export const ImagesTable = () => {
         getImages();
     }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-    /*useEffect(() => {
-        console.log("search: " + search);
-        //search for images....
-    }, [search]);*/
-
     function handleModal() {
         setActiveModal(!activeModal);
         getImages();
@@ -44,10 +38,6 @@ export const ImagesTable = () => {
                     <button className="button is-fullwidth is-primary" onClick={() => setActiveModal(true)}
                     >Add a new image</button>
                 </div>
-                {/*<div className="column">
-                    <input className="input is-fullwidth" placeholder="Search images" type="search"
-                        value={search} onChange={e => setSearch(e.target.value)} />
-                </div>*/}
             </div>
         </section>
         <br /><ErrorMessage message={errorMessage} /><br />
