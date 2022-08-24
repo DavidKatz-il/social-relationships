@@ -1,42 +1,35 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ErrorMessage } from "../Info/ErrorMessage";
 import * as g from "../../Global";
 
 export const ImageModal = ({ active, handleModal, token }) => {
-    //const [name, setName] = useState("");
     const [images, setImages] = useState([]);
-    //const [image, setImage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [activeRefresher, setActiveRefresher] = useState(active);
 
     async function uploadImages(e) {
         if (e.target.files && e.target.files.length > 0) {
             for (let i = 0; i < e.target.files.length; i++) {
-                //e.target.files.map(async (file) => {
                 var file = e.target.files[i];
                 var name = file.name.replace(/\.[^/.]+$/, "");
                 var img = await g.fileToDataUri(file);
                 const fullImg = { name: name, image: img }
-                var imgs = images//.push(fullImg);
+                var imgs = images
                 imgs.push(fullImg);
                 setImages(imgs)
             }
-
-            //const file = e.target.files;
-            //setName(file.name.replace(/\.[^/.]+$/, ""));
-            //setImage(await g.fileToDataUri(file));
-
-            //e.target.value = '';
+            setActiveRefresher(!activeRefresher);
         }
     }
 
     function cleanFormData() {
-        //setName("");
         setImages([]);
         setErrorMessage("");
     }
 
     function handleClose() {
         cleanFormData();
+        setActiveRefresher(false);
         handleModal();
     }
 
@@ -46,7 +39,7 @@ export const ImageModal = ({ active, handleModal, token }) => {
             await g.fetchData("POST", "application/json", token, "images", setErrorMessage,
                 "Something went wrong when creating image", undefined, undefined, JSON.stringify({ name: img.name, image: img.image, }));
         })
-        handleClose();
+        if (errorMessage !== "") handleClose();
     }
 
     return <div className={`modal ${active && "is-active"}`}>
@@ -62,9 +55,10 @@ export const ImageModal = ({ active, handleModal, token }) => {
                         <label className="label">Image</label>
                         <div className="control">
                             <input type="file" placeholder="Image" onChange={uploadImages} className="input" required multiple />
-                            {images.map((img) => {
-                                <div key={0}>
-                                    <img width="150" src={img.image} alt={img.name} />
+                            {images.length > 0 && images.map((img, i) => {
+                                return <div key={img.name + i}>
+                                    <img width="250" src={img.image} alt={img.name} />
+                                    <button class="delete" onClick={() => setImages(images.filter(x => x !== img))} />
                                 </div>
                             })}
                         </div>

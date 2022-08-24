@@ -10,7 +10,7 @@ export const ReportModal = (ID) => {
     const [loaded, setLoaded] = useState(false);
     const [myID, setMyID] = useState(ID.valueOf().ID);
     const [isImages, setIsImages] = useState(false);
-    const [images, setImages] = useState(null);
+    const [images, setImages] = useState([]);
 
     async function GetData() {
         setLoaded(false);
@@ -20,8 +20,12 @@ export const ReportModal = (ID) => {
     }
 
     function getImage() {
-        const file = Object.values(state.info);
-        setImages(file);
+        const files = Object.values(state.info);
+        files.map((file) => {
+            var imgs = images
+            imgs.push(file);
+            setImages(imgs);
+        })
     }
 
     useEffect(() => {
