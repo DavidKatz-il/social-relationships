@@ -728,7 +728,16 @@ async def create_report6(
         for studens in image_list_by_student.values()
         for pair in itertools.combinations(studens, 2)
     ]
+    all_students = (
+        db.query(models.Student)
+        .filter_by(owner_id=user.id)
+        .with_entities(models.Student.name)
+        .distinct()
+        .all()
+    )
+
     G = nx.from_edgelist(edgelist)
+    G.add_nodes_from([student_name for student_name, in all_students])
 
     pos = nx.spring_layout(G)
     nx.draw(G, pos=pos, with_labels=True, node_color="skyblue", font_size=8)
