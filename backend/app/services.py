@@ -605,7 +605,10 @@ async def create_report2(
 
     most_popular_student = {
         0: report_table_header,
-        **{i: [name, max_count] for i, name in enumerate(sorted(names_most_appear), start=1)},
+        **{
+            i: [name, max_count]
+            for i, name in enumerate(sorted(names_most_appear), start=1)
+        },
     }
 
     return most_popular_student
