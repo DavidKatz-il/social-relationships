@@ -716,7 +716,8 @@ async def create_report6(
     s = io.BytesIO()
     plt.savefig(s, format="png", bbox_inches="tight")
     s = base64.b64encode(s.getvalue()).decode("utf-8").replace("\n", "")
-
+    plt.close()
+        
     graph_draw_report = {
         "images": [f"data:image/png;base64,{s}"],
     }
