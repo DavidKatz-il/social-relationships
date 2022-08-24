@@ -605,7 +605,7 @@ async def create_report2(
 
     most_popular_student = {
         0: report_table_header,
-        **{i: [name, max_count] for i, name in enumerate(names_most_appear, start=1)},
+        **{i: [name, max_count] for i, name in enumerate(sorted(names_most_appear), start=1)},
     }
 
     return most_popular_student
@@ -646,7 +646,7 @@ async def create_report3(
         0: report_table_header,
         **{
             i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
-            for i, name in enumerate(set(sorted(besties)), start=1)
+            for i, name in enumerate(sorted(set(besties)), start=1)
         },
     }
 
@@ -672,7 +672,7 @@ async def create_report4(
         **{
             i: [image_name, stdnt_list_by_name["Unknown"].count(image_name)]
             for i, image_name in enumerate(
-                set(sorted(stdnt_list_by_name["Unknown"])), start=1
+                sorted(set(stdnt_list_by_name["Unknown"])), start=1
             )
         },
     }
@@ -811,7 +811,7 @@ async def create_report7(
         0: report_table_header,
         **{
             i: [name, len(student_group[name])]
-            for i, name in enumerate(set(sorted(student_group)), start=1)
+            for i, name in enumerate(sorted(set(student_group)), start=1)
         },
     }
 
@@ -862,7 +862,7 @@ async def create_report8(
         0: report_table_header,
         **{
             i: [name, ", ".join(sorted(student_group[name]))]
-            for i, name in enumerate(set(sorted(student_group)), start=1)
+            for i, name in enumerate(sorted(set(student_group)), start=1)
         },
     }
 
