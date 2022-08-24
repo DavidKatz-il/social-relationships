@@ -842,6 +842,26 @@ async def create_report9(
     return not_appear_report
 
 
+async def create_report10(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    image_list_by_student = await get_match_faces_by_image(
+        user, db, exclude_unknown=False
+    )
+    image_students_report = {
+        0: ["name", "names"],
+        **{
+            i: [image_name, ", ".join(image_list_by_student[image_name])]
+            for i, image_name in enumerate(sorted(image_list_by_student), start=1)
+        },
+    }
+
+    return image_students_report
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
@@ -871,6 +891,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Friends count": create_report7,
         "Friends group": create_report8,
         "Not appear": create_report9,
+        "Who is in the image": create_report10,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -934,6 +955,7 @@ async def update_report(
         "Friends count": create_report7,
         "Friends group": create_report8,
         "Not appear": create_report9,
+        "Who is in the image": create_report10,
     }
 
     report_db.info = await report_creator[report_db.name](
