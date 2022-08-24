@@ -566,13 +566,17 @@ async def create_report1(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
+    report_table_header = ["name", "count"]
+    if not name_list:
+        return {0: report_table_header}
+
     total_count = {name: name_list.count(name) for name in name_list}
     total_count_sorted = sorted(
         total_count.items(), key=lambda item: item[1], reverse=True
     )
 
     total_appear = {
-        0: ["name", "count"],
+        0: report_table_header,
         **{
             i: [name, name_list.count(name)]
             for i, (name, count) in enumerate(total_count_sorted, start=1)
@@ -589,6 +593,10 @@ async def create_report2(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
+    report_table_header = ["name", "count"]
+    if not name_list:
+        return {0: report_table_header}
+
     total_count = {name: name_list.count(name) for name in name_list}
     max_count = max(total_count.values())
     names_most_appear = [
@@ -596,7 +604,7 @@ async def create_report2(
     ]
 
     most_popular_student = {
-        0: ["name", "count"],
+        0: report_table_header,
         **{i: [name, max_count] for i, name in enumerate(names_most_appear, start=1)},
     }
 
@@ -610,6 +618,10 @@ async def create_report3(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
+    report_table_header = ["name", "bff", "count"]
+    if not name_list:
+        return {0: report_table_header}
+
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
     besties = {stndt_name: {} for stndt_name in name_list}
@@ -631,7 +643,7 @@ async def create_report3(
                 besties[stdnt][nested_stdnt] = len(match_pic)
 
     besties_counter = {
-        0: ["name", "bff", "count"],
+        0: report_table_header,
         **{
             i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
             for i, name in enumerate(set(sorted(besties)), start=1)
@@ -651,8 +663,12 @@ async def create_report4(
         user, db, exclude_unknown=False
     )
 
+    report_table_header = ["name", "count"]
+    if not stdnt_list_by_name:
+        return {0: report_table_header}
+
     total_appear = {
-        0: ["name", "count"],
+        0: report_table_header,
         **{
             i: [image_name, stdnt_list_by_name["Unknown"].count(image_name)]
             for i, image_name in enumerate(
@@ -676,11 +692,17 @@ async def create_report5(
         for studens in image_list_by_student.values()
         for pair in itertools.combinations(studens, 2)
     ]
+
+    report_table_header = ["name", "members"]
+    print(edgelist)
+    if not edgelist:
+        return {0: report_table_header}
+
     G = nx.from_edgelist(edgelist)
 
     communities = sorted(map(sorted, louvain_communities(G)))
     communities_report = {
-        0: ["name", "members"],
+        0: report_table_header,
         **{
             i: [f"community {i}", ", ".join(community)]
             for i, community in enumerate(communities, start=1)
@@ -697,6 +719,10 @@ async def create_report6(
         await create_match_faces(user, db)
 
     image_list_by_student = await get_match_faces_by_image(user, db)
+
+    if not image_list_by_student:
+        return {"images": []}
+
     edgelist = [
         tuple(pair)
         for studens in image_list_by_student.values()
@@ -732,6 +758,11 @@ async def create_report7(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
+
+    report_table_header = ["name", "friends amount"]
+    if not name_list:
+        return {0: report_table_header}
+
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
     my_friends = {stndt_name: {} for stndt_name in name_list}
@@ -761,7 +792,7 @@ async def create_report7(
                 student_group[stdnt_name].append(friend)
 
     student_group_cnt_report = {
-        0: ["name", "friends amount"],
+        0: report_table_header,
         **{
             i: [name, len(student_group[name])]
             for i, name in enumerate(set(sorted(student_group)), start=1)
@@ -778,6 +809,11 @@ async def create_report8(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
+
+    report_table_header = ["name", "friends"]
+    if not name_list:
+        return {0: report_table_header}
+
     stdnt_list_by_name = await get_match_faces_by_student(user, db)
 
     my_friends = {stndt_name: {} for stndt_name in name_list}
@@ -807,7 +843,7 @@ async def create_report8(
                 student_group[stdnt_name].append(friend)
 
     student_group_report = {
-        0: ["name", "friends"],
+        0: report_table_header,
         **{
             i: [name, ", ".join(sorted(student_group[name]))]
             for i, name in enumerate(set(sorted(student_group)), start=1)
@@ -824,6 +860,10 @@ async def create_report9(
         await create_match_faces(user, db)
 
     students_in_images = await get_students_list(user, db)
+    report_table_header = ["name"]
+    if not report_table_header:
+        return {0: report_table_header}
+
     all_students = (
         db.query(models.Student)
         .filter_by(owner_id=user.id)
@@ -835,7 +875,7 @@ async def create_report9(
         students_in_images
     )
     not_appear_report = {
-        0: ["name"],
+        0: report_table_header,
         **{i: [name] for i, name in enumerate(sorted(missing_students), start=1)},
     }
 
@@ -851,8 +891,13 @@ async def create_report10(
     image_list_by_student = await get_match_faces_by_image(
         user, db, exclude_unknown=False
     )
+
+    report_table_header = ["name", "names"]
+    if not image_list_by_student:
+        return {0: report_table_header}
+
     image_students_report = {
-        0: ["name", "names"],
+        0: report_table_header,
         **{
             i: [image_name, ", ".join(image_list_by_student[image_name])]
             for i, image_name in enumerate(sorted(image_list_by_student), start=1)
@@ -879,6 +924,13 @@ async def save_report_in_db(
 
 
 async def create_reports(user: schemas.User, db: orm.Session):
+    if (db.query(models.Image).filter_by(owner_id=user.id).count() == 0) or (
+        db.query(models.Student).filter_by(owner_id=user.id).count() == 0
+    ):
+        raise fastapi.HTTPException(
+            status_code=404, detail="There must be at least one student and one image."
+        )
+
     await create_match_faces(user, db)
 
     reports_creators = {
