@@ -20,12 +20,13 @@ export const ReportModal = (ID) => {
     }
 
     function getImage() {
-        const files = Object.values(state.info);
-        files.map((file) => {
-            var imgs = images
-            imgs.push(file);
-            setImages(imgs);
-        })
+        var imgs = Object.values(state.info)
+        setImages(imgs);
+        //files.map((file) => {
+        //    var imgs = images
+        //     imgs.push(file);
+        //    setImages(imgs);
+        //})
     }
 
     useEffect(() => {
@@ -51,9 +52,12 @@ export const ReportModal = (ID) => {
         {(loaded && state) ?
             <>
                 <h1 className="title" style={{ textAlign: "center" }}>{state.name}</h1>
-                {(isImages) ? (images) && <div style={{ textAlign: "center" }}>{
-                    images.map((img) => {
-                        return <img src={img} alt="" />
+                {(isImages) ? (images[0].length) && <div style={{ textAlign: "center" }}>{
+                    images[0].map((img) => {
+                        return <>
+                            <img src={img} alt="" />
+                            <hr style={{ height: 5, color: "black" }} />
+                        </>
                     })
                 }</div>
                     :
