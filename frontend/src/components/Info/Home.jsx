@@ -38,7 +38,7 @@ export const Home = () => {
 
     return <>
         <br /><ErrorMessage message={errorMessage} /><br />
-        <div style={{ textAlign: "center" }}><img src={social_relationships} height="350" width="350" /></div>
+        <div style={{ textAlign: "center" }}><img src={social_relationships} height="350" width="350" alt="" /></div>
         {(token) ? <>
             <div className="container">
                 <div className="columns">

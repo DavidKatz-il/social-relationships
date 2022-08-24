@@ -56,8 +56,8 @@ export const StudentsTable = () => {
             <div className="column is-3" key={student.id}>
               <div className="card is-shady" onClick={() => handleUpdate(student.id)} >
                 <div className="card-image">
-                  <figure className="image is-6by5">
-                    <img src={JSON.parse(student.images)[0]} alt={student.name} style={{ height: 320 }} />
+                  <figure className="image">
+                    <img src={JSON.parse(student.images)[0]} alt={student.name} width="250" />
                   </figure>
                 </div>
                 <div className="card-content">

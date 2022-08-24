@@ -49,7 +49,7 @@ export const ReportModal = (ID) => {
                 <h1 className="title" style={{ textAlign: "center" }}>{state.name}</h1>
                 {(isImages) ? (images) && <div style={{ textAlign: "center" }}>{
                     images.map((img) => {
-                        return <img src={img} alt={"report " + img} />
+                        return <img src={img} alt="" />
                     })
                 }</div>
                     :
