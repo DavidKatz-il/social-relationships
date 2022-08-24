@@ -38,6 +38,7 @@ export const ImageModal = ({ active, handleModal, token }) => {
         <div className="modal-card">
             <header className="modal-card-head has-background-primary-light">
                 <h1 className="modal-card-title">{"Create Image"}</h1>
+                <button class="delete is-large" onClick={handleClose} />
             </header>
             <section className="modal-card-body">
                 <form>

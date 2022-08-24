@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ErrorMessage } from "../Info/ErrorMessage"
 import { UserContext } from "../../context/UserContext";
 import * as g from "../../Global";
+import social_relationships from "../../social_relationships.png";
 
 export const Home = () => {
     const [token] = useContext(UserContext);
@@ -26,8 +27,8 @@ export const Home = () => {
 
     async function getUserData() {
         if (token !== 'null') {
-            await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setUserData, undefined, undefined);
-            await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData, undefined, undefined);
+            await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setUserData);
+            await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData);
         }
     };
 
@@ -37,6 +38,7 @@ export const Home = () => {
 
     return <>
         <br /><ErrorMessage message={errorMessage} /><br />
+        <div style={{ textAlign: "center" }}><img src={social_relationships} height="350" width="350" /></div>
         {(token) ? <>
             <div className="container">
                 <div className="columns">

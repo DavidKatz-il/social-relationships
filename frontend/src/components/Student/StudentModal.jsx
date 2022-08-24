@@ -64,6 +64,7 @@ export const StudentModal = ({ active, handleModal, token, id }) => {
     <div className="modal-card">
       <header className="modal-card-head has-background-primary-light">
         <h1 className="modal-card-title">{id ? "Update " : "Create "}Student</h1>
+        <button class="delete is-large" onClick={handleClose} />
       </header>
       <section className="modal-card-body">
         <form>
