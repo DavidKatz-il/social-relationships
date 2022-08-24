@@ -631,7 +631,7 @@ async def create_report3(
                 besties[stdnt][nested_stdnt] = len(match_pic)
 
     besties_counter = {
-        0: ["name", "besties", "count"],
+        0: ["name", "bff", "count"],
         **{
             i: [name, *max(besties[name].items(), key=operator.itemgetter(1))]
             for i, name in enumerate(set(sorted(besties)), start=1)
@@ -652,7 +652,7 @@ async def create_report4(
     )
 
     total_appear = {
-        0: ["image name", "count"],
+        0: ["name", "count"],
         **{
             i: [image_name, stdnt_list_by_name["Unknown"].count(image_name)]
             for i, image_name in enumerate(
@@ -680,7 +680,7 @@ async def create_report5(
 
     communities = sorted(map(sorted, louvain_communities(G)))
     communities_report = {
-        0: ["community name", "community members"],
+        0: ["name", "members"],
         **{
             i: [f"community {i}", ", ".join(community)]
             for i, community in enumerate(communities, start=1)
@@ -717,7 +717,7 @@ async def create_report6(
     plt.savefig(s, format="png", bbox_inches="tight")
     s = base64.b64encode(s.getvalue()).decode("utf-8").replace("\n", "")
     plt.close()
-        
+
     graph_draw_report = {
         "images": [f"data:image/png;base64,{s}"],
     }
@@ -761,7 +761,7 @@ async def create_report7(
                 student_group[stdnt_name].append(friend)
 
     student_group_cnt_report = {
-        0: ["student name", "friends amount"],
+        0: ["name", "friends amount"],
         **{
             i: [name, len(student_group[name])]
             for i, name in enumerate(set(sorted(student_group)), start=1)
@@ -807,7 +807,7 @@ async def create_report8(
                 student_group[stdnt_name].append(friend)
 
     student_group_report = {
-        0: ["student name", "friends name"],
+        0: ["name", "friends"],
         **{
             i: [name, ", ".join(sorted(student_group[name]))]
             for i, name in enumerate(set(sorted(student_group)), start=1)
@@ -840,7 +840,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Total appear": create_report1,
         "Most appearance": create_report2,
         "Besties": create_report3,
-        "Unknown": create_report4,
+        "Images with unknowns": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
         "Friends count": create_report7,
@@ -902,7 +902,7 @@ async def update_report(
         "Total appear": create_report1,
         "Most appearance": create_report2,
         "Besties": create_report3,
-        "Unknown": create_report4,
+        "Images with unknowns": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
         "Friends count": create_report7,
