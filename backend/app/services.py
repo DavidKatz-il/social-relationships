@@ -715,6 +715,22 @@ async def create_report5(
 async def create_report6(
     user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
 ):
+    def get_graph_draw_str(graph):
+        pos = nx.spring_layout(graph)
+        nx.draw(graph, pos=pos, with_labels=True, node_color="skyblue", font_size=8)
+        nx.draw_networkx_edge_labels(
+            graph,
+            pos,
+            edge_labels=nx.get_edge_attributes(graph, "weight"),
+            rotate=False,
+            font_size=8,
+        )
+        s = io.BytesIO()
+        plt.savefig(s, format="png", bbox_inches="tight")
+        s = base64.b64encode(s.getvalue()).decode("utf-8").replace("\n", "")
+        plt.close()
+        return s
+
     if recreate_match_faces:
         await create_match_faces(user, db)
 
@@ -737,24 +753,15 @@ async def create_report6(
     )
 
     G = nx.from_edgelist(edgelist)
+    graph_draw = get_graph_draw_str(G)
     G.add_nodes_from([student_name for student_name, in all_students])
-
-    pos = nx.spring_layout(G)
-    nx.draw(G, pos=pos, with_labels=True, node_color="skyblue", font_size=8)
-    nx.draw_networkx_edge_labels(
-        G,
-        pos,
-        edge_labels=nx.get_edge_attributes(G, "weight"),
-        rotate=False,
-        font_size=8,
-    )
-    s = io.BytesIO()
-    plt.savefig(s, format="png", bbox_inches="tight")
-    s = base64.b64encode(s.getvalue()).decode("utf-8").replace("\n", "")
-    plt.close()
+    graph_draw_nodes = get_graph_draw_str(G)
 
     graph_draw_report = {
-        "images": [f"data:image/png;base64,{s}"],
+        "images": [
+            f"data:image/png;base64,{base64_str}"
+            for base64_str in [graph_draw, graph_draw_nodes]
+        ],
     }
 
     return graph_draw_report
