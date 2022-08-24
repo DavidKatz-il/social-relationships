@@ -747,23 +747,24 @@ async def create_report6(
         for studens in image_list_by_student.values()
         for pair in itertools.combinations(studens, 2)
     ]
-    all_students = (
-        db.query(models.Student)
+    all_students = [
+        student.name
+        for student in db.query(models.Student)
         .filter_by(owner_id=user.id)
         .with_entities(models.Student.name)
         .distinct()
         .all()
-    )
+    ]
 
     G = nx.from_edgelist(edgelist)
-    graph_draw = get_graph_draw_str(G)
-    G.add_nodes_from([student_name for student_name, in all_students])
-    graph_draw_nodes = get_graph_draw_str(G)
+    graph_draw_images = [get_graph_draw_str(G)]
+    if sorted(G.nodes) != sorted(all_students):
+        G.add_nodes_from(all_students)
+        graph_draw_images.append(get_graph_draw_str(G))
 
     graph_draw_report = {
         "images": [
-            f"data:image/png;base64,{base64_str}"
-            for base64_str in [graph_draw, graph_draw_nodes]
+            f"data:image/png;base64,{base64_str}" for base64_str in graph_draw_images
         ],
     }
 
