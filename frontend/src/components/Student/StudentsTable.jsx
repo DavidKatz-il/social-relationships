@@ -11,7 +11,6 @@ export const StudentsTable = () => {
   const [loaded, setLoaded] = useState(false);
   const [activeModal, setActiveModal] = useState(false);
   const [id, setId] = useState(null);
-  //const [search, setSearch] = useState("");
 
   async function handleUpdate(id) {
     setId(id);
@@ -32,11 +31,6 @@ export const StudentsTable = () => {
     getStudents();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  {/*useEffect(() => {
-    console.log("search: " + search);
-    //search for students....
-  }, [search]);*/}
-
   function handleModal() {
     setActiveModal(!activeModal);
     getStudents();
@@ -50,10 +44,6 @@ export const StudentsTable = () => {
         <div className="column">
           <button className="button is-fullwidth is-primary" onClick={() => setActiveModal(true)}>Add a new student</button>
         </div>
-        {/*<div className="column">
-          <input className="input is-fullwidth" placeholder="Search students" type="search"
-            value={search} onChange={e => setSearch(e.target.value)} />
-</div>*/}
       </div>
     </section>
     <br />
@@ -66,7 +56,7 @@ export const StudentsTable = () => {
             <div className="column is-3" key={student.id}>
               <div className="card is-shady" onClick={() => handleUpdate(student.id)} >
                 <div className="card-image">
-                  <figure className="image is-6by3">
+                  <figure className="image is-6by5">
                     <img src={JSON.parse(student.images)[0]} alt={student.name} style={{ height: 320 }} />
                   </figure>
                 </div>

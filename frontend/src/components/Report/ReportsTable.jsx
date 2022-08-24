@@ -37,8 +37,8 @@ export const ReportsTable = () => {
         setActiveTab(name);
     }
 
-    return <>
-        <section className="container">
+    return <section className="container">
+        <section >
             <div className="columns">
                 <div className="column">
                     <button className="button is-fullwidth is-primary" onClick={handleCreateOrUpdate}
@@ -47,28 +47,34 @@ export const ReportsTable = () => {
             </div>
         </section>
 
-        <aside className="menu" style={{ padding: 25, float: "left" }}>
-            <p className="menu-label"><b>Reports</b></p>
-            <ul className="menu-list">
-                {reports && reports.map(r => {
-                    return <li><a className={activeTab === r.name ? "is-active" : ""} onClick={() => setActiveReport(r.name, r.id)} >{r.name}</a></li>
-                })}
-            </ul>
-        </aside>
-        <section className="container">
+        <section >
             <br /><ErrorMessage message={errorMessage} /><br />
-            {(loaded && reports.length && activeID > 0) ? <ReportModal ID={activeID} />
-                :
-                <>
-                    {(loaded && reports.length) ?
-                        <p style={{ textAlign: "center" }}><b>Select A Report</b></p>
+            <div className="columns">
+                <div className="column">
+                    <aside className="menu" style={{ padding: 25, float: "left" }}>
+                        <p className="menu-label"><b>Reports</b></p>
+                        <ul className="menu-list">
+                            {reports && reports.map(r => {
+                                return <li><a className={activeTab === r.name ? "is-active" : ""} onClick={() => setActiveReport(r.name, r.id)} >{r.name}</a></li>
+                            })}
+                        </ul>
+                    </aside>
+                </div>
+                <div className="column is-four-fifths">
+                    {(loaded && reports.length && activeID > 0) ? <ReportModal ID={activeID} />
                         :
-                        <div>
-                            <p style={{ textAlign: "center" }}><br />Loading your reports</p>
-                            <progress className="progress is-small is-primary" max="100">99%</progress>
-                        </div>}
-                </>
-            }
+                        <>
+                            {(loaded && reports.length) ?
+                                <p style={{ textAlign: "center" }}><b>Select A Report</b></p>
+                                :
+                                <div>
+                                    <p style={{ textAlign: "center" }}><br />Loading your reports</p>
+                                    <progress className="progress is-small is-primary" max="100">99%</progress>
+                                </div>}
+                        </>
+                    }
+                </div>
+            </div>
         </section>
-    </>
+    </section >
 }

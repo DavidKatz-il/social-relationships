@@ -42,7 +42,7 @@ export const ReportModal = (ID) => {
     }, [state]);
 
 
-    return <section className="container">
+    return <section >
         <br /><ErrorMessage message={errorMessage} /><br />
         {(loaded && state) ?
             <>
@@ -53,12 +53,14 @@ export const ReportModal = (ID) => {
                     })
                 }</div>
                     :
-                    <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
-                        <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
-                        <tbody>{Object.values(state.info).map((v, i) => {
-                            if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
-                        })}</tbody>
-                    </table>}
+                    <div>
+                        <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
+                            <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
+                            <tbody>{Object.values(state.info).map((v, i) => {
+                                if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
+                            })}</tbody>
+                        </table>
+                    </div>}
             </>
             :
             <div>

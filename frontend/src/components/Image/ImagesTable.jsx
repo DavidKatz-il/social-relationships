@@ -47,7 +47,7 @@ export const ImagesTable = () => {
                     {images.map((img) => (
                         <div className="column is-4" key={img.id}>
                             <div className="card is-shady">
-                                <div className="card-image" onClick={() => { setActiveModal(true); }}>
+                                <div className="card-image">
                                     <figure className="image is-3by2">
                                         <img src={img.image} alt="" />
                                     </figure>
@@ -57,8 +57,7 @@ export const ImagesTable = () => {
                                 </div>
                                 <footer className="card-footer">
                                     <button className="button is-danger card-footer-item"
-                                        onClick={() => handleDelete(img.id)} >Delete
-                                    </button>
+                                        onClick={() => handleDelete(img.id)} >Delete</button>
                                 </footer>
                             </div>
                         </div>

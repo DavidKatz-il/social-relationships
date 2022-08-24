@@ -2,28 +2,25 @@ import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import logo from '../logo.png';
-import logo_social_relationships from '../social_relationships.png';
 
 export const HeaderTabs = () => {
     const [token, setToken] = useContext(UserContext);
     const [activeTab, setActiveTab] = useState(window.location.pathname.substring(1, window.location.pathname.length));
-    const [pageTitle,setPageTitle] = useState("Page");
-    const [pageInfo,setPageInfo] = useState("some info about the page");
 
     const handleLogout = () => {
         setToken(null);
     };
 
     return (<>
-        <nav className="navbar">{/* className="navbar-menu is-info" set background color for the tabs pane also*/}
+        <nav className="navbar is-fixed-top">
             <div className="navbar-brand">
                 <NavLink className="navbar-item" to="/" onClick={() => setActiveTab("home")}>
-                    <img src={logo} alt="Logo" width="28" height="28" />
+                    <img src={logo} alt="Logo" width="40" height="50" />
                 </NavLink>
             </div>
             <div className="navbar-menu">
                 <div className={"navbar-start"}>
-                    <div className="tabs is-boxed" >
+                    <div className="tabs is-toggle is-large" >
                         <ul className="navbar-item">
                             <li className={activeTab === "home" || activeTab === "" ? "is-active" : ""} onClick={() => setActiveTab("home")}>
                                 <NavLink to="/home">
@@ -50,22 +47,7 @@ export const HeaderTabs = () => {
                                         <span>Reports</span>
                                     </NavLink>
                                 </li>
-                                {/*<li style={{ paddingRight: 70, paddingLeft: 70 }} />*/}
                             </>}
-                            {/*
-                            <li className={activeTab === "about" ? "is-active" : ""} onClick={() => setActiveTab("about")}>
-                                <NavLink to="/about">
-                                    <i className="icon is-small fa fa-info-circle" />
-                                    <span>About</span>
-                                </NavLink>
-                            </li>
-                            <li className={activeTab === "contact" ? "is-active" : ""} onClick={() => setActiveTab("contact")}>
-                                <NavLink to="/contact">
-                                    <i className="icon is-small fa fa-phone-alt" />
-                                    <span>Contact us</span>
-                                </NavLink>
-                            </li>
-                            */}
                         </ul>
                     </div></div>
                 <div className="navbar-end">
@@ -98,25 +80,6 @@ export const HeaderTabs = () => {
                 </div>
             </div>
         </nav>
-        {/*
-        <section className="hero is-primary">
-            <div style={{ padding: 7 }}>
-                <div className="container">
-                    <div className="columns">
-                        <div className="column">
-                            <img src={logo_social_relationships} alt="social_relationships" width="120" height="60" />
-                        </div>
-                        <div className="column">
-                            <h1 className="title">{pageTitle}</h1>
-                        </div>
-                        <div className="column">
-                            <h2 className="subtitle">{pageInfo}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        */}
         <br />
     </>);
 };
