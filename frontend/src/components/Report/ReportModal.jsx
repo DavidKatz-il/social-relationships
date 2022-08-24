@@ -56,7 +56,7 @@ export const ReportModal = (ID) => {
                     images[0].map((img) => {
                         return <>
                             <img src={img} alt="" />
-                            <hr style={{ height: 5, color: "black" }} />
+                            <hr style={{ height: 2, width: "100%", background: "black" }} />
                         </>
                     })
                 }</div>
