@@ -748,7 +748,8 @@ async def create_report6(
         for pair in itertools.combinations(studens, 2)
     ]
     all_students = [
-        student.name for student in db.query(models.Student)
+        student.name
+        for student in db.query(models.Student)
         .filter_by(owner_id=user.id)
         .with_entities(models.Student.name)
         .distinct()
