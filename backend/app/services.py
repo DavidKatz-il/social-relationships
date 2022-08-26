@@ -602,7 +602,7 @@ async def create_report1(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
-    report_table_header = ["name", "count"]
+    report_table_header = ["Name", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -629,7 +629,7 @@ async def create_report2(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
-    report_table_header = ["name", "count"]
+    report_table_header = ["Name", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -657,7 +657,7 @@ async def create_report3(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
-    report_table_header = ["name", "bff", "count"]
+    report_table_header = ["Name", "BFF", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -702,7 +702,7 @@ async def create_report4(
         user, db, exclude_unknown=False
     )
 
-    report_table_header = ["name", "count"]
+    report_table_header = ["Name", "Count"]
     if not stdnt_list_by_name:
         return {0: report_table_header}
 
@@ -732,7 +732,7 @@ async def create_report5(
         for pair in itertools.combinations(studens, 2)
     ]
 
-    report_table_header = ["name", "members"]
+    report_table_header = ["Name", "Members"]
     print(edgelist)
     if not edgelist:
         return {0: report_table_header}
@@ -815,7 +815,7 @@ async def create_report7(
 
     name_list = await get_students_list(user, db)
 
-    report_table_header = ["name", "friends amount"]
+    report_table_header = ["Student", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -866,7 +866,7 @@ async def create_report8(
 
     name_list = await get_students_list(user, db)
 
-    report_table_header = ["name", "friends"]
+    report_table_header = ["Student", "Students"]
     if not name_list:
         return {0: report_table_header}
 
@@ -916,7 +916,7 @@ async def create_report9(
         await create_match_faces(user, db)
 
     students_in_images = await get_students_list(user, db)
-    report_table_header = ["name"]
+    report_table_header = ["Student"]
     if not report_table_header:
         return {0: report_table_header}
 
@@ -948,7 +948,7 @@ async def create_report10(
         user, db, exclude_unknown=False
     )
 
-    report_table_header = ["name", "names"]
+    report_table_header = ["Image", "Students"]
     if not image_list_by_student:
         return {0: report_table_header}
 
