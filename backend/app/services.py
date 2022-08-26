@@ -601,21 +601,16 @@ async def create_report1(
     if recreate_match_faces:
         await create_match_faces(user, db)
 
-    name_list = await get_students_list(user, db)
-    report_table_header = ["Name", "Count"]
-    if not name_list:
+    stdnt_list_by_name = await get_match_faces_by_student(user, db)
+    report_table_header = ["Student", "Count", "Images"]
+    if not stdnt_list_by_name:
         return {0: report_table_header}
-
-    total_count = {name: name_list.count(name) for name in name_list}
-    total_count_sorted = sorted(
-        total_count.items(), key=lambda item: item[1], reverse=True
-    )
 
     total_appear = {
         0: report_table_header,
         **{
-            i: [name, name_list.count(name)]
-            for i, (name, count) in enumerate(total_count_sorted, start=1)
+            i: [name, len(stdnt_list_by_name[name]), ', '.join(sorted(stdnt_list_by_name[name]))]
+            for i, name in enumerate(stdnt_list_by_name, start=1)
         },
     }
 
@@ -629,7 +624,7 @@ async def create_report2(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
-    report_table_header = ["Name", "Count"]
+    report_table_header = ["Student", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -657,7 +652,7 @@ async def create_report3(
         await create_match_faces(user, db)
 
     name_list = await get_students_list(user, db)
-    report_table_header = ["Name", "BFF", "Count"]
+    report_table_header = ["Student", "BFF", "Count"]
     if not name_list:
         return {0: report_table_header}
 
@@ -702,7 +697,7 @@ async def create_report4(
         user, db, exclude_unknown=False
     )
 
-    report_table_header = ["Name", "Count"]
+    report_table_header = ["Image", "Count"]
     if not stdnt_list_by_name:
         return {0: report_table_header}
 
@@ -732,7 +727,7 @@ async def create_report5(
         for pair in itertools.combinations(studens, 2)
     ]
 
-    report_table_header = ["Name", "Members"]
+    report_table_header = ["Community", "Members"]
     print(edgelist)
     if not edgelist:
         return {0: report_table_header}
@@ -743,7 +738,7 @@ async def create_report5(
     communities_report = {
         0: report_table_header,
         **{
-            i: [f"community {i}", ", ".join(community)]
+            i: [f"{i}", ", ".join(community)]
             for i, community in enumerate(communities, start=1)
         },
     }
@@ -815,7 +810,7 @@ async def create_report7(
 
     name_list = await get_students_list(user, db)
 
-    report_table_header = ["Student", "Count"]
+    report_table_header = ["Student", "Count", "Students"]
     if not name_list:
         return {0: report_table_header}
 
@@ -850,7 +845,7 @@ async def create_report7(
     student_group_cnt_report = {
         0: report_table_header,
         **{
-            i: [name, len(student_group[name])]
+            i: [name, len(student_group[name]), ", ".join(sorted(student_group[name]))]
             for i, name in enumerate(sorted(set(student_group)), start=1)
         },
     }
@@ -859,57 +854,6 @@ async def create_report7(
 
 
 async def create_report8(
-    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
-):
-    if recreate_match_faces:
-        await create_match_faces(user, db)
-
-    name_list = await get_students_list(user, db)
-
-    report_table_header = ["Student", "Students"]
-    if not name_list:
-        return {0: report_table_header}
-
-    stdnt_list_by_name = await get_match_faces_by_student(user, db)
-
-    my_friends = {stndt_name: {} for stndt_name in name_list}
-    for nested_stndt_name in my_friends:
-        my_friends[nested_stndt_name] = {
-            name: 0 for name in name_list if name != nested_stndt_name
-        }
-
-    for stdnt in stdnt_list_by_name:
-        for nested_stdnt in stdnt_list_by_name:
-            if stdnt == nested_stdnt:
-                continue
-            match_pic = list(
-                set(stdnt_list_by_name[stdnt]).intersection(
-                    stdnt_list_by_name[nested_stdnt]
-                )
-            )
-            if len(match_pic) > 0:
-                my_friends[stdnt][nested_stdnt] = len(match_pic)
-
-    student_group = {}
-
-    for stdnt_name in my_friends.keys():
-        student_group[stdnt_name] = []
-        for friend in my_friends[stdnt_name]:
-            if my_friends[stdnt_name][friend] > 0:
-                student_group[stdnt_name].append(friend)
-
-    student_group_report = {
-        0: report_table_header,
-        **{
-            i: [name, ", ".join(sorted(student_group[name]))]
-            for i, name in enumerate(sorted(set(student_group)), start=1)
-        },
-    }
-
-    return student_group_report
-
-
-async def create_report9(
     user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
 ):
     if recreate_match_faces:
@@ -938,7 +882,7 @@ async def create_report9(
     return not_appear_report
 
 
-async def create_report10(
+async def create_report9(
     user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
 ):
     if recreate_match_faces:
@@ -993,13 +937,12 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Total appear": create_report1,
         "Most appearance": create_report2,
         "Besties": create_report3,
-        "Unknown": create_report4,
+        "Images with unknown": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
-        "Friends count": create_report7,
-        "Friends group": create_report8,
-        "Not appear": create_report9,
-        "Who is in the image": create_report10,
+        "Friends": create_report7,
+        "Not appear": create_report8,
+        "Who is in the image": create_report9,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -1060,10 +1003,9 @@ async def update_report(
         "Unknown": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
-        "Friends count": create_report7,
-        "Friends group": create_report8,
-        "Not appear": create_report9,
-        "Who is in the image": create_report10,
+        "Friends": create_report7,
+        "Not appear": create_report8,
+        "Who is in the image": create_report9,
     }
 
     report_db.info = await report_creator[report_db.name](

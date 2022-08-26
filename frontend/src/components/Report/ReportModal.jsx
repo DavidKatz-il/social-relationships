@@ -56,19 +56,24 @@ export const ReportModal = (ID) => {
                     images[0].map((img) => {
                         return <>
                             <img src={img} alt="" />
-                            <hr style={{ height: 2, width: "100%", background: "black" }} />
+                            <hr style={{ height: 4, width: "100%", background: "gray" }} />
                         </>
                     })
                 }</div>
                     :
                     <div>
+                        {(Object.values(state.info).length == 1) ? 
+                        <h1 className="subtitle" style={{ textAlign: "center" }}>There is no data for this report.</h1>
+                        :
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
                             <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
                             <tbody>{Object.values(state.info).map((v, i) => {
                                 if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
                             })}</tbody>
                         </table>
-                    </div>}
+                        }
+                    </div>
+                }
             </>
             :
             <div>
