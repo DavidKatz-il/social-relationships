@@ -43,6 +43,16 @@ async def create_user(
     return await services.create_token(user)
 
 
+@app.put("/api/users", status_code=200)
+async def update_user(
+    user_update: schemas.UserUpdate,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    await services.update_user(user_update, user, db)
+    return {"message", "Successfully Updated."}
+
+
 @app.post("/api/token")
 async def generate_token(
     form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends(),

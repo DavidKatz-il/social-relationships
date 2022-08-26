@@ -38,22 +38,31 @@ async def get_user_by_email(email: str, db: orm.Session):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-async def validate_user(user: schemas.UserCreate):
-    min_pass_len = 6
+async def validate_email(email: str, db: orm.Session):
     email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-
-    if not user.email or not re.match(email_regex, user.email):
+    if not email or not re.match(email_regex, email):
         raise fastapi.HTTPException(status_code=400, detail="Invalid email address.")
 
-    if len(user.hashed_password) < min_pass_len:
+    if await get_user_by_email(email=email, db=db):
+        raise fastapi.HTTPException(status_code=401, detail="Email already exist.")
+
+
+async def validate_hashed_password(hashed_password: str):
+    min_pass_len = 6
+    if len(hashed_password) < min_pass_len:
         raise fastapi.HTTPException(
             status_code=400,
             detail=f"The password must contain at least {min_pass_len} characters.",
         )
 
 
+async def validate_user(user: schemas.UserCreate, db: orm.Session):
+    await validate_email(user.email, db)
+    await validate_hashed_password(user.hashed_password)
+
+
 async def create_user(user: schemas.UserCreate, db: orm.Session):
-    await validate_user(user=user)
+    await validate_user(user=user, db=db)
 
     user.hashed_password = bcrypt.hash(user.hashed_password)
     user_obj = models.User(**user.dict())
@@ -62,6 +71,33 @@ async def create_user(user: schemas.UserCreate, db: orm.Session):
     db.commit()
     db.refresh(user_obj)
     return user_obj
+
+
+async def update_user(
+    user_update: schemas.UserUpdate, user: schemas.User, db: orm.Session
+):
+    user_db = db.query(models.User).filter(models.User.id == user.id).first()
+    
+    if user_update.email and user_update.email != user_db.email:
+        await validate_email(user_update.email, db=db)
+        user_db.email = user_update.email
+    if (
+        user_update.hashed_password
+        and user_update.hashed_password != user_db.hashed_password
+    ):
+        await validate_hashed_password(user_update.hashed_password)
+        user_db.hashed_password = bcrypt.hash(user_update.hashed_password)
+    if user_update.teacher_name:
+        user_db.teacher_name = user_update.teacher_name
+    if user_update.school_name:
+        user_db.school_name = user_update.school_name
+    
+    user_db.datetime_updated = datetime.utcnow()
+
+    db.commit()
+    db.refresh(user_db)
+
+    return schemas.User.from_orm(user_db)
 
 
 async def authenticate_user(email: str, password: str, db: orm.Session):

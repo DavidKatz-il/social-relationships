@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
+from typing_extensions import Self
 
 from pydantic import BaseModel
 
@@ -15,6 +16,13 @@ class UserCreate(_UserBase):
 
     class Config:
         orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    email: Optional[str]
+    teacher_name: Optional[str]
+    school_name: Optional[str]
+    hashed_password: Optional[str]
 
 
 class User(_UserBase):
