@@ -1,15 +1,32 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import * as g from "../Global";
 import logo from '../logo.png';
 
 export const HeaderTabs = () => {
     const [token, setToken] = useContext(UserContext);
     const [activeTab, setActiveTab] = useState(window.location.pathname.substring(1, window.location.pathname.length));
+    const [userName, setUserName] = useState("");
 
     const handleLogout = () => {
         setToken(null);
     };
+
+    function getUser(user) {
+        if (user) setUserName(user.teacher_name);
+    }
+    const fetchUser = async () => {
+        await g.fetchData("GET", "application/json", token, "user", undefined, "", getUser);
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, [token])
+
+    useEffect(() => {
+        fetchUser();
+    }, [])
 
     return (<>
         <nav className="navbar is-fixed-top">
@@ -53,13 +70,20 @@ export const HeaderTabs = () => {
                 <div className="navbar-end">
                     <div className="navbar-item">
                         <div className="field is-grouped">
-                            {token ?
+                            {token ? <>
+                                <p className="control">
+                                    <NavLink className="button" to="/User">
+                                        <i className="icon fas fa-edit" />
+                                        <span>{userName}</span>
+                                    </NavLink>
+                                </p>
                                 <p className="control">
                                     <button className="button is-secondary" onClick={handleLogout}>
                                         <i className="icon fa fa-sign-out" />
                                         <span>Logout</span>
                                     </button>
                                 </p>
+                            </>
                                 : <>
                                     <p className="control">
                                         <NavLink className="button is-primary" to="/Login">
