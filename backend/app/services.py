@@ -896,14 +896,18 @@ async def create_report9(
         user, db, exclude_unknown=False
     )
 
-    report_table_header = ["Image", "Students"]
+    report_table_header = ["Image", "Count", "Students"]
     if not image_list_by_student:
         return {0: report_table_header}
 
     image_students_report = {
         0: report_table_header,
         **{
-            i: [image_name, ", ".join(image_list_by_student[image_name])]
+            i: [
+                image_name,
+                len(image_list_by_student[image_name]),
+                ", ".join(image_list_by_student[image_name]),
+            ]
             for i, image_name in enumerate(sorted(image_list_by_student), start=1)
         },
     }
