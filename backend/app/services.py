@@ -77,7 +77,7 @@ async def update_user(
     user_update: schemas.UserUpdate, user: schemas.User, db: orm.Session
 ):
     user_db = db.query(models.User).filter(models.User.id == user.id).first()
-    
+
     if user_update.email and user_update.email != user_db.email:
         await validate_email(user_update.email, db=db)
         user_db.email = user_update.email
@@ -91,7 +91,7 @@ async def update_user(
         user_db.teacher_name = user_update.teacher_name
     if user_update.school_name:
         user_db.school_name = user_update.school_name
-    
+
     user_db.datetime_updated = datetime.utcnow()
 
     db.commit()
@@ -609,7 +609,11 @@ async def create_report1(
     total_appear = {
         0: report_table_header,
         **{
-            i: [name, len(stdnt_list_by_name[name]), ', '.join(sorted(stdnt_list_by_name[name]))]
+            i: [
+                name,
+                len(stdnt_list_by_name[name]),
+                ", ".join(sorted(stdnt_list_by_name[name])),
+            ]
             for i, name in enumerate(stdnt_list_by_name, start=1)
         },
     }
@@ -1000,7 +1004,7 @@ async def update_report(
         "Total appear": create_report1,
         "Most appearance": create_report2,
         "Besties": create_report3,
-        "Unknown": create_report4,
+        "Images with unknown": create_report4,
         "Communities": create_report5,
         "Graph": create_report6,
         "Friends": create_report7,
