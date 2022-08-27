@@ -56,13 +56,13 @@ export const ImagesTable = () => {
             <section className="container">
                 <div className="columns is-multiline">
                     {images.map((img) => (
-                        <div className="column is-4" key={img.id} onClick={() => {
-                            setFaceModalID(img.id);
-                            setFaceModalName(img.name);
-                            setActiveFaceModal(true);
-                        }}>
+                        <div className="column is-4" key={img.id} >
                             <div className="card is-shady">
-                                <div className="card-image">
+                                <div className="card-image" onClick={() => {
+                                    setFaceModalID(img.id);
+                                    setFaceModalName(img.name);
+                                    setActiveFaceModal(true);
+                                }}>
                                     <figure className="image is-3by2">
                                         <img src={img.image} alt="" />
                                     </figure>
