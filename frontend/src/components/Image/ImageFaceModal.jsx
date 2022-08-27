@@ -7,7 +7,8 @@ export const ImageFaceModal = ({ active, handleModal, ID, name }) => {
     const [token] = useContext(UserContext);
     const [image, setImage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [myID, setMyID] = useState(ID.valueOf().ID);
+    const [myID, setMyID] = useState(ID);
+    const [activeRefresher, setActiveRefresher] = useState(active);
 
     function cleanFormData() {
         setImage("");
@@ -19,19 +20,32 @@ export const ImageFaceModal = ({ active, handleModal, ID, name }) => {
         handleModal();
     }
 
+    function handleSetImage(data) {
+        setImage(data.image)
+    }
+
     async function getImage() {
-        await g.fetchData("GET", "application/json", token, "images_faces/" + ID.valueOf().ID, setErrorMessage,
-            "Something went wrong when getting image", setImage);
+        await g.fetchData("GET", "application/json", token, "images_faces/" + ID, setErrorMessage,
+            "Something went wrong when getting image", handleSetImage);
+        setActiveRefresher(!activeRefresher);
     }
 
     useEffect(() => {
-        setMyID(ID.valueOf().ID);
-        if (myID > 0) getImage();
+        setMyID(ID);
+        setActiveRefresher(active);
+        if (ID > 0) getImage();
     }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-    if (ID.valueOf().ID !== myID) {
-        setMyID(ID.valueOf().ID);
-        if (myID > 0) getImage();
+    useEffect(() => {
+        setMyID(ID);
+        setActiveRefresher(active);
+        if (ID > 0) getImage();
+    }, [ID]);
+
+
+    if (ID !== myID) {
+        setMyID(ID);
+        if (ID > 0) getImage();
     }
 
     return <div className={`modal ${active && "is-active"}`}>
