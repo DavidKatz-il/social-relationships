@@ -61,7 +61,7 @@ export const ImageFaceModal = ({ active, handleModal, ID, name }) => {
                 : 
                 <div>
                     <p style={{ textAlign: "center" }}><br />Loading the image</p>
-                    <progress className="progress is-small is-primary" max="100">99%</progress>
+                    <progress className="progress is-small is-primary" max="100">50%</progress>
                 </div>
                 }
                 
