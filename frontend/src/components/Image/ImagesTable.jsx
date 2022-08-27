@@ -3,6 +3,7 @@ import { ErrorMessage } from "../Info/ErrorMessage";
 import { ImageModal } from "./ImageModal";
 import { UserContext } from "../../context/UserContext";
 import * as g from "../../Global";
+import { ImageFaceModal } from "./ImageFaceModal";
 
 export const ImagesTable = () => {
     const [token] = useContext(UserContext);
@@ -10,6 +11,9 @@ export const ImagesTable = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loaded, setLoaded] = useState(false);
     const [activeModal, setActiveModal] = useState(false);
+    const [activeFaceModal, setActiveFaceModal] = useState(false);
+    const [faceModalID, setFaceModalID] = useState(0);
+    const [faceModalName, setFaceModalName] = useState("");
 
     async function handleDelete(id) {
         await g.fetchData("DELETE", "application/json", token, `images/${id}`, setErrorMessage,
@@ -30,8 +34,15 @@ export const ImagesTable = () => {
         getImages();
     }
 
+    function handleFaceModal() {
+        setActiveFaceModal(!activeFaceModal);
+        setFaceModalID(0);
+        setFaceModalName("");
+    }
+
     return <>
         <ImageModal active={activeModal} handleModal={handleModal} token={token} />
+        <ImageFaceModal active={activeFaceModal} handleModal={handleFaceModal} ID={faceModalID} name={faceModalName} />
         <section className="container">
             <div className="columns">
                 <div className="column">
@@ -45,7 +56,11 @@ export const ImagesTable = () => {
             <section className="container">
                 <div className="columns is-multiline">
                     {images.map((img) => (
-                        <div className="column is-4" key={img.id}>
+                        <div className="column is-4" key={img.id} onClick={() => {
+                            setFaceModalID(img.id);
+                            setFaceModalName(img.name);
+                            setActiveFaceModal(true);
+                        }}>
                             <div className="card is-shady">
                                 <div className="card-image">
                                     <figure className="image is-3by2">

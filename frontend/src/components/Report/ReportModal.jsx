@@ -22,11 +22,6 @@ export const ReportModal = (ID) => {
     function getImage() {
         var imgs = Object.values(state.info)
         setImages(imgs);
-        //files.map((file) => {
-        //    var imgs = images
-        //     imgs.push(file);
-        //    setImages(imgs);
-        //})
     }
 
     useEffect(() => {
@@ -38,6 +33,7 @@ export const ReportModal = (ID) => {
         setMyID(ID.valueOf().ID);
         if (myID > 0) GetData();
     }
+
     useEffect(() => {
         if (state) {
             const isimg = Object.keys(state.info).includes("images")
@@ -45,7 +41,6 @@ export const ReportModal = (ID) => {
             if (isimg) getImage();
         }
     }, [state]);
-
 
     return <section >
         <br /><ErrorMessage message={errorMessage} /><br />
@@ -62,15 +57,15 @@ export const ReportModal = (ID) => {
                 }</div>
                     :
                     <div>
-                        {(Object.values(state.info).length == 1) ? 
-                        <h1 className="subtitle" style={{ textAlign: "center" }}>There is no data for this report.</h1>
-                        :
-                        <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
-                            <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
-                            <tbody>{Object.values(state.info).map((v, i) => {
-                                if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
-                            })}</tbody>
-                        </table>
+                        {(Object.values(state.info).length == 1) ?
+                            <h1 className="subtitle" style={{ textAlign: "center" }}>There is no data for this report.</h1>
+                            :
+                            <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>
+                                <thead><tr>{Object.values(state.info[0]).map((v) => (<th>{v}</th>))}</tr></thead>
+                                <tbody>{Object.values(state.info).map((v, i) => {
+                                    if (i > 0) return <tr>{v.map((c) => (<td>{c}</td>))}</tr>
+                                })}</tbody>
+                            </table>
                         }
                     </div>
                 }
