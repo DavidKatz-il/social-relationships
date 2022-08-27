@@ -4,6 +4,7 @@ import json
 import base64
 import operator
 import itertools
+from typing import List
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -16,6 +17,7 @@ import matplotlib.pyplot as plt
 from passlib.hash import bcrypt
 from sqlalchemy import orm
 from networkx.algorithms.community import louvain_communities
+from PIL import Image, ImageDraw, ImageFont
 from app import database, models, schemas
 
 JWT_SECRET = "special-jwt-secret"
@@ -296,6 +298,20 @@ async def get_image(image_id: int, user: schemas.User, db: orm.Session):
         obj_id=image_id, user_id=user.id, model=models.Image, db=db
     )
 
+    return schemas.Image.from_orm(image_db)
+
+
+async def get_image_faces(image_id: int, user: schemas.User, db: orm.Session):
+    image_db = await _get_object_by_id(
+        obj_id=image_id, user_id=user.id, model=models.Image, db=db
+    )
+    face_db = (
+        db.query(models.FaceImage)
+        .filter_by(owner_id=user.id)
+        .filter(models.FaceImage.name == image_db.name)
+        .one()
+    )
+    image_db.image = f"data:image/png;base64,{get_img_with_draw_boxes(image_db.image, face_db.face_locations, face_db.student_names)}"
     return schemas.Image.from_orm(image_db)
 
 
@@ -732,7 +748,6 @@ async def create_report5(
     ]
 
     report_table_header = ["Community", "Members"]
-    print(edgelist)
     if not edgelist:
         return {0: report_table_header}
 
@@ -915,6 +930,76 @@ async def create_report9(
     return image_students_report
 
 
+def get_img_with_draw_boxes(
+    image_data: str, locations: List[List[int]], names: List[str]
+):
+    image_data = re.sub("^data:image/.+;base64,", "", image_data)
+    image = Image.open(io.BytesIO(base64.b64decode(image_data)))
+    draw = ImageDraw.Draw(image)
+
+    for (top, right, bottom, left), student_name in zip(locations, names):
+        student_name = student_name.encode("utf-8")
+        text_width, text_height = draw.textsize(student_name)
+        text_width, text_height = text_width * 5, text_height * 5
+
+        color = (0, 0, 255)
+        if student_name == b"Unknown":
+            color = (255, 0, 0)
+
+        draw.rectangle(((left, top), (right, bottom)), outline=color)
+        draw.rectangle(
+            ((left, bottom), (right, bottom + int(image.size[0] * 0.02))),
+            fill=color,
+            outline=color,
+        )
+
+        font = ImageFont.truetype("./data/arial.ttf", int(image.size[0] * 0.015))
+        draw.text(
+            (left, bottom),
+            student_name.decode("utf-8"),
+            fill=(255, 255, 255, 255),
+            font=font,
+        )
+
+    buffered = io.BytesIO()
+    image.save(buffered, format="png")
+    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8").replace("\n", "")
+    image.close()
+    return img_str
+
+
+async def create_report10(
+    user: schemas.User, db: orm.Session, recreate_match_faces: bool = True
+):
+    if recreate_match_faces:
+        await create_match_faces(user, db)
+
+    db_images = db.query(models.Image).filter_by(owner_id=user.id).all()
+    if not db_images:
+        return {"images": []}
+
+    images = {}
+    for image_db in db_images:
+        face_db = (
+            db.query(models.FaceImage)
+            .filter_by(owner_id=user.id)
+            .filter(models.FaceImage.name == image_db.name)
+            .one()
+        )
+        images[image_db.name] = get_img_with_draw_boxes(
+            image_db.image, face_db.face_locations, face_db.student_names
+        )
+
+    images_report = {
+        "images": [
+            f"data:image/png;base64,{images[image_name]}"
+            for image_name in sorted(images)
+        ],
+    }
+
+    return images_report
+
+
 async def save_report_in_db(
     name_of_report,
     report_info,
@@ -951,6 +1036,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         "Friends": create_report7,
         "Not appear": create_report8,
         "Who is in the image": create_report9,
+        "Images": create_report10,
     }
     for report_name, report_creator in reports_creators.items():
         await validate_report_not_exist(report_name=report_name, user_id=user.id, db=db)
@@ -1014,6 +1100,7 @@ async def update_report(
         "Friends": create_report7,
         "Not appear": create_report8,
         "Who is in the image": create_report9,
+        "Images": create_report10,
     }
 
     report_db.info = await report_creator[report_db.name](

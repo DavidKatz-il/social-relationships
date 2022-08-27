@@ -130,6 +130,15 @@ async def get_image(
     return await services.get_image(image_id, user, db)
 
 
+@app.get("/api/images_faces/{image_id}", status_code=200)
+async def get_image_faces(
+    image_id: int,
+    user: schemas.User = fastapi.Depends(services.get_current_user),
+    db: orm.Session = fastapi.Depends(services.get_db),
+):
+    return await services.get_image_faces(image_id, user, db)
+
+
 @app.post("/api/images", response_model=schemas.Image)
 async def create_image(
     image: schemas.ImageCreate,

@@ -20,7 +20,7 @@ export const ImageFaceModal = ({ active, handleModal, ID, name }) => {
     }
 
     async function getImage() {
-        await g.fetchData("GET", "application/json", token, "images/" + ID.valueOf().ID, setErrorMessage,
+        await g.fetchData("GET", "application/json", token, "images_faces/" + ID.valueOf().ID, setErrorMessage,
             "Something went wrong when getting image", setImage);
     }
 
