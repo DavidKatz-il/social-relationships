@@ -57,7 +57,14 @@ export const ImageFaceModal = ({ active, handleModal, ID, name }) => {
             </header>
             <section className="modal-card-body">
                 <ErrorMessage message={errorMessage} />
-                <img src={image} alt="" />
+                {(image) ? <img src={image} alt="" />
+                : 
+                <div>
+                    <p style={{ textAlign: "center" }}><br />Loading the image</p>
+                    <progress className="progress is-small is-primary" max="100">99%</progress>
+                </div>
+                }
+                
             </section>
             <footer className="modal-card-foot has-background-primary-light">
                 <button className="button" onClick={handleClose}>Close</button>
