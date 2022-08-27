@@ -129,7 +129,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-*/data/*
+*/data/database.db
 
 /node_modules
 
