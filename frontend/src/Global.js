@@ -12,25 +12,51 @@ export async function fetchData(method, contentType, token, api, setErrorMessage
         method: method,
         headers: {
             "Content-Type": contentType,
-            Authorization: (token && token !== "null") ? ("Bearer " + token) : undefined,
+            Authorization: "Bearer " + token,
+            //Authorization: (token && token !== "null") ? ("Bearer " + token) : undefined,
         },
         body: body,
     };
     const response = await fetch(api, requestOptions);
-    var data;
     try {
-        data = await response.json();
+        var data = await response.json();
         if (!response.ok) {
             if (data && data.detail && setErrorMessage) setErrorMessage(data.detail);
             else if (setToken) {
                 setToken(null);
                 if (refresher) refresher();
             }
-            else setErrorMessage(standrdErrorMessage);
+            else if (setErrorMessage) setErrorMessage(standrdErrorMessage);
+            return false;
         }
         else {
             if (setData && data) setData(data);
             if (refresher) refresher();
         }
-    } catch (e) { }
+        return true;
+    } catch (e) {
+        try {
+            if (!response.ok) {
+                if (data && data.detail && setErrorMessage) setErrorMessage(data.detail);
+                else if (setToken) {
+                    setToken(null);
+                    if (refresher) refresher();
+                }
+                else if (setErrorMessage) setErrorMessage(standrdErrorMessage);
+                return false;
+            }
+            else {
+                if (setData && data) setData(data);
+                if (refresher) refresher();
+            }
+            return true;
+        }
+        catch (e1) {
+            console.log("faild " + e1);
+            return false;
+        }
+        //if (setErrorMessage) setErrorMessage(standrdErrorMessage);
+        if (refresher) refresher();
+        return false;
+    }
 }

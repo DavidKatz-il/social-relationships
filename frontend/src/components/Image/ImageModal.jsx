@@ -34,12 +34,16 @@ export const ImageModal = ({ active, handleModal, token }) => {
     }
 
     function handleCreateImages(e) {
-        e.preventDefault();
-        images.map(async (img) => {
-            await g.fetchData("POST", "application/json", token, "images", setErrorMessage,
-                "Something went wrong when creating image", undefined, undefined, JSON.stringify({ name: img.name, image: img.image, }));
-        })
-        if (errorMessage !== "") handleClose();
+        //e.preventDefault();
+        var res = false;
+        var a = images.map(async (img) => {
+            var nm = img.name;
+            var ig = img.image;
+            res = await g.fetchData("POST", "application/json", token, "images", setErrorMessage,
+                "Something went wrong when creating image", undefined, undefined, JSON.stringify({ name: nm, image: ig }));
+        });
+
+        if (errorMessage === "") handleClose();
     }
 
     return <div className={`modal ${active && "is-active"}`}>

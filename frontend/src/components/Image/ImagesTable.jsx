@@ -14,6 +14,7 @@ export const ImagesTable = () => {
     const [activeFaceModal, setActiveFaceModal] = useState(false);
     const [faceModalID, setFaceModalID] = useState(0);
     const [faceModalName, setFaceModalName] = useState("");
+    //const [activeRefresher, setActiveRefresher] = useState(false);
 
     async function handleDelete(id) {
         await g.fetchData("DELETE", "application/json", token, `images/${id}`, setErrorMessage,
@@ -21,23 +22,28 @@ export const ImagesTable = () => {
     }
 
     async function getImages() {
+        //setLoaded(false);
         await g.fetchData("GET", "application/json", token, "images", setErrorMessage,
             "Something went wrong. Couldn't load the images", setImages, () => setLoaded(true));
+        //setActiveRefresher(!activeRefresher);
     }
 
     useEffect(() => {
         getImages();
+        //setActiveRefresher(!activeRefresher);
     }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
     function handleModal() {
         setActiveModal(!activeModal);
         getImages();
+        //setActiveRefresher(!activeRefresher);
     }
 
     function handleFaceModal() {
         setActiveFaceModal(!activeFaceModal);
         setFaceModalID(0);
         setFaceModalName("");
+        //setActiveRefresher(!activeRefresher);
     }
 
     return <>

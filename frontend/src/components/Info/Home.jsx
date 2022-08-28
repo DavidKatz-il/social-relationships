@@ -26,7 +26,7 @@ export const Home = () => {
     }
 
     async function getUserData() {
-        if (token !== undefined) {
+        if (token !== 'null') {
             await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setUserData);
             await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData);
         }
@@ -34,7 +34,7 @@ export const Home = () => {
 
     useEffect(() => {
         getUserData();
-    }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return <>
         <br /><ErrorMessage message={errorMessage} /><br />
