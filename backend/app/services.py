@@ -309,9 +309,10 @@ async def get_image_faces(image_id: int, user: schemas.User, db: orm.Session):
         db.query(models.FaceImage)
         .filter_by(owner_id=user.id)
         .filter(models.FaceImage.name == image_db.name)
-        .one()
+        .one_or_none()
     )
-    image_db.image = f"data:image/png;base64,{get_img_with_draw_boxes(image_db.image, face_db.face_locations, face_db.student_names)}"
+    if face_db:
+        image_db.image = f"data:image/png;base64,{get_img_with_draw_boxes(image_db.image, face_db.face_locations, face_db.student_names)}"
     return schemas.Image.from_orm(image_db)
 
 
