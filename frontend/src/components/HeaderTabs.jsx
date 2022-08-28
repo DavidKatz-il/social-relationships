@@ -14,7 +14,7 @@ export const HeaderTabs = () => {
     };
 
     function getUser(user) {
-        if (user) setUserName(user.teacher_name);
+        if (user && user.teacher_name) setUserName(user.teacher_name);
     }
     const fetchUser = async () => {
         await g.fetchData("GET", "application/json", token, "user", undefined, "", getUser);

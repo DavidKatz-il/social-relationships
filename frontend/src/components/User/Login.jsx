@@ -12,7 +12,7 @@ export const Login = () => {
   const [, setToken] = useContext(UserContext);
 
   function setData(data) {
-    setToken(data.access_token);
+    if (data && data.access_token) setToken(data.access_token);
   }
 
   async function submitLogin() {

@@ -12,23 +12,25 @@ export async function fetchData(method, contentType, token, api, setErrorMessage
         method: method,
         headers: {
             "Content-Type": contentType,
-            Authorization: "Bearer " + token,
+            Authorization: (token && token !== "null") ? ("Bearer " + token) : undefined,
         },
         body: body,
     };
     const response = await fetch(api, requestOptions);
     var data;
-    try { data = await response.json(); } catch (e) { }
-    if (!response.ok) {
-        if (data && data.detail && setErrorMessage) setErrorMessage(data.detail);
-        else if (setToken) {
-            setToken(null);
+    try {
+        data = await response.json();
+        if (!response.ok) {
+            if (data && data.detail && setErrorMessage) setErrorMessage(data.detail);
+            else if (setToken) {
+                setToken(null);
+                if (refresher) refresher();
+            }
+            else setErrorMessage(standrdErrorMessage);
+        }
+        else {
+            if (setData && data) setData(data);
             if (refresher) refresher();
         }
-        else setErrorMessage(standrdErrorMessage);
-    }
-    else {
-        if (setData && data) setData(data);
-        if (refresher) refresher();
-    }
+    } catch (e) { }
 }
