@@ -46,7 +46,7 @@ async def validate_email(email: str, db: orm.Session):
         raise fastapi.HTTPException(status_code=400, detail="Invalid email address.")
 
     if await get_user_by_email(email=email, db=db):
-        raise fastapi.HTTPException(status_code=401, detail="Email already exist.")
+        raise fastapi.HTTPException(status_code=400, detail="Email already exist.")
 
 
 async def validate_hashed_password(hashed_password: str):
@@ -130,7 +130,7 @@ async def get_current_user(
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         user = db.query(models.User).get(payload["id"])
     except:
-        raise fastapi.HTTPException(status_code=401, detail="Invalid Email or Password")
+        raise fastapi.HTTPException(status_code=401, detail="Invalid Email or Password.")
 
     return schemas.User.from_orm(user)
 
@@ -1022,7 +1022,7 @@ async def create_reports(user: schemas.User, db: orm.Session):
         db.query(models.Student).filter_by(owner_id=user.id).count() == 0
     ):
         raise fastapi.HTTPException(
-            status_code=404, detail="There must be at least one student and one image."
+            status_code=400, detail="There must be at least one student and one image."
         )
 
     await create_match_faces(user, db)
