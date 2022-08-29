@@ -33,16 +33,14 @@ export const ImageModal = ({ active, handleModal, token }) => {
         handleModal();
     }
 
-    function handleCreateImages(e) {
-        //e.preventDefault();
-        var res = false;
-        var a = images.map(async (img) => {
-            var nm = img.name;
-            var ig = img.image;
-            res = await g.fetchData("POST", "application/json", token, "images", setErrorMessage,
-                "Something went wrong when creating image", undefined, undefined, JSON.stringify({ name: nm, image: ig }));
+    async function handleCreateImages(e) {
+        e.preventDefault();
+        const newImagesPromises = [];
+        images.map((img) => {
+            newImagesPromises.push(g.fetchData("POST", "application/json", token, "images", setErrorMessage,
+                "Something went wrong when creating image", undefined, undefined, JSON.stringify({ name: img.name, image: img.image })));
         });
-
+        const newImages = await Promise.all(newImagesPromises);
         if (errorMessage === "") handleClose();
     }
 
