@@ -1,0 +1,6 @@
+FROM backend
+
+RUN rm -rf /backend/app
+COPY ./requirements-dev.txt ./
+COPY ./.pylintrc ./
+RUN pip install --no-cache-dir --upgrade -r ./requirements-dev.txt

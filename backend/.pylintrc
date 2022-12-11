@@ -1,0 +1,27 @@
+[MASTER]
+disable=
+    C0114, # missing-module-docstring
+    C0116, # missing-function-docstring
+    C0115, # missing-class-docstring
+    R0902, # too-many-instance-attributes
+    R0903, # too-few-public-methods
+    R0801, # duplicate-code
+
+[TYPECHECK]
+ignored-modules=pyspark.sql.functions
+
+[DESIGN]
+max-args=7
+
+[FORMAT]
+max-line-length=130
+
+[SIMILARITIES]
+# Minimum lines number of a similarity.
+min-similarity-lines=5
+# Ignore comments when computing similarities.
+ignore-comments=yes
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+# Ignore imports when computing similarities.
+ignore-imports=yes
