@@ -5,9 +5,10 @@ import uvicorn
 from sqlalchemy import orm
 
 from app import schemas, services
+from app.core_utils.const import APIMessagesConst, APPConst
 
 app = fastapi.FastAPI(
-    title="Social Relationships - API",
+    title=APPConst.TITLE.value,
 )
 
 
@@ -36,7 +37,9 @@ async def create_user(
 ):
     user_db = await services.get_user_by_email(user.email, db_session)
     if user_db:
-        raise fastapi.HTTPException(status_code=400, detail="Email already in use.")
+        raise fastapi.HTTPException(
+            status_code=400, detail=APIMessagesConst.EMAIL_ALREADY_EXIST.value
+        )
 
     user = await services.create_user(user, db_session)
 
@@ -50,7 +53,7 @@ async def update_user(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.update_user(user_update, user, db_session)
-    return {"message", "Successfully Updated."}
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.post("/api/token")
@@ -63,7 +66,9 @@ async def generate_token(
     )
 
     if not user:
-        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials.")
+        raise fastapi.HTTPException(
+            status_code=401, detail=APIMessagesConst.USER_NOT_EXIST.value
+        )
 
     return await services.create_token(user)
 
@@ -104,7 +109,7 @@ async def update_student(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.update_student(student_id, student, user, db_session)
-    return {"message", "Successfully Updated."}
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.delete("/api/students/{student_id}", status_code=204)
@@ -114,7 +119,7 @@ async def delete_student(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.delete_student(student_id, user, db_session)
-    return {"message", "Successfully Deleted."}
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.get("/api/images", response_model=List[schemas.Image])
@@ -159,7 +164,7 @@ async def delete_image(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.delete_image(image_id, user, db_session)
-    return {"message", "Successfully Deleted."}
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.post("/api/create_match_faces", status_code=200)
@@ -168,7 +173,7 @@ async def create_match_faces(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.create_match_faces(user, db_session)
-    return {"message", "Successfully finished matcheing all faces."}
+    return {"message", APIMessagesConst.CREATE_MATCH_FACES.value}
 
 
 @app.get("/api/get_match_faces", status_code=200)
@@ -229,7 +234,7 @@ async def delete_report(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.delete_report(report_id, user, db_session)
-    return {"message", "Successfully Deleted."}
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.put("/api/report/{report_id}", status_code=200)
@@ -239,13 +244,15 @@ async def update_report(
     db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
     await services.update_report(report_id, user, db_session)
-    return {"message", "Successfully Updated."}
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.get("/api")
 async def root():
-    return {"message": "Social Relationships API"}
+    return {"message": APIMessagesConst.ROOT.value}
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8000)
+    uvicorn.run(
+        "main:app", host=APPConst.HOST.value, reload=True, port=APPConst.PORT.value
+    )
