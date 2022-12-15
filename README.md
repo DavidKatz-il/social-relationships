@@ -14,6 +14,8 @@ docker compose up
 #### Format python code style:
 ##### Fron inside the `backend` folder run
 ```bash
+make docker_build
+make docker_dev_build
 make lint
 ```
 
