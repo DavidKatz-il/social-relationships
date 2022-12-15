@@ -30,7 +30,7 @@ export const ReportsTable = () => {
 
     useEffect(() => {
         if (!(reports && reports.length)) getReportsData();
-    }, []);
+    }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
     function setActiveReport(name, id) {
         setActiveID(id);
@@ -55,7 +55,7 @@ export const ReportsTable = () => {
                         <p className="menu-label"><b>Reports</b></p>
                         <ul className="menu-list">
                             {reports && reports.map(r => {
-                                return <li><a className={activeTab === r.name ? "is-active" : ""} onClick={() => setActiveReport(r.name, r.id)} >{r.name}</a></li>
+                                return <li><a className={activeTab === r.name ? "is-active" : ""} onClick={() => setActiveReport(r.name, r.id)} >{r.name}</a></li> // eslint-disable-line react-hooks/exhaustive-deps
                             })}
                         </ul>
                     </aside>

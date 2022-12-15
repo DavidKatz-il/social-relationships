@@ -10,6 +10,7 @@ class FaceImageCreate(FaceBase):
     face_encodings: List[List[float]]
 
 
+# pylint:disable=duplicate-code
 class FaceImage(FaceImageCreate):
     id: int
     owner_id: int

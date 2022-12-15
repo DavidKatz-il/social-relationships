@@ -55,8 +55,8 @@ class Data:
         report: List[Dict[str, Union[str, int]]]
     ) -> Dict[Union[int, str], List]:
         if report:
-            if ['Image'] == list(report[0].keys()):
-                return {'images': list(row['Image'] for row in report)}
+            if ["Image"] == list(report[0].keys()):
+                return {"images": list(row["Image"] for row in report)}
             columns = {0: list(report[0].keys())}
             rows = {idx: list(row.values()) for idx, row in enumerate(report, start=1)}
             return {**columns, **rows}

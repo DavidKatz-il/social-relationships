@@ -1,6 +1,5 @@
-from typing import Callable, Dict, Iterable, List, Optional, Protocol, Union
+from typing import Dict, List, Protocol, Union
 
-from networkx import Graph
 from networkx.algorithms.community import louvain_communities
 
 from app.reports.base import BaseGraphReport

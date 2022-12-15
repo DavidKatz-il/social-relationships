@@ -9,6 +9,7 @@ class FaceStudentCreate(FaceBase):
     face_encodings: List[List[float]]
 
 
+# pylint:disable=duplicate-code
 class FaceStudent(FaceStudentCreate):
     id: int
     owner_id: int

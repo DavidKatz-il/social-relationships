@@ -20,6 +20,7 @@ class ImagesFaceRecognitionReport(BaseImageReport):
                     image["student_names"],
                     image["face_locations"],
                 )
-            }   for image in data.images
+            }
+            for image in data.images
         ]
         return report

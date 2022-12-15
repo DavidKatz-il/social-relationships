@@ -7,6 +7,7 @@ class StudentCreate(StudentBase):
     pass
 
 
+# pylint:disable=duplicate-code
 class Student(StudentBase):
     id: int
     owner_id: int
