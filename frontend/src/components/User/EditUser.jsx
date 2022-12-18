@@ -47,7 +47,7 @@ export const EditUser = () => {
 
     useEffect(() => {
         fetchUser();
-    }, [])
+    }, [])// eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div className="hero-body">

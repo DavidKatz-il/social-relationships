@@ -20,7 +20,7 @@ export const ReportModal = (ID) => {
     }
 
     function getImage() {
-        var imgs = Object.values(state.info)
+        let imgs = Object.values(state.info)
         setImages(imgs);
     }
 
@@ -57,7 +57,7 @@ export const ReportModal = (ID) => {
                 }</div>
                     :
                     <div>
-                        {(Object.values(state.info).length == 1) ?
+                        {(Object.values(state.info).length <= 1) ?
                             <h1 className="subtitle" style={{ textAlign: "center" }}>There is no data for this report.</h1>
                             :
                             <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style={{ textAlign: "center" }}>

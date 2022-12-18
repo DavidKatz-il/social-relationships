@@ -5,10 +5,10 @@ import uvicorn
 from sqlalchemy import orm
 
 from app import schemas, services
-
+from app.core_utils.const import APIMessagesConst, APPConst
 
 app = fastapi.FastAPI(
-    title="Social Relationships - API",
+    title=APPConst.TITLE.value,
 )
 
 
@@ -25,20 +25,23 @@ async def get_user(user: schemas.User = fastapi.Depends(services.get_current_use
 @app.get("/api/user_info", response_model=schemas.UserInfo)
 async def get_user_info(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_user_info(user, db)
+    return await services.get_user_info(user, db_session)
 
 
 @app.post("/api/users")
 async def create_user(
-    user: schemas.UserCreate, db: orm.Session = fastapi.Depends(services.get_db)
+    user: schemas.UserCreate,
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    user_db = await services.get_user_by_email(user.email, db)
+    user_db = await services.get_user_by_email(user.email, db_session)
     if user_db:
-        raise fastapi.HTTPException(status_code=400, detail="Email already in use.")
+        raise fastapi.HTTPException(
+            status_code=400, detail=APIMessagesConst.EMAIL_ALREADY_EXIST.value
+        )
 
-    user = await services.create_user(user, db)
+    user = await services.create_user(user, db_session)
 
     return await services.create_token(user)
 
@@ -47,21 +50,25 @@ async def create_user(
 async def update_user(
     user_update: schemas.UserUpdate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.update_user(user_update, user, db)
-    return {"message", "Successfully Updated."}
+    await services.update_user(user_update, user, db_session)
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.post("/api/token")
 async def generate_token(
     form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends(),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    user = await services.authenticate_user(form_data.username, form_data.password, db)
+    user = await services.authenticate_user(
+        form_data.username, form_data.password, db_session
+    )
 
     if not user:
-        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials.")
+        raise fastapi.HTTPException(
+            status_code=401, detail=APIMessagesConst.USER_NOT_EXIST.value
+        )
 
     return await services.create_token(user)
 
@@ -69,27 +76,29 @@ async def generate_token(
 @app.get("/api/students", response_model=List[schemas.Student])
 async def get_students(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_students(user=user, db=db)
+    return await services.get_students(user=user, db_session=db_session)
 
 
 @app.get("/api/students/{student_id}", status_code=200)
 async def get_student(
     student_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_student(student_id, user, db)
+    return await services.get_student(student_id, user, db_session)
 
 
 @app.post("/api/students", response_model=schemas.Student)
 async def create_student(
     student: schemas.StudentCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.create_student(user=user, db=db, student=student)
+    return await services.create_student(
+        user=user, db_session=db_session, student=student
+    )
 
 
 @app.put("/api/students/{student_id}", status_code=200)
@@ -97,149 +106,153 @@ async def update_student(
     student_id: int,
     student: schemas.StudentCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.update_student(student_id, student, user, db)
-    return {"message", "Successfully Updated."}
+    await services.update_student(student_id, student, user, db_session)
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.delete("/api/students/{student_id}", status_code=204)
 async def delete_student(
     student_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.delete_student(student_id, user, db)
-    return {"message", "Successfully Deleted."}
+    await services.delete_student(student_id, user, db_session)
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.get("/api/images", response_model=List[schemas.Image])
 async def get_images(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_images(user=user, db=db)
+    return await services.get_images(user=user, db_session=db_session)
 
 
 @app.get("/api/images/{image_id}", status_code=200)
 async def get_image(
     image_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_image(image_id, user, db)
+    return await services.get_image(image_id, user, db_session)
 
 
 @app.get("/api/images_faces/{image_id}", status_code=200)
 async def get_image_faces(
     image_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_image_faces(image_id, user, db)
+    return await services.get_image_faces(image_id, user, db_session)
 
 
 @app.post("/api/images", response_model=schemas.Image)
 async def create_image(
     image: schemas.ImageCreate,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.create_image(user=user, db=db, image=image)
+    return await services.create_image(user=user, db_session=db_session, image=image)
 
 
 @app.delete("/api/images/{image_id}", status_code=204)
 async def delete_image(
     image_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.delete_image(image_id, user, db)
-    return {"message", "Successfully Deleted."}
+    await services.delete_image(image_id, user, db_session)
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.post("/api/create_match_faces", status_code=200)
 async def create_match_faces(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.create_match_faces(user, db)
-    return {"message", "Successfully finished matcheing all faces."}
+    await services.create_match_faces(user, db_session)
+    return {"message", APIMessagesConst.CREATE_MATCH_FACES.value}
 
 
 @app.get("/api/get_match_faces", status_code=200)
 async def get_match_faces(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_match_faces(user, db)
+    return await services.get_match_faces(user, db_session)
 
 
 @app.post("/api/reports", status_code=200)
 async def create_reports(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.create_reports(user=user, db=db)
+    return await services.create_update_reports(user=user, db_session=db_session)
 
 
 @app.put("/api/reports", status_code=200)
 async def update_reports(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.update_reports(user=user, db=db)
+    return await services.create_update_reports(user=user, db_session=db_session)
 
 
 @app.get("/api/reports_info", status_code=200)
 async def get_reports_info(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_reports_info(user=user, db=db)
+    return await services.get_reports_info(user=user, db_session=db_session)
 
 
 @app.get("/api/reports", status_code=200)
 async def get_reports(
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_reports(user=user, db=db)
+    return await services.get_reports(user=user, db_session=db_session)
 
 
 @app.get("/api/report/{report_id}", status_code=200)
 async def get_report(
     report_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    return await services.get_specific_report(report_id=report_id, user=user, db=db)
+    return await services.get_specific_report(
+        report_id=report_id, user=user, db_session=db_session
+    )
 
 
 @app.delete("/api/report/{report_id}", status_code=204)
 async def delete_report(
     report_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.delete_report(report_id, user, db)
-    return {"message", "Successfully Deleted."}
+    await services.delete_report(report_id, user, db_session)
+    return {"message", APIMessagesConst.DELETED.value}
 
 
 @app.put("/api/report/{report_id}", status_code=200)
 async def update_report(
     report_id: int,
     user: schemas.User = fastapi.Depends(services.get_current_user),
-    db: orm.Session = fastapi.Depends(services.get_db),
+    db_session: orm.Session = fastapi.Depends(services.get_db_session),
 ):
-    await services.update_report(report_id, user, db)
-    return {"message", "Successfully Updated."}
+    await services.update_report(report_id, user, db_session)
+    return {"message", APIMessagesConst.UPDATED.value}
 
 
 @app.get("/api")
 async def root():
-    return {"message": "Social Relationships API"}
+    return {"message": APIMessagesConst.ROOT.value}
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8000)
+    uvicorn.run(
+        "main:app", host=APPConst.HOST.value, reload=True, port=APPConst.PORT.value
+    )
