@@ -18,7 +18,6 @@ from app.services.utils.face_recognition import (
 
 
 class Data:
-
     student_images: Dict[str, List[str]]
     image_students: Dict[str, List[str]]
     all_student_names: List[str]

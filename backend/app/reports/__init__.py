@@ -20,7 +20,6 @@ class Data(Protocol):
 
 
 class InterfaceReport(Protocol):
-
     name: str
     keys: List[str]
 

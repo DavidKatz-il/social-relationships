@@ -8,7 +8,6 @@ class Data(Protocol):
 
 
 class ImageStudentsReport(BaseReport):
-
     name = "Who is in the image"
     keys = ["Image", "Count", "Students"]
 

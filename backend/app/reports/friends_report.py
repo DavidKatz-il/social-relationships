@@ -8,7 +8,6 @@ class Data(Protocol):
 
 
 class FriendsReport(BaseReport):
-
     name = "Friends"
     keys = ["Student", "Count", "Students"]
 

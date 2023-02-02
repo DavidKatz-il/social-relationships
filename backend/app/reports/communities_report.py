@@ -10,7 +10,6 @@ class Data(Protocol):
 
 
 class CommunitiesReport(BaseGraphReport):
-
     name = "Communities"
     keys = ["Community", "Members"]
 

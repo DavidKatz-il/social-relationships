@@ -9,7 +9,6 @@ class Data(Protocol):
 
 
 class GraphReport(BaseImageGraphReport):
-
     name = "Graph"
     keys = ["Image"]
 

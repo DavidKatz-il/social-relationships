@@ -5,7 +5,7 @@ import uvicorn
 from sqlalchemy import orm
 
 from app import schemas, services
-from app.core_utils.const import APIMessagesConst, APPConst
+from app.core_utils.const import APIMessagesConst, APPConst, ExceptionMessagesConst
 
 app = fastapi.FastAPI(
     title=APPConst.TITLE.value,
@@ -38,7 +38,7 @@ async def create_user(
     user_db = await services.get_user_by_email(user.email, db_session)
     if user_db:
         raise fastapi.HTTPException(
-            status_code=400, detail=APIMessagesConst.EMAIL_ALREADY_EXIST.value
+            status_code=400, detail=ExceptionMessagesConst.EMAIL_EXIST.value
         )
 
     user = await services.create_user(user, db_session)
@@ -67,7 +67,7 @@ async def generate_token(
 
     if not user:
         raise fastapi.HTTPException(
-            status_code=401, detail=APIMessagesConst.USER_NOT_EXIST.value
+            status_code=401, detail=ExceptionMessagesConst.USER_NOT_EXIST.value
         )
 
     return await services.create_token(user)

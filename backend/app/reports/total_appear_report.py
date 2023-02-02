@@ -8,7 +8,6 @@ class Data(Protocol):
 
 
 class TotalAppearReport(BaseReport):
-
     name = "Total appear"
     keys = ["Student", "Count", "Images"]
 

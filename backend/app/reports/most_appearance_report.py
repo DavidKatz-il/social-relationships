@@ -8,7 +8,6 @@ class Data(Protocol):
 
 
 class MostAppearanceReport(BaseReport):
-
     name = "Most appearance"
     keys = ["Student", "Count"]
 

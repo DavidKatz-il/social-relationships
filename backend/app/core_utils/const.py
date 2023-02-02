@@ -21,20 +21,33 @@ class APPConst(Enum):
     TITLE: str = "Social Relationships - API"
 
 
-class APIMessagesConst(Enum):
-    ROOT: str = "Social Relationships API"
-    UPDATED: str = "Successfully Updated."
-    DELETED: str = "Successfully Deleted."
-    CREATE_MATCH_FACES: str = "Successfully finished matcheing all faces."
-    USER_NOT_EXIST: str = "Invalid Credentials."
-    EMAIL_ALREADY_EXIST: str = "Email already in use."
+class APIMessagesConst(str, Enum):
+    ROOT = "Social Relationships API"
+    UPDATED = "Successfully Updated."
+    DELETED = "Successfully Deleted."
+    CREATE_MATCH_FACES = "Successfully finished matcheing all faces."
+
+
+class ExceptionMessagesConst(str, Enum):
+    USER_NOT_EXIST = "Invalid Credentials."
+    EMAIL_EXIST = "Email already in use."
+    EMAIL_INVALID = "Invalid email address."
+    STUDENT_IMAGE_ONE_FACE = "Must be only one face in a student image"
+    STUDENT_EXIST = "Email already in use."
+    STUDENT_REQUIREMENTS = "Student must have a name and at least one image."
+    IMAGE_WITHOUT_FACES = "Cannot recognize a face in the image."
+    PASSWORD_REQUIREMENTS = (
+        "The password must contain at least {min_pass_len} characters."
+    )
+    IMAGE_EXIST = "Image already exist."
+    IMAGE_REQUIREMENTS = "Image must have a name and a image."
 
 
 @dataclass
 class Const:
-
     face = FaceConst
     user = UserConst
     image = ImageConst
     app = APPConst
     api_messages = APIMessagesConst
+    exception_messages = ExceptionMessagesConst

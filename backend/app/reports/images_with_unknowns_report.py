@@ -9,7 +9,6 @@ class Data(Protocol):
 
 
 class ImagesWithUnknownsReport(BaseReport):
-
     name = "Images with unknowns"
     keys = ["Image", "Count"]
 
