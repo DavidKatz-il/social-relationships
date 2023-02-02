@@ -1,8 +1,10 @@
 from datetime import datetime
 
+import fastapi
 from sqlalchemy import orm
 
 from app import models, schemas
+from app.core_utils.const import ExceptionMessagesConst
 from app.core_utils.face_recognition import get_locations_and_encodings_from_image
 from app.core_utils.image import draw_face_boxes
 from app.services.utils.db import get_object_by_id, get_object_by_name
@@ -51,6 +53,11 @@ async def create_image(
     locations, encodings = await get_locations_and_encodings_from_image(
         image_base64=image.image
     )
+    if len(locations) == 0:
+        raise fastapi.HTTPException(
+            status_code=400, detail=ExceptionMessagesConst.IMAGE_WITHOUT_FACES.value
+        )
+
     face_image = schemas.FaceImageCreate(
         face_locations=locations,
         face_encodings=encodings,

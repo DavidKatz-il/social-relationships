@@ -9,7 +9,6 @@ class Data(Protocol):
 
 
 class NotAppearReport(BaseReport):
-
     name = "Not appear"
     keys = ["Student"]
 

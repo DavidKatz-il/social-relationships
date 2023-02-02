@@ -8,7 +8,6 @@ class Data(Protocol):
 
 
 class ImagesFaceRecognitionReport(BaseImageReport):
-
     name = "Images"
     keys = ["Image"]
 

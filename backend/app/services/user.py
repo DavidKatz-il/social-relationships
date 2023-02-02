@@ -69,12 +69,12 @@ async def authenticate_user(email: str, password: str, db_session: orm.Session):
     return user
 
 
-async def create_token(user: models.User):
+async def create_token(user: models.User) -> dict:
     user_obj = schemas.User.from_orm(user)
 
     token = jwt.encode(user_obj.dict(), UserConst.JWT_SECRET.value)
-
-    return dict(access_token=token, token_type=UserConst.TOKEN_TYPE.value)
+    token_data = {"access_token": token, "token_type": UserConst.TOKEN_TYPE.value}
+    return token_data
 
 
 async def get_current_user(

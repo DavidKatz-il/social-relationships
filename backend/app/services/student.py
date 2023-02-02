@@ -1,10 +1,16 @@
 import json
 from datetime import datetime
+from typing import List, Tuple, Union
 
+import fastapi
 from sqlalchemy import orm
 
 from app import models, schemas
-from app.core_utils.face_recognition import get_locations_and_encodings_from_images
+from app.core_utils.const import ExceptionMessagesConst
+from app.core_utils.exceptions import ImageFaceError
+from app.core_utils.face_recognition import (
+    get_locations_and_encodings_from_images_with_only_one_face,
+)
 from app.services.utils.db import get_object_by_id, get_object_by_name
 from app.services.utils.validations import (
     validate_student,
@@ -26,6 +32,17 @@ async def get_student(student_id: int, user: schemas.User, db_session: orm.Sessi
     return schemas.Student.from_orm(student_db)
 
 
+async def get_locations_and_encodings_from_images(
+    images: List[str],
+) -> Tuple[Union[list, List[List[int]]], Union[list, List[List[float]]]]:
+    try:
+        return await get_locations_and_encodings_from_images_with_only_one_face(images)
+    except ImageFaceError as exc:
+        raise fastapi.HTTPException(
+            status_code=400, detail=ExceptionMessagesConst.STUDENT_IMAGE_ONE_FACE.value
+        ) from exc
+
+
 async def create_student(
     user: schemas.User, db_session: orm.Session, student: schemas.StudentCreate
 ):
@@ -33,7 +50,7 @@ async def create_student(
         student_name=student.name, user_id=user.id, db_session=db_session
     )
 
-    locations, encodings = await get_locations_and_encodings_from_images(
+    locations, encodings = get_locations_and_encodings_from_images(
         images=json.loads(student.images)
     )
     face_student = schemas.FaceStudentCreate(
@@ -75,7 +92,7 @@ async def update_student(
 
     if student.images != student_db.images:
         student_db.images = student.images
-        locations, encodings = await get_locations_and_encodings_from_images(
+        locations, encodings = get_locations_and_encodings_from_images(
             images=json.loads(student.images)
         )
     else:
