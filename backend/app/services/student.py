@@ -92,7 +92,7 @@ async def update_student(
 
     if student.images != student_db.images:
         student_db.images = student.images
-        locations, encodings = get_locations_and_encodings_from_images(
+        locations, encodings = await get_locations_and_encodings_from_images(
             images=json.loads(student.images)
         )
     else:
