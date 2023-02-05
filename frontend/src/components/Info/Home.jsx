@@ -26,7 +26,7 @@ export const Home = () => {
     }
 
     async function getUserData() {
-        if (token !== 'null') {
+        if (token !== null) {
             await g.fetchData("GET", "application/json", token, 'user', setErrorMessage, "Could not get the user", setUserData);
             await g.fetchData("GET", "application/json", token, 'user_info', setErrorMessage, "Could not get the user", setUserInfoData);
         }
