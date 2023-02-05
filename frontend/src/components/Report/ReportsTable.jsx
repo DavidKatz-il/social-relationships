@@ -46,9 +46,10 @@ export const ReportsTable = () => {
                 </div>
             </div>
         </section>
-
+        <br />
+        <ErrorMessage message={errorMessage} />
+        <br />
         <section >
-            <br /><ErrorMessage message={errorMessage} /><br />
             <div className="columns">
                 <div className="column">
                     <aside className="menu" style={{ padding: 25, float: "left" }}>
@@ -61,17 +62,16 @@ export const ReportsTable = () => {
                     </aside>
                 </div>
                 <div className="column is-four-fifths">
-                    {(loaded && reports.length && activeID > 0) ? <ReportModal ID={activeID} />
-                        :
-                        <>
-                            {(loaded && reports.length) ?
-                                <p style={{ textAlign: "center" }}><b>Select A Report</b></p>
-                                :
-                                <div>
-                                    <p style={{ textAlign: "center" }}><br />Loading your reports</p>
-                                    <progress className="progress is-small is-primary" max="100">99%</progress>
-                                </div>}
-                        </>
+                    {
+                        (!loaded) ? (
+                            <div>
+                                <p style={{ textAlign: "center" }}><br /> Loading your reports</p>
+                                <progress className="progress is-small is-primary" max="100">99%</progress>
+                            </div>
+                        ) : (reports.length && activeID > 0) ? <ReportModal ID={activeID} />
+                        : (reports.length > 0) ? (
+                        <p style={{ textAlign: "center" }}><b>Select A Report</b></p>
+                        )  : <></>
                     }
                 </div>
             </div>
