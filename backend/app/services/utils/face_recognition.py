@@ -28,9 +28,10 @@ async def create_match_faces(user: schemas.User, db_session: orm.Session):
             name = FaceConst.UNKNOWN.value
             matches = np.where(
                 face_recognition.compare_faces(
-                np.array(known_face_encodings), np.array(encoding), tolerance=0.65
-            ))[0]
-            
+                    np.array(known_face_encodings), np.array(encoding), tolerance=0.6
+                )
+            )[0]
+
             if len(matches) > 0:
                 names = [known_face_names[idx] for idx in matches]
                 most_common_name = Counter(names).most_common(1)[0][0]
