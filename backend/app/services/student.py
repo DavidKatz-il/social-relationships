@@ -50,7 +50,7 @@ async def create_student(
         student_name=student.name, user_id=user.id, db_session=db_session
     )
 
-    locations, encodings = get_locations_and_encodings_from_images(
+    locations, encodings = await get_locations_and_encodings_from_images(
         images=json.loads(student.images)
     )
     face_student = schemas.FaceStudentCreate(
@@ -92,7 +92,7 @@ async def update_student(
 
     if student.images != student_db.images:
         student_db.images = student.images
-        locations, encodings = get_locations_and_encodings_from_images(
+        locations, encodings = await get_locations_and_encodings_from_images(
             images=json.loads(student.images)
         )
     else:

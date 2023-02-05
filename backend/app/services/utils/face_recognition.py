@@ -1,5 +1,5 @@
-from collections import OrderedDict
-from typing import Dict, List
+from collections import Counter, OrderedDict
+from typing import Dict, List, Optional
 
 import face_recognition
 import numpy as np
@@ -26,15 +26,17 @@ async def create_match_faces(user: schemas.User, db_session: orm.Session):
         student_names = []
         for encoding in face_image.face_encodings:
             name = FaceConst.UNKNOWN.value
-            matches = face_recognition.compare_faces(
-                np.array(known_face_encodings), np.array(encoding)
-            )
-            face_distances = face_recognition.face_distance(
-                np.array(known_face_encodings), np.array(encoding)
-            )
-            best_match_index = np.argmin(face_distances)
-            if matches[best_match_index]:
-                name = known_face_names[best_match_index]
+            matches = np.where(
+                face_recognition.compare_faces(
+                    np.array(known_face_encodings), np.array(encoding), tolerance=0.6
+                )
+            )[0]
+
+            if len(matches) > 0:
+                names = [known_face_names[idx] for idx in matches]
+                most_common_name = Counter(names).most_common(1)[0][0]
+                name = most_common_name
+
             student_names.append(name)
 
         face_image.student_names = sorted(student_names)
