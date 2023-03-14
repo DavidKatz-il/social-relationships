@@ -1,7 +1,8 @@
 ![logo](docs/logo.png "Social Relationships logo")
 ___________________________
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
+___________________________
+[![Lint](https://github.com/DavidKatz-il/social-relationships/actions/workflows/black.yml/badge.svg)](https://github.com/DavidKatz-il/social-relationships/actions/workflows/black.yml)
 ___________________________
 
 ## Introduction
